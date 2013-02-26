@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * This is the config file for GoalioQueueDoctrine. Just drop this file into your config/autoload folder (don't
+ * forget to remove the .dist extension from the file), and configure it as you want
+ */
+
+return array(
+    'slm_queue' => array(
+        /**
+         * Configuration for GoalioQueueDoctrine
+         */
+        'doctrine' => array(
+            /**
+             * The name of the doctrine connection service
+             */
+            // 'connection' => 'doctrine.connection.orm_default',
+
+            /**
+             * Table name which should be used to store jobs
+             */
+            // 'table_name' => 'queue_default',
+
+            /**
+             * how long to keep deleted (successful) jobs (in minutes)
+             */
+            // 'deleted_lifetime' => '60',
+
+            /**
+             * how long to keep buried (failed) jobs (in minutes)
+             */
+            // 'buried_lifetime' => '60'
+        ),
+    ),
+);
