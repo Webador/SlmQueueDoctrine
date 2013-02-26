@@ -11,10 +11,9 @@ use SlmQueueDoctrine\Queue\Table;
  */
 class TableFactory implements FactoryInterface
 {
-
    /**
-     *  {@inheritDoc}
-     */
+    * {@inheritDoc}
+    */
    public function createService(ServiceLocatorInterface $serviceLocator, $name = '', $requestedName = '')
    {
        $parentLocator = $serviceLocator->getServiceLocator();
