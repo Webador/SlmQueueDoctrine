@@ -1,5 +1,5 @@
 {
-    "name": "goalio/goalio-queue-doctrine",
+    "name": "juriansluiman/slm-queue-doctrine",
     "description": "Zend Framework 2 module that integrates Doctrine as queuing system",
     "type": "library",
     "keywords": [
@@ -10,7 +10,7 @@
         "db",
         "database"
     ],
-    "homepage": "https://github.com/goalio/GoalioQueueDoctrine",
+    "homepage": "https://github.com/juriansluiman/SlmQueueDoctrine",
     "authors": [
         {
             "name": "Stefan Kleff",
@@ -29,7 +29,7 @@
     },
     "autoload": {
         "psr-0": {
-            "GoalioQueueDoctrine": "src/"
+            "SlmQueueDoctrine": "src/"
         },
         "classmap": [
             "./Module.php"
