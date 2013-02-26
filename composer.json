@@ -25,7 +25,7 @@
         "zendframework/zend-servicemanager": "2.*",
         "zendframework/zend-stdlib": "2.*",
         "juriansluiman/slm-queue": ">=0.2.3",
-        "doctrine/doctrine-orm-module":  ">0.6"
+        "doctrine/doctrine-orm-module":  ">=0.6"
     },
     "autoload": {
         "psr-0": {
