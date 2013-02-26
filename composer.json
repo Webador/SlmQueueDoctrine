@@ -1,0 +1,38 @@
+{
+    "name": "goalio/goalio-queue-doctrine",
+    "description": "Zend Framework 2 module that integrates Doctrine as queuing system",
+    "type": "library",
+    "keywords": [
+        "zf2",
+        "queue",
+        "job",
+        "doctrine",
+        "db",
+        "database"
+    ],
+    "homepage": "https://github.com/goalio/GoalioQueueDoctrine",
+    "authors": [
+        {
+            "name": "Stefan Kleff",
+            "email": "s.kleff@goalio.de",
+            "homepage": "http://www.goalio.de"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zend-mvc": "2.*",
+        "zendframework/zend-servicemanager": "2.*",
+        "zendframework/zend-stdlib": "2.*",
+        "juriansluiman/slm-queue": ">=0.2.3",
+        "doctrine/doctrine-orm-module":  ">0.6"
+    },
+    "autoload": {
+        "psr-0": {
+            "GoalioQueueDoctrine": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}
