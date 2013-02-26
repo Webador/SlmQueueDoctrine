@@ -1,19 +1,22 @@
 <?php
-namespace GoalioQueueDoctrine\Worker;
+
+namespace SlmQueueDoctrine\Worker;
 
 use Exception;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\AbstractWorker;
-use GoalioQueueDoctrine\Queue\TableInterface;
-use GoalioQueueDoctrine\Job\Exception as JobException;
+use SlmQueueDoctrine\Queue\TableInterface;
+use SlmQueueDoctrine\Job\Exception as JobException;
 
 /**
  * Worker for Doctrine
  */
 class Worker extends AbstractWorker
 {
-
+    /**
+     * {@inheritDoc}
+     */
     public function processJob(JobInterface $job, QueueInterface $queue)
     {
         if (!$queue instanceof TableInterface) {
@@ -21,10 +24,8 @@ class Worker extends AbstractWorker
         }
 
         try {
-
             $job->execute($queue);
             $queue->delete($job);
-
         } catch(JobException\ReleasableException $exception) {
             $queue->release($job, $exception->getOptions());
         } catch (JobException\BuryableException $exception) {

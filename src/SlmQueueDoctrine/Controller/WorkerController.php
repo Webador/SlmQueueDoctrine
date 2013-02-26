@@ -1,16 +1,27 @@
 <?php
-namespace GoalioQueueDoctrine\Controller;
-use Goalio\Mvc\Controller\AbstractActionController;
-use GoalioQueueDoctrine\Queue\Table;
 
+namespace SlmQueueDoctrine\Controller;
 
-class WorkerController extends AbstractActionController {
+use Exception;
+use SlmQueueDoctrine\Queue\Table;
+use Zend\Mvc\Controller\AbstractActionController;
 
-    public function processAction() {
-        /** @var $worker \GoalioQueueDoctrine\Worker\Worker */
-        $worker = $this->serviceLocator->get('GoalioQueueDoctrine\Worker\Worker');
+/**
+ * Worker controller
+ */
+class WorkerController extends AbstractActionController
+{
+    /**
+     * Process the queue
+     *
+     * @return string
+     */
+    public function processAction()
+    {
+        /** @var $worker \SlmQueueDoctrine\Worker\Worker */
+        $worker    = $this->serviceLocator->get('SlmQueueDoctrine\Worker\Worker');
         $queueName = $this->params('queueName');
-        $options = array();
+        $options   = array();
 
         try {
             $count = $worker->processQueue($queueName, array_filter($options));
@@ -25,16 +36,19 @@ class WorkerController extends AbstractActionController {
         );
     }
 
-
-    public function recoverAction() {
-        /** @var $worker \GoalioQueueDoctrine\Worker\Worker */
-        $worker = $this->serviceLocator->get('GoalioQueueDoctrine\Worker\Worker');
-        $queueName = $this->params('queueName');
-        $executionTime = $this->params('executiontime', 0);
+    /**
+     * Recover long running jobs
+     *
+     * @return string
+     */
+    public function recoverAction()
+    {
+        $queueName     = $this->params('queueName');
+        $executionTime = $this->params('executionTime', 0);
 
         /** @var $queueManager \SlmQueue\Queue\QueuepluginManager */
         $queueManager = $this->getServiceLocator()->get('SlmQueue\Queue\QueuePluginManager');
-        $queue = $queueManager->get('main');
+        $queue        = $queueManager->get($queueName);
 
         if(!$queue instanceof Table) {
             return sprintf("\nQueue % does not support the recovering of job\n\n", $queueName);
@@ -51,7 +65,5 @@ class WorkerController extends AbstractActionController {
             $queueName,
             $count
         );
-
     }
-
 }

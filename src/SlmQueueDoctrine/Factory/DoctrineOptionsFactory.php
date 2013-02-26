@@ -1,11 +1,14 @@
 <?php
 
-namespace GoalioQueueDoctrine\Factory;
+namespace SlmQueueDoctrine\Factory;
 
-use GoalioQueueDoctrine\Options\DoctrineOptions;
+use SlmQueueDoctrine\Options\DoctrineOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
+/**
+ * DoctrineOptionsFactory
+ */
 class DoctrineOptionsFactory implements FactoryInterface
 {
     /**

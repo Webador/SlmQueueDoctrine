@@ -1,6 +1,6 @@
 <?php
 
-namespace GoalioQueueDoctrine;
+namespace SlmQueueDoctrine;
 
 /**
  * Version

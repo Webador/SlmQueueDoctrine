@@ -1,5 +1,6 @@
 <?php
-namespace GoalioQueueDoctrine\Job\Exception;
+
+namespace SlmQueueDoctrine\Job\Exception;
 
 use RuntimeException;
 
@@ -13,11 +14,10 @@ class BuryableException extends RuntimeException
      */
     protected $options;
 
-
     /**
      * Valid options are:
-     * - message: Message why this has happened
-     * - trace: Stack trace for further investigation
+     *      - message: Message why this has happened
+     *      - trace: Stack trace for further investigation
      *
      * @param array $options
      */

@@ -1,9 +1,13 @@
 <?php
-namespace GoalioQueueDoctrine\Options;
 
+namespace SlmQueueDoctrine\Options;
+
+use SlmQueueDoctrine\Queue\Table;
 use Zend\Stdlib\AbstractOptions;
-use GoalioQueueDoctrine\Queue\Table;
 
+/**
+ * DoctrineOptions
+ */
 class DoctrineOptions extends AbstractOptions
 {
     /**
@@ -32,6 +36,7 @@ class DoctrineOptions extends AbstractOptions
      */
     protected $buriedLifetime = Table::LIFETIME_DISABLED;
 
+
     /**
      * Set the name of the doctrine connection service
      *
@@ -57,7 +62,7 @@ class DoctrineOptions extends AbstractOptions
      */
     public function setBuriedLifetime($buriedLifetime)
     {
-        $this->buriedLifetime = $buriedLifetime;
+        $this->buriedLifetime = (int) $buriedLifetime;
     }
 
     /**
@@ -73,7 +78,7 @@ class DoctrineOptions extends AbstractOptions
      */
     public function setDeletedLifetime($deletedLifetime)
     {
-        $this->deletedLifetime = $deletedLifetime;
+        $this->deletedLifetime = (int) $deletedLifetime;
     }
 
     /**

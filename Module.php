@@ -1,13 +1,13 @@
 <?php
 
-namespace GoalioQueueDoctrine;
+namespace SlmQueueDoctrine;
 
 use Zend\Loader;
 use Zend\Console\Adapter\AdapterInterface;
 use Zend\ModuleManager\Feature;
 
 /**
- * GoalioQueueDoctrine
+ * SlmQueueDoctrine
  */
 class Module implements
     Feature\AutoloaderProviderInterface,
@@ -34,7 +34,7 @@ class Module implements
      */
     public function getConfig()
     {
-        return include __DIR__ . '/../../config/module.config.php';
+        return include __DIR__ . '/config/module.config.php';
     }
 
     /**
@@ -43,8 +43,8 @@ class Module implements
     public function getConsoleBanner(AdapterInterface $console)
     {
         return "\n----------------------------------------------------------------------\n" .
-            "GoalioQueueDoctrine | Doctrine 2 based Queuing Zend Framework 2 module\n" .
-            "----------------------------------------------------------------------\n";
+               "SlmQueueDoctrine | Doctrine 2 based Queuing Zend Framework 2 module\n" .
+               "----------------------------------------------------------------------\n";
     }
 
     /**
@@ -54,10 +54,10 @@ class Module implements
     {
         return array(
             'queue doctrine <queueName> --start' => 'Process the jobs',
-            'queue doctrine <queueName> --recover [--executiontime=]' => 'Recover long running jobs',
+            'queue doctrine <queueName> --recover [--executionTime=]' => 'Recover long running jobs',
 
             array('<queueName>', 'Queue\'s name to process'),
-            array('<executiontime>', 'Time (in minutes) after which the job gets recovered'),
+            array('<executionTime>', 'Time (in minutes) after which the job gets recovered'),
         );
     }
 }

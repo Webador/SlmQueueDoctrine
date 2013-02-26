@@ -1,14 +1,14 @@
 <?php
 
 /**
- * This is the config file for GoalioQueueDoctrine. Just drop this file into your config/autoload folder (don't
+ * This is the config file for SlmQueueDoctrine. Just drop this file into your config/autoload folder (don't
  * forget to remove the .dist extension from the file), and configure it as you want
  */
 
 return array(
     'slm_queue' => array(
         /**
-         * Configuration for GoalioQueueDoctrine
+         * Configuration for SlmQueueDoctrine
          */
         'doctrine' => array(
             /**
@@ -22,12 +22,12 @@ return array(
             // 'table_name' => 'queue_default',
 
             /**
-             * how long to keep deleted (successful) jobs (in minutes)
+             * How long to keep deleted (successful) jobs (in minutes)
              */
             // 'deleted_lifetime' => '60',
 
             /**
-             * how long to keep buried (failed) jobs (in minutes)
+             * How long to keep buried (failed) jobs (in minutes)
              */
             // 'buried_lifetime' => '60'
         ),

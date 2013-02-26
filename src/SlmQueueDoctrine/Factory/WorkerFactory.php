@@ -1,9 +1,9 @@
 <?php
-namespace GoalioQueueDoctrine\Factory;
+namespace SlmQueueDoctrine\Factory;
 
-use GoalioQueueDoctrine\Worker\Worker as DoctrineWorker;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SlmQueueDoctrine\Worker\Worker as DoctrineWorker;
 
 /**
  * WorkerFactory
@@ -15,7 +15,7 @@ class WorkerFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $workerOptions = $serviceLocator->get('SlmQueue\Options\WorkerOptions');
+        $workerOptions      = $serviceLocator->get('SlmQueue\Options\WorkerOptions');
         $queuePluginManager = $serviceLocator->get('SlmQueue\Queue\QueuePluginManager');
 
         return new DoctrineWorker($queuePluginManager, $workerOptions);

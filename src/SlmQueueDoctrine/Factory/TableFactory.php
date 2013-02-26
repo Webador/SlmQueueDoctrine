@@ -1,11 +1,16 @@
 <?php
-namespace GoalioQueueDoctrine\Factory;
+
+namespace SlmQueueDoctrine\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
-use GoalioQueueDoctrine\Queue\Table;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SlmQueueDoctrine\Queue\Table;
 
-class TableFactory implements FactoryInterface {
+/**
+ * TableFactory
+ */
+class TableFactory implements FactoryInterface
+{
 
    /**
      *  {@inheritDoc}
@@ -14,14 +19,10 @@ class TableFactory implements FactoryInterface {
    {
        $parentLocator = $serviceLocator->getServiceLocator();
 
-       /**
-        * @var $doctrineOptions \GoalioQueueDoctrine\Options\DoctrineOptions
-        */
-       $doctrineOptions = $parentLocator->get('GoalioQueueDoctrine\Options\DoctrineOptions');
+       /** @var $doctrineOptions \SlmQueueDoctrine\Options\DoctrineOptions */
+       $doctrineOptions = $parentLocator->get('SlmQueueDoctrine\Options\DoctrineOptions');
 
-       /**
-        * @var $connection \Doctrine\DBAL\Connection
-        */
+       /** @var $connection \Doctrine\DBAL\Connection */
        $connection       = $parentLocator->get($doctrineOptions->getConnection());
        $tableName        = $doctrineOptions->getTableName();
        $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
