@@ -315,16 +315,16 @@ class Table extends AbstractQueue implements TableInterface
             $buriedLifetime = new Timestamp($now - ($buriedLifetime * 60));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
                       'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
-            $conn->executeUpdate($delete, array(static::STATUS_BURIED, $buriedLifetime, $this->getName()),
-                array(Type::INTEGER, Type::DATETIME, Type::STRING));
+            $conn->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
+                array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
 
         if ($deletedLifetime > static::LIFETIME_UNLIMITED) {
             $deletedLifetime = new Timestamp($now - ($deletedLifetime * 60));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
                       'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
-            $conn->executeUpdate($delete, array(static::STATUS_DELETED, $deletedLifetime, $this->getName()),
-                array(Type::INTEGER, Type::DATETIME, Type::STRING));
+            $conn->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
+                array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
     }
 }
