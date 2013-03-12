@@ -147,7 +147,7 @@ class Table extends AbstractQueue implements TableInterface
             $select =  'SELECT * ' .
                        'FROM ' . $platform->appendLockHint($this->tableName, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) . ' ' .
                        'WHERE status = ? AND queue = ? AND scheduled > ? ' .
-                       'ORDER BY scheduled DESC '.
+                       'ORDER BY scheduled ASC '.
                        'LIMIT 1 ' .
                        $platform->getWriteLockSQL();
 
