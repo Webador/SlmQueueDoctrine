@@ -20,7 +20,7 @@ add the following line into your `composer.json` file:
 
 ```json
 "require": {
-	"juriansluiman/slm-queue-doctrine": ">=0.2"
+	"juriansluiman/slm-queue-doctrine": "dev-master"
 }
 ```
 
