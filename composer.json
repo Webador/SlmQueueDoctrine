@@ -18,7 +18,6 @@
             "homepage": "http://www.goalio.de"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.3",
         "zendframework/zend-mvc": "2.*",
