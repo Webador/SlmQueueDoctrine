@@ -40,7 +40,8 @@ class DoctrineOptions extends AbstractOptions
     /**
      * Set the name of the doctrine connection service
      *
-     * @param array $options
+     * @param  string $connection
+     * @return void
      */
     public function setConnection($connection)
     {
@@ -58,7 +59,8 @@ class DoctrineOptions extends AbstractOptions
     }
 
     /**
-     * @param int $buriedLifetime
+     * @param  int $buriedLifetime
+     * @return void
      */
     public function setBuriedLifetime($buriedLifetime)
     {
@@ -74,7 +76,8 @@ class DoctrineOptions extends AbstractOptions
     }
 
     /**
-     * @param int $deletedLifetime
+     * @param  int $deletedLifetime
+     * @return void
      */
     public function setDeletedLifetime($deletedLifetime)
     {
@@ -90,7 +93,8 @@ class DoctrineOptions extends AbstractOptions
     }
 
     /**
-     * @param string $tableName
+     * @param  string $tableName
+     * @return void
      */
     public function setTableName($tableName)
     {
@@ -104,5 +108,4 @@ class DoctrineOptions extends AbstractOptions
     {
         return $this->tableName;
     }
-
 }

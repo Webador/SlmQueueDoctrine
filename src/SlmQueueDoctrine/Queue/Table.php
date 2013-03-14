@@ -4,6 +4,7 @@ namespace SlmQueueDoctrine\Queue;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
@@ -18,7 +19,7 @@ class Table extends AbstractQueue implements TableInterface
     const STATUS_DELETED = 3;
     const STATUS_BURIED  = 4;
 
-    const LIFETIME_DISABLED = 0;
+    const LIFETIME_DISABLED  = 0;
     const LIFETIME_UNLIMITED = -1;
 
     /**
@@ -101,6 +102,10 @@ class Table extends AbstractQueue implements TableInterface
 
 
     /**
+     * Valid options are:
+     *      - scheduled: the time when the job should run the next time OR
+     *      - delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
+     *
      * {@inheritDoc}
      */
     public function push(JobInterface $job, array $options = array())
@@ -145,7 +150,7 @@ class Table extends AbstractQueue implements TableInterface
         try {
             $platform = $conn->getDatabasePlatform();
             $select =  'SELECT * ' .
-                       'FROM ' . $platform->appendLockHint($this->tableName, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) . ' ' .
+                       'FROM ' . $platform->appendLockHint($this->tableName, LockMode::PESSIMISTIC_WRITE) . ' ' .
                        'WHERE status = ? AND queue = ? AND scheduled > ? ' .
                        'ORDER BY scheduled ASC '.
                        'LIMIT 1 ' .
@@ -293,12 +298,16 @@ class Table extends AbstractQueue implements TableInterface
                                                                 static::STATUS_RUNNING));
 
         if ($rows != 1) {
-            throw new \Doctrine\DBAL\DBALException("Race-condition detected while updating item in queue.");
+            throw new DBALException("Race-condition detected while updating item in queue.");
         }
     }
 
     /**
      * Cleans old jobs in the table according to the configured lifetime of successful and failed jobs.
+     *
+     * Valid options are:
+     *      - buried_lifetime
+     *      - deleted_lifetime
      *
      * @param array $options
      * @return void
