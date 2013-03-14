@@ -43,6 +43,7 @@ Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentati
 Copy the `slm_queue_doctrine.local.php.dist` file to your `config/autoload` folder, and follow the instructions.
 
 ### Adding queues
+
 ```php
 return array(
  'slm_queue' => array(
@@ -54,6 +55,44 @@ return array(
  )
 );
  ```
+
+### Operations on queues
+
+#### push
+
+Valid options are:
+
+* scheduled: the time when the job should run the next time OR
+* delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
+
+Example:
+
+```php
+$queue->push($job, array(
+    'delay' => 20
+));
+```
+
+#### bury
+
+Valid options are:
+
+* message: Message why this has happened
+* trace: Stack trace for further investigation
+
+#### release
+
+Valid options are:
+
+* scheduled: the time when the job should run the next time OR
+* delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
+
+#### purge
+
+Valid options are:
+
+* buried_lifetime
+* deleted_lifetime
 
 ### Executing jobs
 
