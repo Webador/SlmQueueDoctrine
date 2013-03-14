@@ -101,6 +101,10 @@ class Table extends AbstractQueue implements TableInterface
 
 
     /**
+     * Valid options are:
+     *      - scheduled: the time when the job should run the next time OR
+     *      - delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
+     *
      * {@inheritDoc}
      */
     public function push(JobInterface $job, array $options = array())
