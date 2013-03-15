@@ -48,5 +48,20 @@ return array(
             'deleted_lifetime' => '60',
             'buried_lifetime'  => '60'
         )
-    )
+    ),
+
+    'doctrine' => array(
+        'driver' => array(
+            'slm_queue_driver' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
+                'paths' => __DIR__ . '/../data/doctrine'
+            ),
+            'orm_default' => array(
+                'drivers' => array(
+                    'SlmQueueDoctrine\Entity'  => 'slm_queue_driver'
+                )
+            )
+        )
+    ),
+
 );
