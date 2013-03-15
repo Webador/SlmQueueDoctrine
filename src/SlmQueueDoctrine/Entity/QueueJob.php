@@ -2,7 +2,10 @@
 
 namespace SlmQueueDoctrine\Entity;
 
-class QueueJob {
+use DateTime;
+
+class QueueJob
+{
     /**
      * @var integer
      */
@@ -24,22 +27,22 @@ class QueueJob {
     protected $status;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $created;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $scheduled;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $executed;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $finished;
 
@@ -118,7 +121,7 @@ class QueueJob {
     }
 
     /**
-     * @param \DateTime $created
+     * @param DateTime $created
      */
     public function setCreated($created)
     {
@@ -126,7 +129,7 @@ class QueueJob {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreated()
     {
@@ -134,7 +137,7 @@ class QueueJob {
     }
 
     /**
-     * @param \DateTime $scheduled
+     * @param DateTime $scheduled
      */
     public function setScheduled($scheduled)
     {
@@ -142,7 +145,7 @@ class QueueJob {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getScheduled()
     {
@@ -150,7 +153,7 @@ class QueueJob {
     }
 
     /**
-     * @param \DateTime $executed
+     * @param DateTime $executed
      */
     public function setExecuted($executed)
     {
@@ -158,7 +161,7 @@ class QueueJob {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getExecuted()
     {
@@ -166,7 +169,7 @@ class QueueJob {
     }
 
     /**
-     * @param \DateTime $finished
+     * @param DateTime $finished
      */
     public function setFinished($finished)
     {
@@ -174,7 +177,7 @@ class QueueJob {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getFinished()
     {
@@ -212,5 +215,4 @@ class QueueJob {
     {
         return $this->trace;
     }
-
 }
