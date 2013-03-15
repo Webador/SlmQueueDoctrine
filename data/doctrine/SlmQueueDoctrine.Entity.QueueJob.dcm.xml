@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="SlmQueueDoctrine\Entity\QueueJob" table="queue_default">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO" />
+        </id>
+
+        <field name="queue" type="string" length="64" nullable="false" />
+        <field name="data" type="text" nullable="false" />
+        <field name="status" type="integer" length="1" nullable="false"/>
+        <field name="created" type="datetime" nullable="false" />
+        <field name="scheduled" type="datetime" nullable="false" />
+        <field name="executed" type="datetime" nullable="true" />
+        <field name="finished" type="datetime" nullable="true" />
+
+        <field name="message" type="string" length="256" nullable="true" />
+        <field name="trace" type="text" />
+    </entity>
+</doctrine-mapping>
