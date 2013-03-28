@@ -42,9 +42,7 @@ class Module implements
      */
     public function getConsoleBanner(AdapterInterface $console)
     {
-        return "\n----------------------------------------------------------------------\n" .
-               "SlmQueueDoctrine | Doctrine 2 based Queuing Zend Framework 2 module\n" .
-               "----------------------------------------------------------------------\n";
+        return 'SlmQueueDoctrine ' . Version::VERSION;
     }
 
     /**
