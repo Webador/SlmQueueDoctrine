@@ -18,6 +18,8 @@
  */
 return array(
     'modules' => array(
+		'DoctrineModule',
+		'DoctrineORMModule',
         'SlmQueue',
         'SlmQueueDoctrine'
     ),
@@ -25,7 +27,6 @@ return array(
         'config_glob_paths' => array(
             __DIR__ . '/testing.config.php',
         ),
-        'module_paths' => array(),
-		'check_dependencies' => false
+        'module_paths' => array()
     ),
 );
