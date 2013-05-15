@@ -48,13 +48,15 @@ class DoctrineTableTest extends TestCase
     public function testJobIsPushed() {
         /** @var \Doctrine\DBAL\Driver\Statement $statement */
         $statement = $this->getEntityManager()->getConnection()->query('SELECT count(*) as count FROM queue_default');
-        $countBefore = $statement->fetch()['count'];
+        $result = $statement->fetch();
+        $countBefore = $result['count'];
 
         $job = new SimpleJob();
         $this->tableQueue->push($job);
 
         $statement = $this->getEntityManager()->getConnection()->query('SELECT count(*) as count FROM queue_default');
-        $countAfter = $statement->fetch()['count'];
+        $result = $statement->fetch();
+        $countAfter = $result['count'];
 
         $this->assertLessThan($countAfter, $countBefore);
     }
