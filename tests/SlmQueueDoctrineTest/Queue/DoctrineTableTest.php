@@ -3,6 +3,7 @@
 namespace SlmQueueDoctrineTest\Queue;
 
 use SlmQueueDoctrine\Queue\Table;
+use SlmQueueDoctrine\Queue\Timestamp;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
@@ -106,8 +107,7 @@ class DoctrineTableTest extends TestCase
     public function testPushOptions_Scheduled() {
         $job = new SimpleJob();
 
-        $someDate = new \DateTime('2000-01-01 0:0:00');
-        $testOptions = array('scheduled'=>$someDate->getTimestamp());
+        $testOptions = array('scheduled'=> (string) new Timestamp(time() - 10));
 
         $this->tableQueue->push($job, $testOptions);
 
@@ -133,6 +133,47 @@ class DoctrineTableTest extends TestCase
 
         $this->assertEquals($testOptions['scheduled'], $scheduled->getTimestamp(),
             "The delay option should be ignored when a scheduled time has been specified");
+    }
+
+    public function testPopBecomesPending() {
+        $job = new SimpleJob();
+
+        $this->tableQueue->push($job);
+
+        $returnedJob = $this->tableQueue->pop();
+
+
+        $this->assertNotNull($returnedJob, "A job should have been returned.");
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertEquals(Table::STATUS_RUNNING, $result['status'], "The status of a popped should be running.");
+        $this->assertNotNull($result['executed'], "The executed field of a popped job should be set to current time.");
+    }
+
+    public function testPopsCorrectlyScheduled() {
+        $returnedCount = 0;
+
+        $job = new SimpleJob();
+        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() + 10))); // must not be returned
+        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 10)));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 100)));$returnedCount++;
+        $firstJobId = $job->getId();
+        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 50)));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 30)));$returnedCount++;
+        $this->tableQueue->push($job, array('delay' => 100)); // must not be returned
+        $this->tableQueue->push($job, array('delay' => -90)); $returnedCount++;
+
+
+        $jobs = array();
+        while ($job = $this->tableQueue->pop()) {
+            $jobs[] = $job;
+        }
+
+        $this->assertEquals($firstJobId, $jobs[0]->getId(), "Job with the oldest scheduled date is expected to be popped first.");
+        $this->assertEquals($returnedCount, count($jobs), "The number of popped jobs is incorrect.");
     }
 
 }
