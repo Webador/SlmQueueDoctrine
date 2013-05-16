@@ -191,7 +191,7 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(0, $result['count']);
     }
 
-    public function testDelete_WithLifeTimeShouldBeInstant() {
+    public function testDelete_WithLifeTimeShouldMarked() {
         $job = new SimpleJob();
 
         $this->tableQueue->setDeletedLifetime(10);
@@ -211,7 +211,7 @@ class DoctrineTableTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(Table::STATUS_DELETED, $result['status'], "The status of a deleted job should be deleted.");
+        $this->assertEquals(Table::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
     }
 
     public function testDelete_RaceCondition() {
@@ -226,5 +226,86 @@ class DoctrineTableTest extends TestCase
 
         $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
         $this->tableQueue->delete($job);
+    }
+
+    public function testBury_WithZeroLifeTimeShouldBeInstant() {
+        $job = new SimpleJob();
+
+        $this->tableQueue->setBuriedLifetime(Table::LIFETIME_DISABLED);
+        $this->tableQueue->push($job);
+
+        $this->tableQueue->bury($job);
+
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT count(*) as count FROM queue_default')->fetch();
+
+        $this->assertEquals(0, $result['count']);
+    }
+
+    public function testBury_Options() {
+        $job = new SimpleJob();
+
+        $this->tableQueue->setBuriedLifetime(10);
+
+        $this->tableQueue->push($job);
+        $this->tableQueue->pop(); // why must the job be running?
+        $this->tableQueue->bury($job);
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertNull($result['message'], "The message of this job should be 'null'.");
+        $this->assertNull($result['trace'], "The message of this job should be 'null'.");
+
+
+        $this->tableQueue->push($job);
+        $this->tableQueue->pop(); // why must the job be running?
+        $this->tableQueue->bury($job, array('message'=>'hi', 'trace'=>'because'));
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertContains('hi', $result['message']);
+        $this->assertNotNull('because', $result['trace']);
+
+    }
+
+    public function testBury_WithLifeTimeShouldMarked() {
+        $job = new SimpleJob();
+
+        $this->tableQueue->setBuriedLifetime(10);
+        $this->tableQueue->push($job);
+
+        $this->tableQueue->pop(); // why must the job be running?
+
+        $this->tableQueue->bury($job);
+
+        // count
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT count(*) as count FROM queue_default')->fetch();
+
+        $this->assertEquals(1, $result['count']);
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertEquals(Table::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
+    }
+
+    public function testBury_RaceCondition() {
+        $job = new SimpleJob();
+
+        $this->tableQueue->setBuriedLifetime(10);
+        $this->tableQueue->push($job);
+
+        $this->tableQueue->pop(); // why must the job be running?
+
+        $this->tableQueue->bury($job);
+
+        $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
+        $this->tableQueue->bury($job);
     }
 }
