@@ -26,11 +26,13 @@ class DoctrineTableTest extends TestCase
             ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
     }
 
-    public function tearDown() {
+    public function tearDown()
+    {
         $this->dropDb();
     }
 
-    public function testBuriedLifetimeOption() {
+    public function testBuriedLifetimeOption()
+    {
         // defaults disabled
         $this->assertEquals(Table::LIFETIME_DISABLED, $this->tableQueue->getBuriedLifetime());
 
@@ -38,7 +40,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(10, $this->tableQueue->getBuriedLifetime());
     }
 
-    public function testDeletedLifetimeOption() {
+    public function testDeletedLifetimeOption()
+    {
         // defaults disabled
         $this->assertEquals(Table::LIFETIME_DISABLED, $this->tableQueue->getDeletedLifetime());
 
@@ -46,7 +49,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(10, $this->tableQueue->getDeletedLifetime());
     }
 
-    public function testJobCanBePushed() {
+    public function testJobCanBePushed()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->push($job);
@@ -57,7 +61,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(1, $result['count']);
     }
 
-    public function testJobCanBePushedMoreThenOnce() {
+    public function testJobCanBePushedMoreThenOnce()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->push($job);
@@ -69,7 +74,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(2, $result['count']);
     }
 
-    public function testPushDefaults() {
+    public function testPushDefaults()
+    {
         $job = new SimpleJob();
         $this->assertNull($job->getId(), "Upon job instantiation its id's should be null");
 
@@ -87,7 +93,8 @@ class DoctrineTableTest extends TestCase
             "By default a job should be sceduled the same time it was created");
     }
 
-    public function testPushOptions_Delay() {
+    public function testPushOptions_Delay()
+    {
         $job = new SimpleJob();
 
         $testOptions = array('delay'=>100);
@@ -104,7 +111,8 @@ class DoctrineTableTest extends TestCase
             "The job has not been scheduled with the correct delay");
     }
 
-    public function testPushOptions_Scheduled() {
+    public function testPushOptions_Scheduled()
+    {
         $job = new SimpleJob();
 
         $testOptions = array('scheduled'=> (string) new Timestamp(time() - 10));
@@ -139,7 +147,8 @@ class DoctrineTableTest extends TestCase
             "The created field of a pushed job should be set to a scheduled");
     }
 
-    public function testPopBecomesPending() {
+    public function testPopBecomesPending()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->push($job);
@@ -158,7 +167,8 @@ class DoctrineTableTest extends TestCase
             "The executed field of a popped job should be set to a datetime");
     }
 
-    public function testPopsCorrectlyScheduled() {
+    public function testPopsCorrectlyScheduled()
+    {
         $this->markTestSkipped('until fixed');
         $job = new SimpleJob();
         $returnedCount = 0;
@@ -182,7 +192,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals($returnedCount, count($jobs), "The number of popped jobs is incorrect.");
     }
 
-    public function testDelete_WithZeroLifeTimeShouldBeInstant() {
+    public function testDelete_WithZeroLifeTimeShouldBeInstant()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setDeletedLifetime(Table::LIFETIME_DISABLED);
@@ -196,7 +207,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(0, $result['count']);
     }
 
-    public function testDelete_WithLifeTimeShouldMarked() {
+    public function testDelete_WithLifeTimeShouldMarked()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setDeletedLifetime(10);
@@ -219,7 +231,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(Table::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
     }
 
-    public function testDelete_RaceCondition() {
+    public function testDelete_RaceCondition()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setDeletedLifetime(10);
@@ -233,7 +246,8 @@ class DoctrineTableTest extends TestCase
         $this->tableQueue->delete($job);
     }
 
-    public function testBury_WithZeroLifeTimeShouldBeInstant() {
+    public function testBury_WithZeroLifeTimeShouldBeInstant()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setBuriedLifetime(Table::LIFETIME_DISABLED);
@@ -247,7 +261,8 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(0, $result['count']);
     }
 
-    public function testBury_Options() {
+    public function testBury_Options()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setBuriedLifetime(10);
@@ -277,7 +292,8 @@ class DoctrineTableTest extends TestCase
 
     }
 
-    public function testBury_WithLifeTimeShouldMarked() {
+    public function testBury_WithLifeTimeShouldMarked()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setBuriedLifetime(10);
@@ -303,7 +319,8 @@ class DoctrineTableTest extends TestCase
 
     }
 
-    public function testBury_RaceCondition() {
+    public function testBury_RaceCondition()
+    {
         $job = new SimpleJob();
 
         $this->tableQueue->setBuriedLifetime(10);
@@ -317,7 +334,8 @@ class DoctrineTableTest extends TestCase
         $this->tableQueue->bury($job);
     }
 
-    public function testPeek() {
+    public function testPeek()
+    {
         $job = new SimpleJob();
         $this->tableQueue->push($job);
 
@@ -329,13 +347,15 @@ class DoctrineTableTest extends TestCase
     /**
      * Should peek return a more specialized exception for non existent jobs id's?
      */
-    public function testPeek_NonExistent() {
+    public function testPeek_NonExistent()
+    {
         $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
 
         $this->tableQueue->peek(1);
     }
 
-    public function testRelease() {
+    public function testRelease()
+    {
         $job = new SimpleJob();
         $this->tableQueue->push($job);
 
@@ -353,7 +373,8 @@ class DoctrineTableTest extends TestCase
             "The finished field of a released job should be set to a datetime");
     }
 
-    public function testRelease_RaceCondition() {
+    public function testRelease_RaceCondition()
+    {
         $job = new SimpleJob();
 
         $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
