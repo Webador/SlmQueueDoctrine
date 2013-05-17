@@ -28,7 +28,8 @@
         "doctrine/doctrine-orm-module":  ">=0.6"
     },
     "require-dev": {
-        "zendframework/zendframework": "2.*"
+        "zendframework/zend-mvc": "2.*",
+        "zendframework/zend-config": "2.*"
     },
     "autoload": {
         "psr-0": {
