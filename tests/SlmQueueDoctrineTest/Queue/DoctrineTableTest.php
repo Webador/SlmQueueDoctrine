@@ -133,6 +133,10 @@ class DoctrineTableTest extends TestCase
 
         $this->assertEquals($testOptions['scheduled'], $scheduled->getTimestamp(),
             "The delay option should be ignored when a scheduled time has been specified");
+        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['created']),
+            "The created field of a pushed job should be set to a datetime");
+        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['scheduled']),
+            "The created field of a pushed job should be set to a scheduled");
     }
 
     public function testPopBecomesPending() {
@@ -150,7 +154,8 @@ class DoctrineTableTest extends TestCase
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
         $this->assertEquals(Table::STATUS_RUNNING, $result['status'], "The status of a popped should be running.");
-        $this->assertNotNull($result['executed'], "The executed field of a popped job should be set to current time.");
+        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['executed']),
+            "The executed field of a popped job should be set to a datetime");
     }
 
     public function testPopsCorrectlyScheduled() {
@@ -293,6 +298,9 @@ class DoctrineTableTest extends TestCase
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
         $this->assertEquals(Table::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
+        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+            "The finished field of a buried job should be set to a datetime");
+
     }
 
     public function testBury_RaceCondition() {
@@ -307,5 +315,48 @@ class DoctrineTableTest extends TestCase
 
         $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
         $this->tableQueue->bury($job);
+    }
+
+    public function testPeek() {
+        $job = new SimpleJob();
+        $this->tableQueue->push($job);
+
+        $peekedJob = $this->tableQueue->peek($job->getId());
+
+        $this->assertEquals($job, $peekedJob);
+    }
+
+    /**
+     * Should peek return a more specialized exception for non existent jobs id's?
+     */
+    public function testPeek_NonExistent() {
+        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+
+        $this->tableQueue->peek(1);
+    }
+
+    public function testRelease() {
+        $job = new SimpleJob();
+        $this->tableQueue->push($job);
+
+        $job = $this->tableQueue->pop();
+
+        $this->tableQueue->release($job);
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertEquals(Table::STATUS_PENDING, $result['status'], "The status of a released job should be 'pending'.");
+
+        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+            "The finished field of a released job should be set to a datetime");
+    }
+
+    public function testRelease_RaceCondition() {
+        $job = new SimpleJob();
+
+        $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
+        $this->tableQueue->release($job);
     }
 }
