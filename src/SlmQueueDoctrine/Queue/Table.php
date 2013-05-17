@@ -298,7 +298,7 @@ class Table extends AbstractQueue implements TableInterface
                                                                 static::STATUS_RUNNING));
 
         if ($rows != 1) {
-            throw new DBALException("Race-condition detected while updating item in queue.");
+            throw new Exception\LogicException("Race-condition detected while updating item in queue.");
         }
     }
 
