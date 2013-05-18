@@ -292,12 +292,10 @@ class Table extends AbstractQueue implements TableInterface
                   'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
                   'WHERE id = ? AND status = ?';
 
-        $rows = $this->connection->executeUpdate($update, array(static::STATUS_PENDING,
-                                                                time(),
-                                                                $scheduleTime,
-                                                                $job->jsonSerialize(),
-                                                                $job->getId(),
-                                                                static::STATUS_RUNNING));
+        $rows = $this->connection->executeUpdate($update,
+            array(static::STATUS_PENDING, new Timestamp(time()), new Timestamp($scheduleTime), $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
+            array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
+        );
 
         if ($rows != 1) {
             throw new Exception\LogicException("Race-condition detected while updating item in queue.");
