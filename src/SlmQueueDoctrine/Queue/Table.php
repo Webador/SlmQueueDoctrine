@@ -151,12 +151,14 @@ class Table extends AbstractQueue implements TableInterface
             $platform = $conn->getDatabasePlatform();
             $select =  'SELECT * ' .
                        'FROM ' . $platform->appendLockHint($this->tableName, LockMode::PESSIMISTIC_WRITE) . ' ' .
-                       'WHERE status = ? AND queue = ? AND scheduled > ? ' .
+                       'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
                        'ORDER BY scheduled ASC '.
                        'LIMIT 1 ' .
                        $platform->getWriteLockSQL();
 
-            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), time()));
+            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new Timestamp),
+                array(Type::SMALLINT, Type::STRING, Type::DATETIME));
+
 
             if($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $update = 'UPDATE ' . $this->tableName . ' ' .
