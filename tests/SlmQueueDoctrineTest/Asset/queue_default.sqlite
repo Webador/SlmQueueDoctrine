@@ -1,0 +1,13 @@
+CREATE TABLE "queue_default" (
+  "id" integer NOT NULL ,
+  "queue" varchar(64) NOT NULL,
+  "data" text NOT NULL,
+  "status" integer NOT NULL,
+  "created" datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  "scheduled" datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  "executed" datetime NULL DEFAULT NULL,
+  "finished" datetime NULL DEFAULT NULL,
+  "message" varchar(256) DEFAULT NULL,
+  "trace" text,
+  PRIMARY KEY ("id")
+);
