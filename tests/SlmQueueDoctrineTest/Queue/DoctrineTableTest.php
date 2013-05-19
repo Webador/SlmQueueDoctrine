@@ -2,8 +2,10 @@
 
 namespace SlmQueueDoctrineTest\Queue;
 
+use DateTime;
+use DateTimeZone;
+use DateInterval;
 use SlmQueueDoctrine\Queue\Table;
-use SlmQueueDoctrine\Queue\Timestamp;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
@@ -77,10 +79,10 @@ class DoctrineTableTest extends TestCase
     public function testPushDefaults()
     {
         $job = new SimpleJob();
-        $this->assertNull($job->getId(), "Upon job instantiation its id's should be null");
+        $this->assertNull($job->getId(), "Upon job instantiation its id should be null");
 
         $this->tableQueue->push($job);
-        $this->assertTrue(is_numeric($job->getId()), "After a job has been pushed its id's should should be an id");
+        $this->assertTrue(is_numeric($job->getId()), "After a job has been pushed its id should should be an id");
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
@@ -90,65 +92,70 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals(Table::STATUS_PENDING, $result['status'], "The status of a new job should be pending.");
 
         $this->assertEquals($result['created'], $result['scheduled'],
-            "By default a job should be sceduled the same time it was created");
+            "By default a job should be scheduled the same time it was created");
     }
 
-    public function testPushOptions_Delay()
-    {
-        $job = new SimpleJob();
+    public function dataProvider_PushScheduledOptions() {
+        $now = new DateTime('1970-01-01 00:01:40');
 
-        $testOptions = array('delay'=>100);
-        $this->tableQueue->push($job, $testOptions);
-
-        // fetch last added job
-        $result = $this->getEntityManager()->getConnection()
-            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
-
-        $created = new \DateTime($result['created']);
-        $scheduled = new \DateTime($result['scheduled']);
-
-        $this->assertEquals($testOptions['delay'], $scheduled->getTimestamp() - $created->getTimestamp(),
-            "The job has not been scheduled with the correct delay");
+        return array(
+            array(array('scheduled'=>100), '1970-01-01 00:01:40'),
+            array(array('scheduled'=>100, 'delay'=>10), '1970-01-01 00:01:50'), // delay is added to scheduled
+            array(array('scheduled'=>'100'), '1970-01-01 00:01:40'),
+            array(array('scheduled'=>'1970-01-01 00:01:40'), '1970-01-01 00:01:40'),
+            array(array('scheduled'=>'1970-01-01 00:01:40+03:00'), '1970-01-01 00:01:40'),
+            array(array('scheduled'=>$now), $now->format('Y-m-d H:i:s')),
+        );
     }
 
-    public function testPushOptions_Scheduled()
+    /**
+     * @dataProvider dataProvider_PushScheduledOptions
+     */
+    public function testPushOptions_Scheduled($testOptions, $expectedResult)
     {
-        $job = new SimpleJob();
-
-        $testOptions = array('scheduled'=> (string) new Timestamp(time() - 10));
-
-        $this->tableQueue->push($job, $testOptions);
+        $this->tableQueue->push(new SimpleJob, $testOptions);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $scheduled = new \DateTime($result['scheduled']);
+        $this->assertEquals($expectedResult, $result['scheduled'],
+            "The job has not been scheduled correctly");
+    }
 
-        $this->assertEquals($testOptions['scheduled'], $scheduled->getTimestamp(),
-            "The job has not been scheduled at the specified datetime");
+    public function dataProvider_PushDelayOptions() {
+        return array(
+            array(array('delay'=>100), 100),
+            array(array('delay'=>"100"), 100),
+            array(array('delay'=>"PT100S"), 100),
+            array(array('delay'=>"PT2H"), 7200),
+            array(array('delay'=>"2 weeks"), 1209600),
+            array(array('delay'=>new DateInterval("PT100S")), 100),
+        );
+    }
 
-        // add delay option
-        $testOptions['delay'] = 100;
-        $this->tableQueue->push($job, $testOptions);
+
+    /**
+     * @dataProvider dataProvider_PushDelayOptions
+     */
+    public function testPushOptions_Delay($testOptions, $expectedResult)
+    {
+        $this->tableQueue->push(new SimpleJob, $testOptions);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $created = new \DateTime($result['created']);
-        $scheduled = new \DateTime($result['scheduled']);
+        $created = new DateTime($result['created']);
+        $scheduled = new DateTime($result['scheduled']);
 
-        $this->assertEquals($testOptions['scheduled'], $scheduled->getTimestamp(),
-            "The delay option should be ignored when a scheduled time has been specified");
-        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['created']),
-            "The created field of a pushed job should be set to a datetime");
-        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['scheduled']),
-            "The created field of a pushed job should be set to a scheduled");
+        $this->assertEquals($expectedResult, $scheduled->getTimestamp() - $created->getTimestamp(),
+            "The job has not been scheduled correctly");
     }
 
     public function testPopBecomesPending()
     {
+
         $job = new SimpleJob();
 
         $this->tableQueue->push($job);
@@ -169,16 +176,15 @@ class DoctrineTableTest extends TestCase
 
     public function testPopsCorrectlyScheduled()
     {
-        $this->markTestSkipped('until fixed');
         $job = new SimpleJob();
         $returnedCount = 0;
 
-        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() + 10))); // must not be returned
-        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 10)));$returnedCount++;
-        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 100)));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() + 10)); // must not be returned
+        $this->tableQueue->push($job, array('scheduled' => time() - 10));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() - 100));$returnedCount++;
         $firstJobId = $job->getId();
-        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 50)));$returnedCount++;
-        $this->tableQueue->push($job, array('scheduled' => (string) new Timestamp(time() - 30)));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() - 50));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() - 30));$returnedCount++;
         $this->tableQueue->push($job, array('delay' => 100)); // must not be returned
         $this->tableQueue->push($job, array('delay' => -90)); $returnedCount++;
 
@@ -344,11 +350,9 @@ class DoctrineTableTest extends TestCase
         $this->assertEquals($job, $peekedJob);
     }
 
-    /**
-     * Should peek return a more specialized exception for non existent jobs id's?
-     */
     public function testPeek_NonExistent()
     {
+        // Should peek return a more specialized exception for non existent jobs id's?
         $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
 
         $this->tableQueue->peek(1);
