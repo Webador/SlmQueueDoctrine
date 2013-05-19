@@ -2,6 +2,9 @@
 
 namespace SlmQueueDoctrine\Queue;
 
+use DateTime;
+use DateTimeZone;
+use DateInterval;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\LockMode;
@@ -10,7 +13,6 @@ use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Exception;
-use SlmQueueDoctrine\Queue\Timestamp;
 
 class Table extends AbstractQueue implements TableInterface
 {
@@ -100,26 +102,72 @@ class Table extends AbstractQueue implements TableInterface
         return $this->deletedLifetime;
     }
 
-
     /**
      * Valid options are:
      *      - scheduled: the time when the job should run the next time OR
-     *      - delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
+     *      - delay: the delay before a job becomes available to be popped (defaults no delay)
+     *          - accepts an numeric integer as seconds
+     *          - a string that is acceptable to the constructor of DateInterval (eg. P1Y or PT45S)
+     *          - a string that is acceptable to DateInterval::createFromDateString (eg. 1 week, next thuesday)
+     *          - a configured DateInterval instance
+     *
+     * @see http://en.wikipedia.org/wiki/Iso8601#Durations
+     * @see http://www.php.net/manual/en/datetime.formats.relative.php
      *
      * {@inheritDoc}
      */
     public function push(JobInterface $job, array $options = array())
     {
-        $now       = time();
-        $delay     = isset($options['delay']) ? $options['delay'] : 0;
-        $scheduled = isset($options['scheduled']) ? $options['scheduled'] : ($now + $delay);
+        $now       = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
+        $scheduled = clone ($now);
+
+        if (isset($options['scheduled'])) {
+            switch (true) {
+                case is_numeric($options['scheduled']):
+                    $scheduled = new DateTime(sprintf("@%d", (int) $options['scheduled']),
+                        new DateTimeZone(date_default_timezone_get()));
+                    break;
+                case is_string($options['scheduled']):
+                    $scheduled = new DateTime($options['scheduled'], new DateTimeZone(date_default_timezone_get()));
+                    break;
+                case $options['scheduled'] instanceof DateTime:
+                    $scheduled = $options['scheduled'];
+                    break;
+            }
+        }
+
+        if (isset($options['delay'])) {
+            switch (true) {
+                case is_numeric($options['delay']):
+                    $delay = new DateInterval(sprintf("PT%dS", abs((int) $options['delay'])));
+                    break;
+                case is_string($options['delay']):
+                    try {
+                        // first try ISO 8601 duration specification
+                        $delay = new DateInterval($options['delay']);
+                    } catch (\Exception $e) {
+                        // then try normal date parser
+                        $delay = DateInterval::createFromDateString($options['delay']);
+                    }
+                    break;
+                case $options['delay'] instanceof DateInterval:
+                    $delay = $options['delay'];
+                    break;
+                default:
+                    $delay = null;
+            }
+
+            if ($delay instanceof DateInterval) {
+                $scheduled->add($delay);
+            }
+        }
 
         $this->connection->insert($this->tableName, array(
                 'queue'     => $this->getName(),
                 'status'    => self::STATUS_PENDING,
-                'created'   => new Timestamp($now),
+                'created'   => $now,
                 'data'      => $job->jsonSerialize(),
-                'scheduled' => new Timestamp($scheduled),
+                'scheduled' => $scheduled
             ), array(
                 Type::STRING,
                 Type::SMALLINT,
@@ -156,7 +204,7 @@ class Table extends AbstractQueue implements TableInterface
                        'LIMIT 1 ' .
                        $platform->getWriteLockSQL();
 
-            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new Timestamp),
+            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new DateTime),
                 array(Type::SMALLINT, Type::STRING, Type::DATETIME));
 
 
@@ -166,7 +214,7 @@ class Table extends AbstractQueue implements TableInterface
                           'WHERE id = ? AND status = ?';
 
                 $rows = $conn->executeUpdate($update,
-                    array(static::STATUS_RUNNING, new Timestamp, $row['id'], static::STATUS_PENDING),
+                    array(static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING),
                     array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
 
                 if ($rows != 1) {
@@ -202,7 +250,7 @@ class Table extends AbstractQueue implements TableInterface
                       'WHERE id = ? AND status = ?';
 
             $rows = $this->connection->executeUpdate($update,
-                 array(static::STATUS_DELETED, new Timestamp, $job->getId(), static::STATUS_RUNNING),
+                 array(static::STATUS_DELETED, new DateTime, $job->getId(), static::STATUS_RUNNING),
                  array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
 
             if ($rows != 1) {
@@ -232,7 +280,7 @@ class Table extends AbstractQueue implements TableInterface
                       'WHERE id = ? AND status = ?';
 
             $rows = $this->connection->executeUpdate($update,
-                 array(static::STATUS_BURIED, new Timestamp, $message, $trace, $job->getId(), static::STATUS_RUNNING),
+                 array(static::STATUS_BURIED, new DateTime, $message, $trace, $job->getId(), static::STATUS_RUNNING),
                  array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT));
 
             if ($rows != 1) {
@@ -248,7 +296,7 @@ class Table extends AbstractQueue implements TableInterface
      */
     public function recover($executionTime)
     {
-        $executedLifetime = new Timestamp(time() - ($executionTime * 60));
+        $executedLifetime = new DateTime('@' . (time() - ($executionTime * 60)));
 
         $update = 'UPDATE ' . $this->tableName . ' ' .
                   'SET status = ? ' .
@@ -293,7 +341,7 @@ class Table extends AbstractQueue implements TableInterface
                   'WHERE id = ? AND status = ?';
 
         $rows = $this->connection->executeUpdate($update,
-            array(static::STATUS_PENDING, new Timestamp(time()), new Timestamp($scheduleTime), $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
+            array(static::STATUS_PENDING, new DateTime, new DateTime('@'.$scheduleTime), $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
             array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
         );
 
@@ -321,7 +369,7 @@ class Table extends AbstractQueue implements TableInterface
         $deletedLifetime = isset($options['deleted_lifetime']) ? $options['deleted_lifetime'] : $this->getDeletedLifetime();
 
         if ($buriedLifetime > static::LIFETIME_UNLIMITED) {
-            $buriedLifetime = new Timestamp($now - ($buriedLifetime * 60));
+            $buriedLifetime = new DateTime('@' . ($now - ($buriedLifetime * 60)));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
                       'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
             $conn->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
@@ -329,7 +377,7 @@ class Table extends AbstractQueue implements TableInterface
         }
 
         if ($deletedLifetime > static::LIFETIME_UNLIMITED) {
-            $deletedLifetime = new Timestamp($now - ($deletedLifetime * 60));
+            $deletedLifetime = new DateTime('@' . ($now - ($deletedLifetime * 60)));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
                       'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
             $conn->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
