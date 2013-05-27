@@ -4,36 +4,40 @@ namespace SlmQueueDoctrine\Controller;
 
 use Exception;
 use SlmQueueDoctrine\Queue\Table;
-use Zend\Mvc\Controller\AbstractActionController;
+use SlmQueue\Controller\AbstractWorkerController;
+use SlmQueue\Controller\Exception\WorkerProcessException;
+use SlmQueue\Exception\SlmQueueExceptionInterface;
 
 /**
  * Worker controller
  */
-class WorkerController extends AbstractActionController
+class WorkerController extends AbstractWorkerController
 {
+
     /**
-     * Process the queue
-     *
-     * @return string
+     * {@inheritDoc}
      */
-    public function processAction()
-    {
+    protected function getWorker() {
         /** @var $worker \SlmQueueDoctrine\Worker\Worker */
         $worker    = $this->serviceLocator->get('SlmQueueDoctrine\Worker\Worker');
+
+        return $worker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getOptions() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getQueueName() {
         $queueName = $this->params('queueName');
-        $options   = array();
 
-        try {
-            $count = $worker->processQueue($queueName, array_filter($options));
-        } catch(Exception $exception) {
-            return "\nAn error occurred " . $exception->getMessage() . "\n\n";
-        }
-
-        return sprintf(
-            "\nWork for queue %s is done, %s jobs were processed\n\n",
-            $queueName,
-            $count
-        );
+        return $queueName;
     }
 
     /**
@@ -43,7 +47,7 @@ class WorkerController extends AbstractActionController
      */
     public function recoverAction()
     {
-        $queueName     = $this->params('queueName');
+        $queueName     = $this->getQueueName();
         $executionTime = $this->params('executionTime', 0);
 
         /** @var $queueManager \SlmQueue\Queue\QueuepluginManager */
@@ -56,8 +60,8 @@ class WorkerController extends AbstractActionController
 
         try {
             $count = $queue->recover($executionTime);
-        } catch(Exception $exception) {
-            return "\nAn error occurred " . $exception->getMessage() . "\n\n";
+        } catch(\Exception $exception) {
+            throw new \Exception("An error occurred", null, $exception);
         }
 
         return sprintf(
