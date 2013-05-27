@@ -26,7 +26,7 @@ class WorkerController extends AbstractActionController
         try {
             $count = $worker->processQueue($queueName, array_filter($options));
         } catch(Exception $exception) {
-            return "\nAn error occurred " . $exception->getMessage() . "\n\n";
+            throw new Exception("An error occurred", null, $exception);
         }
 
         return sprintf(
@@ -57,7 +57,7 @@ class WorkerController extends AbstractActionController
         try {
             $count = $queue->recover($executionTime);
         } catch(Exception $exception) {
-            return "\nAn error occurred " . $exception->getMessage() . "\n\n";
+            throw new Exception("An error occurred", null, $exception);
         }
 
         return sprintf(
