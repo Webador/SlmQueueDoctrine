@@ -151,12 +151,14 @@ class Table extends AbstractQueue implements TableInterface
             $platform = $conn->getDatabasePlatform();
             $select =  'SELECT * ' .
                        'FROM ' . $platform->appendLockHint($this->tableName, LockMode::PESSIMISTIC_WRITE) . ' ' .
-                       'WHERE status = ? AND queue = ? AND scheduled > ? ' .
+                       'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
                        'ORDER BY scheduled ASC '.
                        'LIMIT 1 ' .
                        $platform->getWriteLockSQL();
 
-            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), time()));
+            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new Timestamp),
+                array(Type::SMALLINT, Type::STRING, Type::DATETIME));
+
 
             if($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $update = 'UPDATE ' . $this->tableName . ' ' .
@@ -290,12 +292,10 @@ class Table extends AbstractQueue implements TableInterface
                   'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
                   'WHERE id = ? AND status = ?';
 
-        $rows = $this->connection->executeUpdate($update, array(static::STATUS_PENDING,
-                                                                time(),
-                                                                $scheduleTime,
-                                                                $job->jsonSerialize(),
-                                                                $job->getId(),
-                                                                static::STATUS_RUNNING));
+        $rows = $this->connection->executeUpdate($update,
+            array(static::STATUS_PENDING, new Timestamp(time()), new Timestamp($scheduleTime), $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
+            array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
+        );
 
         if ($rows != 1) {
             throw new Exception\LogicException("Race-condition detected while updating item in queue.");
