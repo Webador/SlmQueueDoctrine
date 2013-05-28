@@ -31,6 +31,11 @@
         "zendframework/zend-mvc": "2.*",
         "zendframework/zend-config": "2.*"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3.x-dev"
+        }
+    },
     "autoload": {
         "psr-0": {
             "SlmQueueDoctrine": "src/"
