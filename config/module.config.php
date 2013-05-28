@@ -5,8 +5,13 @@ return array(
         'factories' => array(
             'SlmQueueDoctrine\Options\DoctrineOptions' => 'SlmQueueDoctrine\Factory\DoctrineOptionsFactory',
             'SlmQueueDoctrine\Worker\Worker'           => 'SlmQueueDoctrine\Factory\WorkerFactory',
-            'SlmQueueDoctrine\Controller\Worker'       => 'SlmQueueDoctrine\Factory\WorkerControllerFactory'
         )
+    ),
+
+    'controllers' => array(
+        'factories' => array(
+            'SlmQueueDoctrine\Controller\Worker'         => 'SlmQueueDoctrine\Factory\WorkerControllerFactory',
+        ),
     ),
 
     'console'   => array(
