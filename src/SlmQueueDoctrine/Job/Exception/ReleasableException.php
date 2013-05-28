@@ -3,12 +3,13 @@
 namespace SlmQueueDoctrine\Job\Exception;
 
 use RuntimeException;
+use SlmQueueDoctrine\Exception\ExceptionInterface;
 
 /**
  * ReleasableException. Throw this exception in the "execute" method of your job so that the worker
  * puts back the job into the queue
  */
-class ReleasableException extends RuntimeException
+class ReleasableException extends RuntimeException implements ExceptionInterface
 {
     /**
      * @var array
