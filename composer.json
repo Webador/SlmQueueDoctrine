@@ -27,6 +27,9 @@
         "juriansluiman/slm-queue": ">=0.2.3",
         "doctrine/doctrine-orm-module":  ">=0.6"
     },
+    "require-dev": {
+        "zendframework/zendframework": "2.*"
+    },
     "autoload": {
         "psr-0": {
             "SlmQueueDoctrine": "src/"
