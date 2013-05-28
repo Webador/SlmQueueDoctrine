@@ -24,7 +24,7 @@
         "zendframework/zend-mvc": "2.*",
         "zendframework/zend-servicemanager": "2.*",
         "zendframework/zend-stdlib": "2.*",
-        "juriansluiman/slm-queue": ">=0.2.3",
+        "juriansluiman/slm-queue": ">=0.3.0-dev",
         "doctrine/doctrine-orm-module":  ">=0.6"
     },
     "require-dev": {
