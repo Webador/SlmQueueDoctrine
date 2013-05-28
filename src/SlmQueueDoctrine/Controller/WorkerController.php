@@ -2,16 +2,16 @@
 
 namespace SlmQueueDoctrine\Controller;
 
-use Exception;
 use SlmQueueDoctrine\Queue\Table;
+use SlmQueue\Controller\Exception\WorkerException;
 use SlmQueue\Controller\AbstractWorkerController;
+use SlmQueue\Exception\ExceptionInterface;
 
 /**
  * Worker controller
  */
 class WorkerController extends AbstractWorkerController
 {
-
     /**
      * Recover long running jobs
      *
@@ -32,8 +32,8 @@ class WorkerController extends AbstractWorkerController
 
         try {
             $count = $queue->recover($executionTime);
-        } catch(Exception $exception) {
-            throw new Exception("An error occurred", null, $exception);
+        } catch(ExceptionInterface $exception) {
+            throw new WorkerException("An error occurred", $exception->getCode(), $exception);
         }
 
         return sprintf(

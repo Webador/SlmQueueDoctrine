@@ -17,7 +17,7 @@ class WorkerControllerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $worker = $serviceLocator->getServiceLocator()
-            ->get('SlmQueueDoctrine\Worker\Worker');
+                                 ->get('SlmQueueDoctrine\Worker\Worker');
 
         return new WorkerController($worker);
     }

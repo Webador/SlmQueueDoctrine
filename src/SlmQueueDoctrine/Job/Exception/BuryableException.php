@@ -3,11 +3,12 @@
 namespace SlmQueueDoctrine\Job\Exception;
 
 use RuntimeException;
+use SlmQueueDoctrine\Exception\ExceptionInterface;
 
 /**
  * BuryableException
  */
-class BuryableException extends RuntimeException
+class BuryableException extends RuntimeException implements ExceptionInterface
 {
     /**
      * @var array
