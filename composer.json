@@ -30,6 +30,11 @@
     "require-dev": {
         "zendframework/zendframework": "2.*"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3.x-dev"
+        }
+    },
     "autoload": {
         "psr-0": {
             "SlmQueueDoctrine": "src/"
