@@ -2,7 +2,7 @@
 
 namespace SlmQueueDoctrine\Options;
 
-use SlmQueueDoctrine\Queue\Table;
+use SlmQueueDoctrine\Queue\DoctrineQueue;
 use Zend\Stdlib\AbstractOptions;
 
 /**
@@ -27,14 +27,14 @@ class DoctrineOptions extends AbstractOptions
      *
      * @var int
      */
-    protected $deletedLifetime = Table::LIFETIME_DISABLED;
+    protected $deletedLifetime = DoctrineQueue::LIFETIME_DISABLED;
 
     /**
      * how long to keep buried (failed) jobs (in minutes)
      *
      * @var int
      */
-    protected $buriedLifetime = Table::LIFETIME_DISABLED;
+    protected $buriedLifetime = DoctrineQueue::LIFETIME_DISABLED;
 
 
     /**

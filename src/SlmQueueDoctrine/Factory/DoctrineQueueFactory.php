@@ -4,12 +4,12 @@ namespace SlmQueueDoctrine\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SlmQueueDoctrine\Queue\Table;
+use SlmQueueDoctrine\Queue\DoctrineQueue;
 
 /**
- * TableFactory
+ * DoctrineQueueFactory
  */
-class TableFactory implements FactoryInterface
+class DoctrineQueueFactory implements FactoryInterface
 {
    /**
     * {@inheritDoc}
@@ -26,7 +26,7 @@ class TableFactory implements FactoryInterface
        $tableName        = $doctrineOptions->getTableName();
        $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
-       $table = new Table($connection, $tableName, $requestedName, $jobPluginManager);
+       $table = new DoctrineQueue($connection, $tableName, $requestedName, $jobPluginManager);
 
        $table->setBuriedLifetime($doctrineOptions->getBuriedLifetime());
        $table->setDeletedLifetime($doctrineOptions->getDeletedLifetime());
