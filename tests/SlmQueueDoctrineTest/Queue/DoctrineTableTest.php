@@ -193,9 +193,9 @@ class DoctrineTableTest extends TestCase
         $this->tableQueue->push($job, array('delay' => -90)); $returnedCount++;
 
 
-        $result = $this->getEntityManager()->getConnection()
-            ->query('SELECT * FROM queue_default ORDER BY id DESC')->fetchAll();
-        print_r($result);
+//        $result = $this->getEntityManager()->getConnection()
+//            ->query('SELECT * FROM queue_default ORDER BY id DESC')->fetchAll();
+//        print_r($result);
         $jobs = array();
         while ($job = $this->tableQueue->pop()) {
             $jobs[] = $job;
