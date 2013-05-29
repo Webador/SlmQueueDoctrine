@@ -140,6 +140,7 @@ class Table extends AbstractQueue implements TableInterface
             switch (true) {
                 case is_numeric($options['delay']):
                     $delay = new DateInterval(sprintf("PT%dS", abs((int) $options['delay'])));
+                    $delay->invert = ($options['delay'] < 0) ? 1 : 0;
                     break;
                 case is_string($options['delay']):
                     try {
