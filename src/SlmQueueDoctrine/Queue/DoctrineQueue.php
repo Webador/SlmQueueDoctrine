@@ -114,7 +114,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function setSleepWhenIdle($sleepWhenIdle)
     {
-        $this->sleepWhenIdle = $sleepWhenIdle;
+        $this->sleepWhenIdle = (int) $sleepWhenIdle;
     }
 
     /**
@@ -124,7 +124,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         return $this->sleepWhenIdle;
     }
-
 
     /**
      * Valid options are:
