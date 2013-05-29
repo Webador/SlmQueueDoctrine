@@ -26,6 +26,9 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), 'queue_default', 'some-queue-name',
             ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
+
+        // we want tests to run as fast as possible
+        $this->queue->setSleepWhenIdle(0);
     }
 
     public function tearDown()
@@ -49,6 +52,46 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->setDeletedLifetime(10);
         $this->assertEquals(10, $this->queue->getDeletedLifetime());
+    }
+
+    public function testSleepWhenIdleOption()
+    {
+        // recreate queue with real defaults
+        $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), 'queue_default', 'some-queue-name',
+            ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
+
+        // default
+        $this->assertEquals(1, $this->queue->getSleepWhenIdle());
+
+        $this->queue->setSleepWhenIdle(2);
+        $this->assertEquals(2, $this->queue->getSleepWhenIdle());
+
+        $this->queue->setSleepWhenIdle(1);
+        $start = microtime(true);
+        $this->queue->pop();
+        $this->queue->pop();
+        $this->queue->pop();
+
+        $this->assertTrue((microtime(true) - $start) >= ($this->queue->getSleepWhenIdle() * 3),
+            "When no job is returned pop should sleep for a while");
+
+
+        $job = new SimpleJob();
+        $this->queue->push($job);
+        $this->queue->push($job);
+        $this->queue->push($job);
+        $this->queue->push($job);
+        $this->queue->push($job);
+
+        $start = microtime(true);
+        $this->queue->pop();
+        $this->queue->pop();
+        $this->queue->pop();
+        $this->queue->pop();
+        $this->queue->pop();
+
+        $this->assertTrue(microtime(true) - $start < $this->queue->getSleepWhenIdle(),
+            "When jobs are returned this should be as quick as possible");
     }
 
     public function testJobCanBePushed()
