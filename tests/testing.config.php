@@ -25,7 +25,7 @@ return array(
 
         'queues' => array(
             'factories' => array(
-                'newsletter' => 'SlmQueueDoctrine\Factory\TableFactory'
+                'newsletter' => 'SlmQueueDoctrine\Factory\DoctrineQueueFactory'
             )
         )
     ),
