@@ -14,7 +14,7 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Exception;
 
-class Table extends AbstractQueue implements TableInterface
+class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 {
     const STATUS_PENDING = 1;
     const STATUS_RUNNING = 2;

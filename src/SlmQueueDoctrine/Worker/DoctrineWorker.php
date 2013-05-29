@@ -6,20 +6,20 @@ use Exception;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueueDoctrine\Queue\TableInterface;
+use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrine\Job\Exception as JobException;
 
 /**
  * Worker for Doctrine
  */
-class Worker extends AbstractWorker
+class DoctrineWorker extends AbstractWorker
 {
     /**
      * {@inheritDoc}
      */
     public function processJob(JobInterface $job, QueueInterface $queue)
     {
-        if (!$queue instanceof TableInterface) {
+        if (!$queue instanceof DoctrineQueueInterface) {
             return;
         }
 

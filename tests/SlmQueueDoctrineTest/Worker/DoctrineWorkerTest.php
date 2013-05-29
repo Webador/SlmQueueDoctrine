@@ -4,11 +4,11 @@ namespace SlmQueueDoctrineTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueDoctrineTest\Asset;
-use SlmQueueDoctrine\Worker\Worker as DoctrineWorker;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
 
-class WorkerTest extends TestCase
+class DoctrineWorkerTest extends TestCase
 {
     /**
      * @var ServiceManager
@@ -16,7 +16,7 @@ class WorkerTest extends TestCase
     protected $serviceManager;
 
     /**
-     * @var \SlmQueueDoctrine\Queue\TableInterface
+     * @var \SlmQueueDoctrine\Queue\DoctrineQueueInterface
      */
     protected $queueMock;
 
@@ -31,7 +31,7 @@ class WorkerTest extends TestCase
         parent::setUp();
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
 
-        $this->queueMock  = $this->getMock('SlmQueueDoctrine\Queue\TableInterface');
+        $this->queueMock  = $this->getMock('SlmQueueDoctrine\Queue\DoctrineQueueInterface');
         $queueManagerMock = $this->getMock('SlmQueue\Queue\QueuePluginManager');
         $workerOptions    = $this->serviceManager->get('SlmQueue\Options\WorkerOptions');
 

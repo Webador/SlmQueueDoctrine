@@ -7,7 +7,7 @@ use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\ServiceManager\ServiceManager;
 
-class WorkerControllerTest extends TestCase
+class DoctrineWorkerControllerTest extends TestCase
 {
     /**
      * @var ServiceManager
@@ -23,11 +23,11 @@ class WorkerControllerTest extends TestCase
 
     public function testThrowExceptionIfQueueIsUnknown()
     {
-        $controller = $this->serviceManager->get('ControllerLoader')->get('SlmQueueDoctrine\Controller\Worker');
+        $controller = $this->serviceManager->get('ControllerLoader')->get('SlmQueueDoctrine\Controller\DoctrineWorkerController');
         $routeMatch = new RouteMatch(array('queue' => 'unknownQueue'));
         $controller->getEvent()->setRouteMatch($routeMatch);
-        
-       	$this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+
+        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
         $controller->processAction();
     }
 }
