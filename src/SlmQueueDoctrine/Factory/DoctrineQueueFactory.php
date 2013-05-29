@@ -28,6 +28,13 @@ class DoctrineQueueFactory implements FactoryInterface
 
        $table = new DoctrineQueue($connection, $tableName, $requestedName, $jobPluginManager);
 
+       $config = $parentLocator->get('Config');
+       $options = array_key_exists($requestedName, $config['slm_queue']['queues']) ? $config['slm_queue']['queues'][$requestedName] : array();
+
+       if (isset($options['sleep_when_idle'])) {
+           $table->setSleepWhenIdle($options['sleep_when_idle']);
+       }
+       
        $table->setBuriedLifetime($doctrineOptions->getBuriedLifetime());
        $table->setDeletedLifetime($doctrineOptions->getDeletedLifetime());
 
