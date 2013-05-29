@@ -95,7 +95,8 @@ class DoctrineQueueTest extends TestCase
             "By default a job should be scheduled the same time it was created");
     }
 
-    public function dataProvider_PushScheduledOptions() {
+    public function dataProvider_PushScheduledOptions()
+    {
         $now = new DateTime('1970-01-01 00:01:40');
 
         return array(
@@ -123,7 +124,8 @@ class DoctrineQueueTest extends TestCase
             "The job has not been scheduled correctly");
     }
 
-    public function dataProvider_PushDelayOptions() {
+    public function dataProvider_PushDelayOptions()
+    {
         return array(
             array(array('delay'=>100), 100),
             array(array('delay'=>"100"), 100),

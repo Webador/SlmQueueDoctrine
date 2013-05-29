@@ -26,8 +26,8 @@ class DoctrineWorkerControllerTest extends TestCase
         $controller = $this->serviceManager->get('ControllerLoader')->get('SlmQueueDoctrine\Controller\Worker');
         $routeMatch = new RouteMatch(array('queue' => 'unknownQueue'));
         $controller->getEvent()->setRouteMatch($routeMatch);
-        
-       	$this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+
+           $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
         $controller->processAction();
     }
 }
