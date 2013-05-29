@@ -7,7 +7,7 @@ use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\ServiceManager\ServiceManager;
 
-class WorkerControllerTest extends TestCase
+class DoctrineWorkerControllerTest extends TestCase
 {
     /**
      * @var ServiceManager

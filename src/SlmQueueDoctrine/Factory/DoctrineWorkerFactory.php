@@ -3,12 +3,12 @@ namespace SlmQueueDoctrine\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SlmQueueDoctrine\Worker\Worker as DoctrineWorker;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 
 /**
  * WorkerFactory
  */
-class WorkerFactory implements FactoryInterface
+class DoctrineWorkerFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}

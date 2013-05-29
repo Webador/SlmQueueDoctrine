@@ -2,14 +2,14 @@
 
 namespace SlmQueueDoctrine\Factory;
 
-use SlmQueueDoctrine\Options\DoctrineOptions;
+use SlmQueueDoctrine\Options\Options;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * DoctrineOptionsFactory
  */
-class DoctrineOptionsFactory implements FactoryInterface
+class OptionsFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
@@ -17,6 +17,6 @@ class DoctrineOptionsFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        return new DoctrineOptions($config['slm_queue']['doctrine']);
+        return new Options($config['slm_queue']['doctrine']);
     }
 }

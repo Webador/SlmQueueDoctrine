@@ -3,14 +3,14 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueueDoctrine\Options\DoctrineOptions' => 'SlmQueueDoctrine\Factory\DoctrineOptionsFactory',
-            'SlmQueueDoctrine\Worker\Worker'           => 'SlmQueueDoctrine\Factory\WorkerFactory',
+            'SlmQueueDoctrine\Options\Options'         => 'SlmQueueDoctrine\Factory\OptionsFactory',
+            'SlmQueueDoctrine\Worker\Worker'           => 'SlmQueueDoctrine\Factory\DoctrineWorkerFactory',
         )
     ),
 
     'controllers' => array(
         'factories' => array(
-            'SlmQueueDoctrine\Controller\Worker'         => 'SlmQueueDoctrine\Factory\WorkerControllerFactory',
+            'SlmQueueDoctrine\Controller\Worker'         => 'SlmQueueDoctrine\Factory\DoctrineWorkerControllerFactory',
         ),
     ),
 

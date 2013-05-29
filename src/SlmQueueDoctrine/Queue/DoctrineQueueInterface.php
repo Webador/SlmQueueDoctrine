@@ -4,7 +4,7 @@ namespace SlmQueueDoctrine\Queue;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Job\JobInterface;
 
-interface TableInterface extends QueueInterface
+interface DoctrineQueueInterface extends QueueInterface
 {
     /**
      * Put a job that was popped back to the queue

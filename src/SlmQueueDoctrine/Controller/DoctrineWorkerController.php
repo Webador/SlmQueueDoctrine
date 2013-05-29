@@ -10,7 +10,7 @@ use SlmQueue\Exception\ExceptionInterface;
 /**
  * Worker controller
  */
-class WorkerController extends AbstractWorkerController
+class DoctrineWorkerController extends AbstractWorkerController
 {
     /**
      * Recover long running jobs
