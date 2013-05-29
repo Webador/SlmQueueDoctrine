@@ -44,6 +44,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     protected $buriedLifetime;
 
     /**
+     * How long show we sleep when no jobs available for processing (in seconds)
+     *
+     * @var int
+     */
+    protected $sleepWhenIdle = 1;
+
+    /**
      * Table which should be used
      *
      * @var string
@@ -101,6 +108,23 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         return $this->deletedLifetime;
     }
+
+    /**
+     * @param int $sleepWhenIdle
+     */
+    public function setSleepWhenIdle($sleepWhenIdle)
+    {
+        $this->sleepWhenIdle = $sleepWhenIdle;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSleepWhenIdle()
+    {
+        return $this->sleepWhenIdle;
+    }
+
 
     /**
      * Valid options are:
@@ -199,11 +223,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         try {
             $platform = $conn->getDatabasePlatform();
             $select =  'SELECT * ' .
-                       'FROM ' . $platform->appendLockHint($this->tableName, LockMode::PESSIMISTIC_WRITE) . ' ' .
-                       'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
-                       'ORDER BY scheduled ASC '.
-                       'LIMIT 1 ' .
-                       $platform->getWriteLockSQL();
+                'FROM ' . $platform->appendLockHint($this->tableName, LockMode::PESSIMISTIC_WRITE) . ' ' .
+                'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
+                'ORDER BY scheduled ASC '.
+                'LIMIT 1 ' .
+                $platform->getWriteLockSQL();
 
             $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new DateTime),
                 array(Type::SMALLINT, Type::STRING, Type::DATETIME));
@@ -211,8 +235,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             if($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $update = 'UPDATE ' . $this->tableName . ' ' .
-                          'SET status = ?, executed = ? ' .
-                          'WHERE id = ? AND status = ?';
+                    'SET status = ?, executed = ? ' .
+                    'WHERE id = ? AND status = ?';
 
                 $rows = $conn->executeUpdate($update,
                     array(static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING),
@@ -231,6 +255,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         if ($row === false) {
+            sleep($this->sleepWhenIdle);
+
             return null;
         }
 
@@ -247,12 +273,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         if ($this->getDeletedLifetime() > static::LIFETIME_DISABLED) {
             $update = 'UPDATE ' . $this->tableName . ' ' .
-                      'SET status = ?, finished = ? ' .
-                      'WHERE id = ? AND status = ?';
+                'SET status = ?, finished = ? ' .
+                'WHERE id = ? AND status = ?';
 
             $rows = $this->connection->executeUpdate($update,
-                 array(static::STATUS_DELETED, new DateTime, $job->getId(), static::STATUS_RUNNING),
-                 array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
+                array(static::STATUS_DELETED, new DateTime, $job->getId(), static::STATUS_RUNNING),
+                array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
 
             if ($rows != 1) {
                 throw new Exception\LogicException("Race-condition detected while updating item in queue.");
@@ -277,12 +303,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $trace   = isset($options['trace']) ? $options['trace'] : null;
 
             $update = 'UPDATE ' . $this->tableName . ' ' .
-                      'SET status = ?, finished = ?, message = ?, trace = ? ' .
-                      'WHERE id = ? AND status = ?';
+                'SET status = ?, finished = ?, message = ?, trace = ? ' .
+                'WHERE id = ? AND status = ?';
 
             $rows = $this->connection->executeUpdate($update,
-                 array(static::STATUS_BURIED, new DateTime, $message, $trace, $job->getId(), static::STATUS_RUNNING),
-                 array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT));
+                array(static::STATUS_BURIED, new DateTime, $message, $trace, $job->getId(), static::STATUS_RUNNING),
+                array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT));
 
             if ($rows != 1) {
                 throw new Exception\LogicException("Race-condition detected while updating item in queue.");
@@ -300,8 +326,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $executedLifetime = new DateTime('@' . (time() - ($executionTime * 60)));
 
         $update = 'UPDATE ' . $this->tableName . ' ' .
-                  'SET status = ? ' .
-                  'WHERE executed < ? AND status = ? AND queue = ? AND finished IS NULL';
+            'SET status = ? ' .
+            'WHERE executed < ? AND status = ? AND queue = ? AND finished IS NULL';
 
         $rows = $this->connection->executeUpdate($update,
             array(static::STATUS_PENDING, $executedLifetime, static::STATUS_RUNNING, $this->getName()),
@@ -338,8 +364,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $scheduleTime = $scheduleTime + $delay;
 
         $update = 'UPDATE ' . $this->tableName . ' ' .
-                  'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
-                  'WHERE id = ? AND status = ?';
+            'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
+            'WHERE id = ? AND status = ?';
 
         $rows = $this->connection->executeUpdate($update,
             array(static::STATUS_PENDING, new DateTime, new DateTime('@'.$scheduleTime), $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
@@ -372,7 +398,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         if ($buriedLifetime > static::LIFETIME_UNLIMITED) {
             $buriedLifetime = new DateTime('@' . ($now - ($buriedLifetime * 60)));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
-                      'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
+                'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
             $conn->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
                 array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
@@ -380,7 +406,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         if ($deletedLifetime > static::LIFETIME_UNLIMITED) {
             $deletedLifetime = new DateTime('@' . ($now - ($deletedLifetime * 60)));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
-                      'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
+                'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
             $conn->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
                 array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
