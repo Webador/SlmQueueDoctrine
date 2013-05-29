@@ -3,14 +3,14 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueueDoctrine\Options\Options'         => 'SlmQueueDoctrine\Factory\DoctrineOptionsFactory',
-            'SlmQueueDoctrine\Worker\Worker'           => 'SlmQueueDoctrine\Factory\DoctrineWorkerFactory',
+            'SlmQueueDoctrine\Options\DoctrineOptions'  => 'SlmQueueDoctrine\Factory\DoctrineOptionsFactory',
+            'SlmQueueDoctrine\Worker\DoctrineWorker'    => 'SlmQueueDoctrine\Factory\DoctrineWorkerFactory',
         )
     ),
 
     'controllers' => array(
         'factories' => array(
-            'SlmQueueDoctrine\Controller\Worker'         => 'SlmQueueDoctrine\Factory\DoctrineWorkerControllerFactory',
+            'SlmQueueDoctrine\Controller\DoctrineWorkerController' => 'SlmQueueDoctrine\Factory\DoctrineWorkerControllerFactory',
         ),
     ),
 
@@ -22,7 +22,7 @@ return array(
                     'options' => array(
                         'route'    => 'queue doctrine <queue> [--timeout=] --start',
                         'defaults' => array(
-                            'controller' => 'SlmQueueDoctrine\Controller\Worker',
+                            'controller' => 'SlmQueueDoctrine\Controller\DoctrineWorkerController',
                             'action'     => 'process'
                         ),
                     ),
@@ -32,7 +32,7 @@ return array(
                     'options' => array(
                         'route'    => 'queue doctrine <queue> --recover [--executionTime=]',
                         'defaults' => array(
-                            'controller' => 'SlmQueueDoctrine\Controller\Worker',
+                            'controller' => 'SlmQueueDoctrine\Controller\DoctrineWorkerController',
                             'action'     => 'recover'
                         ),
                     ),

@@ -23,11 +23,11 @@ class DoctrineWorkerControllerTest extends TestCase
 
     public function testThrowExceptionIfQueueIsUnknown()
     {
-        $controller = $this->serviceManager->get('ControllerLoader')->get('SlmQueueDoctrine\Controller\Worker');
+        $controller = $this->serviceManager->get('ControllerLoader')->get('SlmQueueDoctrine\Controller\DoctrineWorkerController');
         $routeMatch = new RouteMatch(array('queue' => 'unknownQueue'));
         $controller->getEvent()->setRouteMatch($routeMatch);
 
-           $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
         $controller->processAction();
     }
 }

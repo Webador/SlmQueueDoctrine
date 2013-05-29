@@ -22,7 +22,7 @@ class DoctrineOptionsTest extends TestCase
     public function testCreateDoctrineOptions()
     {
         /** @var $doctrineOptions \SlmQueueDoctrine\Options\DoctrineOptions */
-        $doctrineOptions = $this->serviceManager->get('SlmQueueDoctrine\Options\Options');
+        $doctrineOptions = $this->serviceManager->get('SlmQueueDoctrine\Options\DoctrineOptions');
         $this->assertInstanceOf('SlmQueueDoctrine\Options\DoctrineOptions', $doctrineOptions);
     }
 }
