@@ -54,6 +54,7 @@ class ServiceManagerFactory
         ));
         $serviceManager->setService('ApplicationConfig', static::$config);
         $serviceManager->setFactory('ServiceListener', 'Zend\Mvc\Service\ServiceListenerFactory');
+        $serviceManager->setFactory('ModuleListener', 'Zend\Mvc\Service\ModuleListenerFactory');
 
         /** @var $moduleManager \Zend\ModuleManager\ModuleManager */
         $moduleManager = $serviceManager->get('ModuleManager');
