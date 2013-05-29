@@ -8,7 +8,7 @@ use Zend\Stdlib\AbstractOptions;
 /**
  * DoctrineOptions
  */
-class Options extends AbstractOptions
+class DoctrineOptions extends AbstractOptions
 {
     /**
      * @var string

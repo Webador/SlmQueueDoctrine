@@ -6,7 +6,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
 
-class OptionsTest extends TestCase
+class DoctrineOptionsTest extends TestCase
 {
     /**
      * @var ServiceManager
@@ -21,8 +21,8 @@ class OptionsTest extends TestCase
 
     public function testCreateDoctrineOptions()
     {
-        /** @var $doctrineOptions \SlmQueueDoctrine\Options\Options */
+        /** @var $doctrineOptions \SlmQueueDoctrine\Options\DoctrineOptions */
         $doctrineOptions = $this->serviceManager->get('SlmQueueDoctrine\Options\Options');
-        $this->assertInstanceOf('SlmQueueDoctrine\Options\Options', $doctrineOptions);
+        $this->assertInstanceOf('SlmQueueDoctrine\Options\DoctrineOptions', $doctrineOptions);
     }
 }
