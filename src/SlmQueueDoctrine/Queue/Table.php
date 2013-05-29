@@ -163,6 +163,13 @@ class Table extends AbstractQueue implements TableInterface
             }
         }
 
+        print_r(array(
+            'date_default_timezone_get()' => date_default_timezone_get(),
+            'options'     => $options,
+            'created'   => $now->format("Y-m-d H:i:s"),
+            'scheduled' => $scheduled->format("Y-m-d H:i:s")
+        ));
+
         $this->connection->insert($this->tableName, array(
                 'queue'     => $this->getName(),
                 'status'    => self::STATUS_PENDING,

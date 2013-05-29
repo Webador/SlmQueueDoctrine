@@ -179,16 +179,23 @@ class DoctrineTableTest extends TestCase
         $job = new SimpleJob();
         $returnedCount = 0;
 
-        $this->tableQueue->push($job, array('scheduled' => time() + 10)); // must not be returned
-        $this->tableQueue->push($job, array('scheduled' => time() - 10));$returnedCount++;
-        $this->tableQueue->push($job, array('scheduled' => time() - 100));$returnedCount++;
+        $now = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
+        $this->tableQueue->push($job, array('scheduled' =>  time() + $now->getOffset() + 10));
+        $this->assertNull($this->tableQueue->pop(), "Job is not due yet.");
+
+        $this->tableQueue->push($job, array('scheduled' => time() + $now->getOffset() + 10)); // must not be returned
+        $this->tableQueue->push($job, array('scheduled' => time() + $now->getOffset() - 10));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() + $now->getOffset() - 100));$returnedCount++;
         $firstJobId = $job->getId();
-        $this->tableQueue->push($job, array('scheduled' => time() - 50));$returnedCount++;
-        $this->tableQueue->push($job, array('scheduled' => time() - 30));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() + $now->getOffset()  - 50));$returnedCount++;
+        $this->tableQueue->push($job, array('scheduled' => time() + $now->getOffset()  - 30));$returnedCount++;
         $this->tableQueue->push($job, array('delay' => 100)); // must not be returned
         $this->tableQueue->push($job, array('delay' => -90)); $returnedCount++;
 
 
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC')->fetchAll();
+        print_r($result);
         $jobs = array();
         while ($job = $this->tableQueue->pop()) {
             $jobs[] = $job;
