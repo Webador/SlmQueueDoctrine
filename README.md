@@ -164,4 +164,4 @@ To recover jobs which are in the 'running' state for prolonged period of time (s
 
 `php index.php queue doctrine <queueName> --recover [--executionTime=]`
 
-*Note : Workers that are processing a job that is being recovered are **not** stopped.*
+*Note : Workers that are processing a job that is being recovered are NOT stopped.*
