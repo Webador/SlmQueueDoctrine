@@ -38,6 +38,6 @@ class DoctrineQueueFactory implements FactoryInterface
         $queue->setBuriedLifetime($doctrineOptions->getBuriedLifetime());
         $queue->setDeletedLifetime($doctrineOptions->getDeletedLifetime());
 
-        return $table;
+        return $queue;
     }
 }
