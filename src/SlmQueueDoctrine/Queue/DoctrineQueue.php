@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
+use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
@@ -57,7 +58,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected $tableName;
 
-
     /**
      * Constructor
      *
@@ -78,7 +78,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param int $buriedLifetime
      */
     public function setBuriedLifetime($buriedLifetime)
     {
@@ -86,7 +86,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param int
      */
     public function getBuriedLifetime()
     {
@@ -94,7 +94,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param int $deletedLifetime
      */
     public function setDeletedLifetime($deletedLifetime)
     {
@@ -102,7 +102,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param int
      */
     public function getDeletedLifetime()
     {
@@ -126,70 +126,18 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
-     * Valid options are:
-     *      - scheduled: the time when the job should run the next time OR
-     *      - delay: the delay before a job becomes available to be popped (defaults no delay)
-     *          - accepts an numeric integer as seconds
-     *          - a string that is acceptable to the constructor of DateInterval (eg. P1Y or PT45S)
-     *          - a string that is acceptable to DateInterval::createFromDateString (eg. 1 week, next thuesday)
-     *          - a configured DateInterval instance
-     *
-     * @see http://en.wikipedia.org/wiki/Iso8601#Durations
-     * @see http://www.php.net/manual/en/datetime.formats.relative.php
-     *
      * {@inheritDoc}
+     *
+     * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
      */
     public function push(JobInterface $job, array $options = array())
     {
-        $now       = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
-        $scheduled = clone ($now);
-
-        if (isset($options['scheduled'])) {
-            switch (true) {
-                case is_numeric($options['scheduled']):
-                    $scheduled = new DateTime(sprintf("@%d", (int) $options['scheduled']),
-                        new DateTimeZone(date_default_timezone_get()));
-                    break;
-                case is_string($options['scheduled']):
-                    $scheduled = new DateTime($options['scheduled'], new DateTimeZone(date_default_timezone_get()));
-                    break;
-                case $options['scheduled'] instanceof DateTime:
-                    $scheduled = $options['scheduled'];
-                    break;
-            }
-        }
-
-        if (isset($options['delay'])) {
-            switch (true) {
-                case is_numeric($options['delay']):
-                    $delay = new DateInterval(sprintf("PT%dS", abs((int) $options['delay'])));
-                    $delay->invert = ($options['delay'] < 0) ? 1 : 0;
-                    break;
-                case is_string($options['delay']):
-                    try {
-                        // first try ISO 8601 duration specification
-                        $delay = new DateInterval($options['delay']);
-                    } catch (\Exception $e) {
-                        // then try normal date parser
-                        $delay = DateInterval::createFromDateString($options['delay']);
-                    }
-                    break;
-                case $options['delay'] instanceof DateInterval:
-                    $delay = $options['delay'];
-                    break;
-                default:
-                    $delay = null;
-            }
-
-            if ($delay instanceof DateInterval) {
-                $scheduled->add($delay);
-            }
-        }
+        $scheduled = $this->parseOptionsToDateTime($options);
 
         $this->connection->insert($this->tableName, array(
                 'queue'     => $this->getName(),
                 'status'    => self::STATUS_PENDING,
-                'created'   => $now,
+                'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
                 'data'      => $job->jsonSerialize(),
                 'scheduled' => $scheduled
             ), array(
@@ -205,11 +153,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $job->setId($id);
     }
 
-
     /**
      * {@inheritDoc}
-     * @throws \SlmQueueDoctrine\Exception\RuntimeException
-     * @throws \SlmQueueDoctrine\Exception\LogicException
      */
     public function pop(array $options = array())
     {
@@ -266,7 +211,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
     /**
      * {@inheritDoc}
-     * @throws \Doctrine\DBAL\DBALException
+     *
+     * Note: When $deletedLifetime == 0 the job will be deleted immediately
      */
     public function delete(JobInterface $job, array $options = array())
     {
@@ -276,7 +222,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'WHERE id = ? AND status = ?';
 
             $rows = $this->connection->executeUpdate($update,
-                array(static::STATUS_DELETED, new DateTime, $job->getId(), static::STATUS_RUNNING),
+                array(static::STATUS_DELETED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $job->getId(), static::STATUS_RUNNING),
                 array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
 
             if ($rows != 1) {
@@ -287,13 +233,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
     }
 
-
     /**
-     * Valid options are:
-     *      - message: Message why this has happened
-     *      - trace: Stack trace for further investigation
-     *
      * {@inheritDoc}
+     *
+     * Note: When $buriedLifetime == 0 the job will be deleted immediately
      */
     public function bury(JobInterface $job, array $options = array())
     {
@@ -306,7 +249,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'WHERE id = ? AND status = ?';
 
             $rows = $this->connection->executeUpdate($update,
-                array(static::STATUS_BURIED, new DateTime, $message, $trace, $job->getId(), static::STATUS_RUNNING),
+                array(static::STATUS_BURIED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $message, $trace, $job->getId(), static::STATUS_RUNNING),
                 array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT));
 
             if ($rows != 1) {
@@ -322,7 +265,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function recover($executionTime)
     {
-        $executedLifetime = new DateTime('@' . (time() - ($executionTime * 60)));
+        $executedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($executionTime * 60)));
 
         $update = 'UPDATE ' . $this->tableName . ' ' .
             'SET status = ? ' .
@@ -335,39 +278,40 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         return $rows;
     }
 
-
     /**
-     * {@inheritDoc}
+     * Create a concrete instance of a job from the queue
+     *
+     * @param int $id
+     * @return JobInterface
      */
     public function peek($id)
     {
         $sql  = 'SELECT * FROM ' . $this->tableName.' WHERE id = ?';
-        $row  = $this->connection->fetchAssoc($sql, array($id));
+        $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
         $data = json_decode($row['data'], true);
 
         return $this->createJob($data['class'], $data['content'], array('id' => $row['id']));
     }
 
     /**
-     * Valid options are:
-     *      - scheduled: the time when the job should run the next time OR
-     *      - delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
+     * Reschedules a specific running job
      *
-     * {@inheritDoc}
+     * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
+     *
+     * @param JobInterface $job
+     * @param array $options
+     * @throws Exception\LogicException
      */
     public function release(JobInterface $job, array $options = array())
     {
-        $now = time();
-        $delay        = isset($options['delay']) ? $options['delay'] : 0;
-        $scheduleTime = isset($options['scheduled']) ? $options['scheduled'] : $now;
-        $scheduleTime = $scheduleTime + $delay;
+        $scheduled = $this->parseOptionsToDateTime($options);
 
         $update = 'UPDATE ' . $this->tableName . ' ' .
             'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
             'WHERE id = ? AND status = ?';
 
         $rows = $this->connection->executeUpdate($update,
-            array(static::STATUS_PENDING, new DateTime, new DateTime('@'.$scheduleTime), $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
+            array(static::STATUS_PENDING, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $scheduled, $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
             array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
         );
 
@@ -377,36 +321,97 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
-     * Cleans old jobs in the table according to the configured lifetime of successful and failed jobs.
+     * Parses options to a datetime object
      *
-     * Valid options are:
-     *      - buried_lifetime
-     *      - deleted_lifetime
+     * valid options keys:
      *
-     * @param array $options
-     * @return void
+     * scheduled: the time when the job will be scheduled to run next
+     * - numeric string or integer - interpreted as a timestamp
+     * - string parserable by the DateTime object
+     * - DateTime instance
+     * delay: the delay before a job become available to be popped (defaults to 0 - no delay -)
+     * - numeric string or integer - interpreted as seconds
+     * - string parserable (ISO 8601 duration) by DateTimeInterval::__construct
+     * - string parserable (relative parts) by DateTimeInterval::createFromDateString
+     * - DateTimeInterval instance
+     *
+     * @see http://en.wikipedia.org/wiki/Iso8601#Durations
+     * @see http://www.php.net/manual/en/datetime.formats.relative.php
+     *
+     * @param $options array
+     * @return DateTime
      */
-    protected function purge(array $options = array())
+    protected function parseOptionsToDateTime($options) {
+        $now       = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
+        $scheduled = clone ($now);
+
+        if (isset($options['scheduled'])) {
+            switch (true) {
+                case is_numeric($options['scheduled']):
+                    $scheduled = new DateTime(sprintf("@%d", (int) $options['scheduled']),
+                        new DateTimeZone(date_default_timezone_get()));
+                    break;
+                case is_string($options['scheduled']):
+                    $scheduled = new DateTime($options['scheduled'], new DateTimeZone(date_default_timezone_get()));
+                    break;
+                case $options['scheduled'] instanceof DateTime:
+                    $scheduled = $options['scheduled'];
+                    break;
+            }
+        }
+
+        if (isset($options['delay'])) {
+            switch (true) {
+                case is_numeric($options['delay']):
+                    $delay = new DateInterval(sprintf("PT%dS", abs((int) $options['delay'])));
+                    $delay->invert = ($options['delay'] < 0) ? 1 : 0;
+                    break;
+                case is_string($options['delay']):
+                    try {
+                        // first try ISO 8601 duration specification
+                        $delay = new DateInterval($options['delay']);
+                    } catch (\Exception $e) {
+                        // then try normal date parser
+                        $delay = DateInterval::createFromDateString($options['delay']);
+                    }
+                    break;
+                case $options['delay'] instanceof DateInterval:
+                    $delay = $options['delay'];
+                    break;
+                default:
+                    $delay = null;
+            }
+
+            if ($delay instanceof DateInterval) {
+                $scheduled->add($delay);
+            }
+        }
+
+        return $scheduled;
+    }
+
+    /**
+     * Cleans old jobs in the table according to the configured lifetime of successful and failed jobs.
+     */
+    protected function purge()
     {
-        $conn = $this->connection;
-        $now = time();
+        if ($this->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
+            $buriedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->getBuriedLifetime() * 60)));
 
-        $buriedLifetime  = isset($options['buried_lifetime']) ? $options['buried_lifetime'] : $this->getBuriedLifetime();
-        $deletedLifetime = isset($options['deleted_lifetime']) ? $options['deleted_lifetime'] : $this->getDeletedLifetime();
-
-        if ($buriedLifetime > static::LIFETIME_UNLIMITED) {
-            $buriedLifetime = new DateTime('@' . ($now - ($buriedLifetime * 60)));
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
-            $conn->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
+
+            $this->connection->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
                 array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
 
-        if ($deletedLifetime > static::LIFETIME_UNLIMITED) {
-            $deletedLifetime = new DateTime('@' . ($now - ($deletedLifetime * 60)));
+        if ($this->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
+            $deletedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->getDeletedLifetime() * 60)));
+
             $delete = 'DELETE FROM ' . $this->tableName. ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
-            $conn->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
+
+            $this->connection->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
                 array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
     }
