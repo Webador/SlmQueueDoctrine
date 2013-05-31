@@ -341,7 +341,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @param $options array
      * @return DateTime
      */
-    protected function parseOptionsToDateTime($options) {
+    protected function parseOptionsToDateTime($options)
+    {
         $now       = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
         $scheduled = clone ($now);
 
