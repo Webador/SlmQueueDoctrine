@@ -84,7 +84,7 @@ return array(
  'slm_queue' => array(
      'queues' => array(
          'foo' => array(
-             'sleepWhenIdle' => 1
+             'sleep_when_idle' => 1
          )
      )
  )
