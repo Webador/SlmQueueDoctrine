@@ -2,7 +2,7 @@
 
 namespace SlmQueueDoctrine\Controller;
 
-use SlmQueueDoctrine\Queue\Table;
+use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueue\Controller\Exception\WorkerException;
 use SlmQueue\Controller\AbstractWorkerController;
 use SlmQueue\Exception\ExceptionInterface;
@@ -26,7 +26,7 @@ class DoctrineWorkerController extends AbstractWorkerController
         $queueManager = $this->getServiceLocator()->get('SlmQueue\Queue\QueuePluginManager');
         $queue        = $queueManager->get($queueName);
 
-        if(!$queue instanceof Table) {
+        if(!$queue instanceof DoctrineQueueInterface) {
             return sprintf("\nQueue % does not support the recovering of job\n\n", $queueName);
         }
 
