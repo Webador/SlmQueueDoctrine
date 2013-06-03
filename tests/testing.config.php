@@ -23,7 +23,7 @@ return array(
             'max_runs' => 1
         ),
 
-        'queues' => array(
+        'queue_manager' => array(
             'factories' => array(
                 'newsletter' => 'SlmQueueDoctrine\Factory\DoctrineQueueFactory'
             )
