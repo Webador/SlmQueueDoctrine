@@ -1,7 +1,10 @@
 SlmQueueDoctrine
 ================
 
-Version 0.3.0 Created by Stefan Kleff
+[![Latest Stable Version](https://poser.pugx.org/juriansluiman/slm-queue-doctrine/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue-doctrine)
+[![Latest Unstable Version](https://poser.pugx.org/juriansluiman/slm-queue-doctrine/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue-doctrine)
+
+Created by Stefan Kleff
 
 Requirements
 ------------
