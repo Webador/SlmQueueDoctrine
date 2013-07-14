@@ -1,8 +1,8 @@
 SlmQueueDoctrine
 ================
 
-[![Latest Stable Version](https://poser.pugx.org/juriansluiman/slm-queue-doctrine/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue-doctrine)
-[![Latest Unstable Version](https://poser.pugx.org/juriansluiman/slm-queue-doctrine/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue-doctrine)
+[![Latest Stable Version](https://poser.pugx.org/slm/queue-doctrine/v/stable.png)](https://packagist.org/packages/slm/queue-doctrine)
+[![Latest Unstable Version](https://poser.pugx.org/slm/queue-doctrine/v/unstable.png)](https://packagist.org/packages/slm/queue-doctrine)
 
 Created by Stefan Kleff
 
@@ -21,7 +21,7 @@ add the following line into your `composer.json` file:
 
 ```json
 "require": {
-	"juriansluiman/slm-queue-doctrine": "dev-master"
+	"slm/queue-doctrine": "dev-master"
 }
 ```
 
