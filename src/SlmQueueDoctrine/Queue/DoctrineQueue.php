@@ -282,12 +282,17 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * Create a concrete instance of a job from the queue
      *
      * @param int $id
-     * @return JobInterface
+     * @return JobInterface|null
      */
     public function peek($id)
     {
         $sql  = 'SELECT * FROM ' . $this->tableName.' WHERE id = ?';
         $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
+
+        if (!$row) {
+            return null;
+        }
+
         $data = json_decode($row['data'], true);
 
         return $this->createJob($data['class'], $data['content'], array('id' => $row['id']));
