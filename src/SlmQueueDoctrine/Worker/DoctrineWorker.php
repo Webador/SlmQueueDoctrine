@@ -26,7 +26,7 @@ class DoctrineWorker extends AbstractWorker
         try {
             $job->execute($queue);
             $queue->delete($job);
-        } catch(JobException\ReleasableException $exception) {
+        } catch (JobException\ReleasableException $exception) {
             $queue->release($job, $exception->getOptions());
         } catch (JobException\BuryableException $exception) {
             $queue->bury($job, $exception->getOptions());

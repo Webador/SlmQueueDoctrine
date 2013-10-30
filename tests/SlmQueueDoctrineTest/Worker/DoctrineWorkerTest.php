@@ -25,7 +25,6 @@ class DoctrineWorkerTest extends TestCase
      */
     protected $worker;
 
-
     public function setUp()
     {
         parent::setUp();
@@ -44,7 +43,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->queueMock->expects($this->once())
             ->method('delete')
-            ->will($this->returnCallback(function() use ($job) {
+            ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('deleted');
                 })
             );
@@ -60,7 +59,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->queueMock->expects($this->once())
             ->method('release')
-            ->will($this->returnCallback(function() use ($job) {
+            ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('released');
                 })
             );
@@ -76,7 +75,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->queueMock->expects($this->once())
             ->method('bury')
-            ->will($this->returnCallback(function() use ($job) {
+            ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('buried');
                 })
             );
@@ -92,7 +91,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->queueMock->expects($this->once())
             ->method('bury')
-            ->will($this->returnCallback(function() use ($job) {
+            ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('buried');
                 })
             );

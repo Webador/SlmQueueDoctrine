@@ -21,7 +21,6 @@ namespace SlmQueueDoctrineTest\Framework;
 
 use PHPUnit_Framework_TestCase;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\ToolsException;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
 
