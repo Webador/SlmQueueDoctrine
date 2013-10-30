@@ -402,7 +402,9 @@ class DoctrineQueueTest extends TestCase
 
     public function testPeek_NonExistent()
     {
-        $this->assertNull($this->queue->peek(1));
+        $this->setExpectedException('SlmQueueDoctrine\Exception\JobNotFoundException');
+
+        $this->queue->peek(1);
     }
 
     public function testRelease()
