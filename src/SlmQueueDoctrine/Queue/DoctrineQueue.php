@@ -282,7 +282,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * Create a concrete instance of a job from the queue
      *
      * @param int $id
-     * @return JobInterface|null
+     * @return JobInterface
+     * @throws Exception\JobNotFoundException
      */
     public function peek($id)
     {
@@ -290,7 +291,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
 
         if (!$row) {
-            return null;
+            throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
         $data = json_decode($row['data'], true);
