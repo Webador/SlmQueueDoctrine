@@ -3,7 +3,7 @@
 namespace SlmQueueDoctrine\Controller;
 
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
-use SlmQueue\Controller\Exception\WorkerException;
+use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Controller\AbstractWorkerController;
 use SlmQueue\Exception\ExceptionInterface;
 
@@ -33,7 +33,7 @@ class DoctrineWorkerController extends AbstractWorkerController
         try {
             $count = $queue->recover($executionTime);
         } catch (ExceptionInterface $exception) {
-            throw new WorkerException("An error occurred", $exception->getCode(), $exception);
+            throw new WorkerProcessException("An error occurred", $exception->getCode(), $exception);
         }
 
         return sprintf(
