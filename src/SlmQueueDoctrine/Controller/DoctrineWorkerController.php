@@ -3,6 +3,7 @@
 namespace SlmQueueDoctrine\Controller;
 
 use SlmQueue\Worker\WorkerEvent;
+use SlmQueueDoctrine\Controller\Listener\MaxWorkersListener;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueue\Controller\Exception\WorkerException;
 use SlmQueue\Controller\AbstractWorkerController;
@@ -22,33 +23,17 @@ class DoctrineWorkerController extends AbstractWorkerController
 
         if (isset($options['max-workers']) && is_numeric($options['max-workers'])) {
             $lockfile = sprintf('data/slm-queue-doctrine-worker-%s.cnt', $options['queue']);
-            if (file_exists($lockfile)) {
-                $cnt = (int) file_get_contents($lockfile);
 
-                if ($cnt >= (int) $options['max-workers']) {
-                    return sprintf(
-                        "Exceeding maximum workers '%s' this queue '%s'\n",
-                        $cnt,
+            $listener = new MaxWorkersListener($lockfile);
+
+            if ($listener->check($options['max-workers'])) {
+                return sprintf("Exceeding maximum workers '%s' this queue '%s'\n",
+                        $options['max-workers'],
                         $options['queue']
                     );
-                }
-            } else {
-                $cnt      = 0;
             }
 
-            $this->getEventManager()->getSharedManager()->attach('SlmQueueDoctrine\Worker\DoctrineWorker', WorkerEvent::EVENT_PROCESS_QUEUE_PRE, function(WorkerEvent $e) use ($lockfile, $cnt) {
-                file_put_contents($lockfile, ++$cnt);
-            });
-
-            $this->getEventManager()->getSharedManager()->attach('SlmQueueDoctrine\Worker\DoctrineWorker', WorkerEvent::EVENT_PROCESS_QUEUE_POST, function(WorkerEvent $e) use ($lockfile, $cnt) {
-                if ($cnt >= 1) {
-                    file_put_contents($lockfile, $cnt);
-                } else {
-                    if (file_exists($lockfile)) {
-                        unlink($lockfile);
-                    }
-                }
-            });
+            $this->getEventManager()->getSharedManager()->attachAggregate($listener);
         }
 
         return parent::processAction();
