@@ -17,6 +17,7 @@ class DoctrineOptionsFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
+
         return new DoctrineOptions($config['slm_queue']['doctrine']);
     }
 }

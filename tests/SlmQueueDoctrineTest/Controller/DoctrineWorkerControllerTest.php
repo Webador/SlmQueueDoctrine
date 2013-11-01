@@ -14,7 +14,6 @@ class DoctrineWorkerControllerTest extends TestCase
      */
     protected $serviceManager;
 
-
     public function setUp()
     {
         parent::setUp();

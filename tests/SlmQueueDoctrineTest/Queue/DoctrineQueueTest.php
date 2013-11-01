@@ -75,7 +75,6 @@ class DoctrineQueueTest extends TestCase
         $this->assertTrue((microtime(true) - $start) >= ($this->queue->getSleepWhenIdle() * 3),
             "When no job is returned pop should sleep for a while");
 
-
         $job = new SimpleJob();
         $this->queue->push($job);
         $this->queue->push($job);
@@ -179,7 +178,6 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-
     /**
      * @dataProvider dataProvider_PushDelayOptions
      */
@@ -206,7 +204,6 @@ class DoctrineQueueTest extends TestCase
         $this->queue->push($job);
 
         $returnedJob = $this->queue->pop();
-
 
         $this->assertNotNull($returnedJob, "A job should have been returned.");
 
@@ -237,7 +234,6 @@ class DoctrineQueueTest extends TestCase
         $this->queue->push($job, array('scheduled' => time() + $now->getOffset()  - 30));$returnedCount++;
         $this->queue->push($job, array('delay' => 100)); // must not be returned
         $this->queue->push($job, array('delay' => -90)); $returnedCount++;
-
 
         $jobs = array();
         while ($job = $this->queue->pop()) {
@@ -333,7 +329,6 @@ class DoctrineQueueTest extends TestCase
 
         $this->assertNull($result['message'], "The message of this job should be 'null'.");
         $this->assertNull($result['trace'], "The message of this job should be 'null'.");
-
 
         $this->queue->push($job);
         $this->queue->pop(); // why must the job be running?

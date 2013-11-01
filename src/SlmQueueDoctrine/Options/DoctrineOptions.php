@@ -36,7 +36,6 @@ class DoctrineOptions extends AbstractOptions
      */
     protected $buriedLifetime = DoctrineQueue::LIFETIME_DISABLED;
 
-
     /**
      * Set the name of the doctrine connection service
      *
@@ -59,7 +58,7 @@ class DoctrineOptions extends AbstractOptions
     }
 
     /**
-     * @param  int $buriedLifetime
+     * @param  int  $buriedLifetime
      * @return void
      */
     public function setBuriedLifetime($buriedLifetime)
@@ -76,7 +75,7 @@ class DoctrineOptions extends AbstractOptions
     }
 
     /**
-     * @param  int $deletedLifetime
+     * @param  int  $deletedLifetime
      * @return void
      */
     public function setDeletedLifetime($deletedLifetime)

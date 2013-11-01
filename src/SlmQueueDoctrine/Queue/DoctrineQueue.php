@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
-use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
@@ -176,8 +175,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new DateTime),
                 array(Type::SMALLINT, Type::STRING, Type::DATETIME));
 
-
-            if($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $update = 'UPDATE ' . $this->tableName . ' ' .
                     'SET status = ?, executed = ? ' .
                     'WHERE id = ? AND status = ?';
@@ -205,8 +203,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         $data = json_decode($row['data'], true);
+        // Add job ID to meta data
+        $data['metadata']['id'] = $row['id'];
 
-        return $this->createJob($data['class'], $data['content'], array('id' => $row['id']));
+        return $this->createJob($data['class'], $data['content'], $data['metadata']);
     }
 
     /**
@@ -240,7 +240,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function bury(JobInterface $job, array $options = array())
     {
-        if($this->getBuriedLifetime() > static::LIFETIME_DISABLED)  {
+        if ($this->getBuriedLifetime() > static::LIFETIME_DISABLED) {
             $message = isset($options['message']) ? $options['message'] : null;
             $trace   = isset($options['trace']) ? $options['trace'] : null;
 
@@ -281,7 +281,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * Create a concrete instance of a job from the queue
      *
-     * @param int $id
+     * @param  int          $id
      * @return JobInterface
      */
     public function peek($id)
@@ -289,8 +289,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $sql  = 'SELECT * FROM ' . $this->tableName.' WHERE id = ?';
         $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
         $data = json_decode($row['data'], true);
+        // Add job ID to meta data
+        $data['metadata']['id'] = $row['id'];
 
-        return $this->createJob($data['class'], $data['content'], array('id' => $row['id']));
+        return $this->createJob($data['class'], $data['content'], $data['metadata']);
     }
 
     /**
@@ -298,8 +300,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
      *
-     * @param JobInterface $job
-     * @param array $options
+     * @param  JobInterface             $job
+     * @param  array                    $options
      * @throws Exception\LogicException
      */
     public function release(JobInterface $job, array $options = array())
