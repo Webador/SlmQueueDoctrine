@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   `scheduled` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `executed` datetime NULL DEFAULT NULL,
   `finished` datetime NULL DEFAULT NULL,
-  `message` varchar(256) DEFAULT NULL,
+  `message` text DEFAULT NULL,
   `trace` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
