@@ -300,13 +300,13 @@ class DoctrineQueueTest extends TestCase
 
         // count
         $result = $this->getEntityManager()->getConnection()
-        ->query('SELECT count(*) as count FROM queue_default')->fetch();
+            ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
         $this->assertEquals(1, $result['count']);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
-        ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
         $this->assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
     }
