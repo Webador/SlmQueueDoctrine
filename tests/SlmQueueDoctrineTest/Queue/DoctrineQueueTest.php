@@ -397,8 +397,7 @@ class DoctrineQueueTest extends TestCase
 
     public function testPeek_NonExistent()
     {
-        // Should peek return a more specialized exception for non existent jobs id's?
-        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+        $this->setExpectedException('SlmQueueDoctrine\Exception\JobNotFoundException');
 
         $this->queue->peek(1);
     }

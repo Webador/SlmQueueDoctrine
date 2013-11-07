@@ -283,11 +283,17 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * @param  int          $id
      * @return JobInterface
+     * @throws Exception\JobNotFoundException
      */
     public function peek($id)
     {
         $sql  = 'SELECT * FROM ' . $this->tableName.' WHERE id = ?';
         $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
+
+        if (!$row) {
+            throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
+        }
+
         $data = json_decode($row['data'], true);
         // Add job ID to meta data
         $data['metadata']['id'] = $row['id'];
