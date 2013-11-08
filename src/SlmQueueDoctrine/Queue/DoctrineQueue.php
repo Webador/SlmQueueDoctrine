@@ -212,11 +212,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * {@inheritDoc}
      *
-     * Note: When $deletedLifetime == 0 the job will be deleted immediately
+     * Note: When $deletedLifetime === 0 the job will be deleted immediately
      */
     public function delete(JobInterface $job, array $options = array())
     {
-        if ($this->getDeletedLifetime() > static::LIFETIME_DISABLED) {
+        if ($this->getDeletedLifetime() === static::LIFETIME_DISABLED) {
+            $this->connection->delete($this->tableName, array('id' => $job->getId()));
+        } else {
             $update = 'UPDATE ' . $this->tableName . ' ' .
                 'SET status = ?, finished = ? ' .
                 'WHERE id = ? AND status = ?';
@@ -228,19 +230,19 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             if ($rows != 1) {
                 throw new Exception\LogicException("Race-condition detected while updating item in queue.");
             }
-        } else {
-            $this->connection->delete($this->tableName, array('id' => $job->getId()));
         }
     }
 
     /**
      * {@inheritDoc}
      *
-     * Note: When $buriedLifetime == 0 the job will be deleted immediately
+     * Note: When $buriedLifetime === 0 the job will be deleted immediately
      */
     public function bury(JobInterface $job, array $options = array())
     {
-        if ($this->getBuriedLifetime() > static::LIFETIME_DISABLED) {
+        if ($this->getBuriedLifetime() === static::LIFETIME_DISABLED) {
+            $this->connection->delete($this->tableName, array('id' => $job->getId()));
+        } else {
             $message = isset($options['message']) ? $options['message'] : null;
             $trace   = isset($options['trace']) ? $options['trace'] : null;
 
@@ -255,8 +257,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             if ($rows != 1) {
                 throw new Exception\LogicException("Race-condition detected while updating item in queue.");
             }
-        } else {
-            $this->connection->delete($this->tableName, array('id' => $job->getId()));
         }
     }
 

@@ -283,6 +283,30 @@ class DoctrineQueueTest extends TestCase
         $this->assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
     }
 
+    public function testDelete_WithUnlimitedLifeTimeShouldMarked()
+    {
+        $job = new SimpleJob();
+
+        $this->queue->setDeletedLifetime(DoctrineQueue::LIFETIME_UNLIMITED);
+        $this->queue->push($job);
+
+        $this->queue->pop(); // why must the job be running?
+
+        $this->queue->delete($job);
+
+        // count
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT count(*) as count FROM queue_default')->fetch();
+
+        $this->assertEquals(1, $result['count']);
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
+    }
+
     public function testDelete_RaceCondition()
     {
         $job = new SimpleJob();
@@ -368,6 +392,32 @@ class DoctrineQueueTest extends TestCase
         $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
             "The finished field of a buried job should be set to a datetime");
 
+    }
+
+    public function testBury_WithUnlimitedLifeTimeShouldMarked()
+    {
+        $job = new SimpleJob();
+
+        $this->queue->setBuriedLifetime(DoctrineQueue::LIFETIME_UNLIMITED);
+        $this->queue->push($job);
+
+        $this->queue->pop(); // why must the job be running?
+
+        $this->queue->bury($job);
+
+        // count
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT count(*) as count FROM queue_default')->fetch();
+
+        $this->assertEquals(1, $result['count']);
+
+        // fetch last added job
+        $result = $this->getEntityManager()->getConnection()
+            ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
+
+        $this->assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
+        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+            "The finished field of a buried job should be set to a datetime");
     }
 
     public function testBury_RaceCondition()
