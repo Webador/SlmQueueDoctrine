@@ -20,7 +20,7 @@ return array(
                 'slm-queue-doctrine-worker' => array(
                     'type'    => 'Simple',
                     'options' => array(
-                        'route'    => 'queue doctrine <queue> [--timeout=] --start',
+                        'route'    => 'queue doctrine <queue> [--timeout=] [--max-workers=] --start',
                         'defaults' => array(
                             'controller' => 'SlmQueueDoctrine\Controller\DoctrineWorkerController',
                             'action'     => 'process'

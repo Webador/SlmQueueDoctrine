@@ -2,6 +2,8 @@
 
 namespace SlmQueueDoctrine\Controller;
 
+use SlmQueue\Worker\WorkerEvent;
+use SlmQueueDoctrine\Controller\Listener\MaxWorkersListener;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Controller\AbstractWorkerController;
@@ -12,6 +14,31 @@ use SlmQueue\Exception\ExceptionInterface;
  */
 class DoctrineWorkerController extends AbstractWorkerController
 {
+    /**
+     * @inheritdoc
+     */
+    public function processAction()
+    {
+        $options = $this->params()->fromRoute();
+
+        if (isset($options['max-workers']) && is_numeric($options['max-workers'])) {
+            $lockfile = sprintf('data/slm-queue-doctrine-worker-%s.cnt', $options['queue']);
+
+            $listener = new MaxWorkersListener($lockfile);
+
+            if ($listener->check($options['max-workers'])) {
+                return sprintf("Exceeding maximum workers '%s' this queue '%s'\n",
+                        $options['max-workers'],
+                        $options['queue']
+                    );
+            }
+
+            $this->getEventManager()->getSharedManager()->attachAggregate($listener);
+        }
+
+        return parent::processAction();
+    }
+
     /**
      * Recover long running jobs
      *

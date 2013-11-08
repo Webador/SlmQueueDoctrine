@@ -161,12 +161,16 @@ A worker will exit when you press cntr-C *after* it has finished the current job
 
 *Warning : In previous versions of SlmQueueDoctrine the worker would quit if there where no jobs available for 
 processing. That meant you could savely create a cronjob that would start a worker every minute. If you do that now
-you will quickly run out of available resources.
+you will quickly run out of available resources.*
+
+To work around this limitation a --max-workers switch has been added which will keep track of the running workers for a particular queue. If more workers are running then specified the process will exit immediately.
+
+`php index.php queue doctrine <queueName> --max-workers=2 --start`
 
 Now, you can let your script run indefinitely. While this was not possible in PHP versions previous to 5.3, it is now
 not a big deal. This has the other benefit of not needing to bootstrap the application every time, which is good
 for performance.
-*
+
 
 #### Recovering jobs
 

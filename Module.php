@@ -56,6 +56,7 @@ class Module implements
 
             array('<queueName>', 'Queue\'s name to process'),
             array('<executionTime>', 'Time (in minutes) after which the job gets recovered'),
+            array('<maxWorkers>', 'Number of workers that are allowed to run in sequence for a particular queue'),
         );
     }
 
