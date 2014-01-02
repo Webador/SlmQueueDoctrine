@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   `finished` datetime NULL DEFAULT NULL,
   `message` text DEFAULT NULL,
   `trace` text,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
