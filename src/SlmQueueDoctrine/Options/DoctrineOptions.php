@@ -37,6 +37,13 @@ class DoctrineOptions extends AbstractOptions
     protected $buriedLifetime = DoctrineQueue::LIFETIME_DISABLED;
 
     /**
+     * How long show we sleep when no jobs available for processing (in seconds)
+     *
+     * @var int
+     */
+    protected $sleepWhenIdle = 1;
+
+    /**
      * Set the name of the doctrine connection service
      *
      * @param  string $connection
@@ -107,4 +114,21 @@ class DoctrineOptions extends AbstractOptions
     {
         return $this->tableName;
     }
+
+    /**
+     * @param int $sleepWhenIdle
+     */
+    public function setSleepWhenIdle($sleepWhenIdle)
+    {
+        $this->sleepWhenIdle = $sleepWhenIdle;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSleepWhenIdle()
+    {
+        return $this->sleepWhenIdle;
+    }
+
 }

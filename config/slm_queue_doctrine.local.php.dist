@@ -29,6 +29,11 @@ return array(
         /**
          * How long to keep buried (failed) jobs (in minutes)
          */
-        // 'buried_lifetime' => '60'
+        // 'buried_lifetime' => '60',
+
+        /**
+         * How long show we sleep when no jobs available for processing (in seconds)
+         */
+        // 'sleep_when_idle'  => 1
     ),
 );
