@@ -18,9 +18,17 @@
  */
 return array(
     'slm_queue' => array(
-        'worker' => array(
-            // Limit runs to 1 in test environment
-            'max_runs' => 1
+        'options' => array(
+            'worker' => array(
+                // Limit runs to 1 in test environment
+                'max_runs' => 1
+            ),
+            'queues' => array(
+                'my-doctrine-queue' => array(
+                    'deleted_lifetime' => -1,
+                    'buried_lifetime'  => -1,
+                ),
+            ),
         ),
 
         'queue_manager' => array(
