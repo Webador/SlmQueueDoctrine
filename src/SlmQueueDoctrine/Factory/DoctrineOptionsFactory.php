@@ -18,6 +18,6 @@ class DoctrineOptionsFactory implements FactoryInterface
     {
         $config = $serviceLocator->get('Config');
 
-        return new DoctrineOptions($config['slm_queue_doctrine']);
+        return new DoctrineOptions($config['slm_queue']['doctrine']);
     }
 }

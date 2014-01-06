@@ -41,11 +41,13 @@ return array(
         ),
     ),
 
-    'slm_queue_doctrine' => array(
-        'connection'       => 'doctrine.connection.orm_default',
-        'table_name'       => 'queue_default',
-        'deleted_lifetime' => '60',
-        'buried_lifetime'  => '60',
-        'sleep_when_idle'  => 1,
-    )
+    'slm_queue' => array(
+        'doctrine' => array(
+            'connection'       => 'doctrine.connection.orm_default',
+            'table_name'       => 'queue_default',
+            'deleted_lifetime' => '60',
+            'buried_lifetime'  => '60',
+            'sleep_when_idle'  => 1,
+        ),
+    ),
 );
