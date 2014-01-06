@@ -2,6 +2,7 @@
 
 namespace SlmQueueDoctrine\Factory;
 
+use SlmQueueDoctrine\Options\DoctrineOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
@@ -18,25 +19,24 @@ class DoctrineQueueFactory implements FactoryInterface
     {
         $parentLocator = $serviceLocator->getServiceLocator();
 
-        /** @var $doctrineOptions \SlmQueueDoctrine\Options\DoctrineOptions */
-        $doctrineOptions = $parentLocator->get('SlmQueueDoctrine\Options\DoctrineOptions');
+        /** @var $queueOptions DoctrineOptions */
+        $queueOptions = $parentLocator->get('SlmQueueDoctrine\Options\DoctrineOptions');
+        $queuesOptions   = $parentLocator->get('SlmQueue\Options\ModuleOptions')->getQueues();
+
+        if (isset($queuesOptions[$requestedName])) {
+            $queueOptions->setFromArray($queuesOptions[$requestedName]);
+        }
 
         /** @var $connection \Doctrine\DBAL\Connection */
-        $connection       = $parentLocator->get($doctrineOptions->getConnection());
-        $tableName        = $doctrineOptions->getTableName();
+        $connection       = $parentLocator->get($queueOptions->getConnection());
+        $tableName        = $queueOptions->getTableName();
         $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
         $queue = new DoctrineQueue($connection, $tableName, $requestedName, $jobPluginManager);
 
-        $config = $parentLocator->get('Config');
-        $options = isset($config['slm_queue']['queues'][$requestedName]) ? $config['slm_queue']['queues'][$requestedName] : array();
-
-        if (isset($options['sleep_when_idle'])) {
-            $queue->setSleepWhenIdle($options['sleep_when_idle']);
-        }
-
-        $queue->setBuriedLifetime($doctrineOptions->getBuriedLifetime());
-        $queue->setDeletedLifetime($doctrineOptions->getDeletedLifetime());
+        $queue->setBuriedLifetime($queueOptions->getBuriedLifetime());
+        $queue->setDeletedLifetime($queueOptions->getDeletedLifetime());
+        $queue->setSleepWhenIdle($queueOptions->getSleepWhenIdle());
 
         return $queue;
     }
