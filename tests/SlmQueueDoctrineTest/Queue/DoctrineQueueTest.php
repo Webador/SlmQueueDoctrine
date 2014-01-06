@@ -5,6 +5,7 @@ namespace SlmQueueDoctrineTest\Queue;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
+use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
@@ -24,11 +25,12 @@ class DoctrineQueueTest extends TestCase
 
         $this->createDb();
 
-        $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), 'queue_default', 'some-queue-name',
-            ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
-
+        $options     = new DoctrineOptions();
         // we want tests to run as fast as possible
-        $this->queue->setSleepWhenIdle(0);
+        $options->setSleepWhenIdle(0);
+
+        $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), $options, 'some-queue-name',
+            ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
     }
 
     public function tearDown()
@@ -39,40 +41,39 @@ class DoctrineQueueTest extends TestCase
     public function testBuriedLifetimeOption()
     {
         // defaults disabled
-        $this->assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getBuriedLifetime());
+        $this->assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getBuriedLifetime());
 
-        $this->queue->setBuriedLifetime(10);
-        $this->assertEquals(10, $this->queue->getBuriedLifetime());
+        $this->queue->getOptions()->setBuriedLifetime(10);
+        $this->assertEquals(10, $this->queue->getOptions()->getBuriedLifetime());
     }
 
     public function testDeletedLifetimeOption()
     {
         // defaults disabled
-        $this->assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getDeletedLifetime());
+        $this->assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getDeletedLifetime());
 
-        $this->queue->setDeletedLifetime(10);
-        $this->assertEquals(10, $this->queue->getDeletedLifetime());
+        $this->queue->getOptions()->setDeletedLifetime(10);
+        $this->assertEquals(10, $this->queue->getOptions()->getDeletedLifetime());
     }
 
     public function testSleepWhenIdleOption()
     {
-        // recreate queue with real defaults
-        $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), 'queue_default', 'some-queue-name',
-            ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
+        // reset queue with real defaults
+        $this->queue->getOptions()->setSleepWhenIdle(1);
 
         // default
-        $this->assertEquals(1, $this->queue->getSleepWhenIdle());
+        $this->assertEquals(1, $this->queue->getOptions()->getSleepWhenIdle());
 
-        $this->queue->setSleepWhenIdle(2);
-        $this->assertEquals(2, $this->queue->getSleepWhenIdle());
+        $this->queue->getOptions()->setSleepWhenIdle(2);
+        $this->assertEquals(2, $this->queue->getOptions()->getSleepWhenIdle());
 
-        $this->queue->setSleepWhenIdle(1);
+        $this->queue->getOptions()->setSleepWhenIdle(1);
         $start = microtime(true);
         $this->queue->pop();
         $this->queue->pop();
         $this->queue->pop();
 
-        $this->assertTrue((microtime(true) - $start) >= ($this->queue->getSleepWhenIdle() * 3),
+        $this->assertTrue((microtime(true) - $start) >= ($this->queue->getOptions()->getSleepWhenIdle() * 3),
             "When no job is returned pop should sleep for a while");
 
         $job = new SimpleJob();
@@ -89,7 +90,7 @@ class DoctrineQueueTest extends TestCase
         $this->queue->pop();
         $this->queue->pop();
 
-        $this->assertTrue(microtime(true) - $start < $this->queue->getSleepWhenIdle(),
+        $this->assertTrue(microtime(true) - $start < $this->queue->getOptions()->getSleepWhenIdle(),
             "When jobs are returned this should be as quick as possible");
     }
 
@@ -248,7 +249,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setDeletedLifetime(DoctrineQueue::LIFETIME_DISABLED);
+        $this->queue->getOptions()->setDeletedLifetime(DoctrineQueue::LIFETIME_DISABLED);
         $this->queue->push($job);
 
         $this->queue->delete($job);
@@ -263,7 +264,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setDeletedLifetime(10);
+        $this->queue->getOptions()->setDeletedLifetime(10);
         $this->queue->push($job);
 
         $this->queue->pop(); // why must the job be running?
@@ -287,7 +288,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setDeletedLifetime(DoctrineQueue::LIFETIME_UNLIMITED);
+        $this->queue->getOptions()->setDeletedLifetime(DoctrineQueue::LIFETIME_UNLIMITED);
         $this->queue->push($job);
 
         $this->queue->pop(); // why must the job be running?
@@ -311,7 +312,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setDeletedLifetime(10);
+        $this->queue->getOptions()->setDeletedLifetime(10);
         $this->queue->push($job);
 
         $this->queue->pop(); // why must the job be running?
@@ -326,7 +327,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setBuriedLifetime(DoctrineQueue::LIFETIME_DISABLED);
+        $this->queue->getOptions()->setBuriedLifetime(DoctrineQueue::LIFETIME_DISABLED);
         $this->queue->push($job);
 
         $this->queue->bury($job);
@@ -341,7 +342,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setBuriedLifetime(10);
+        $this->queue->getOptions()->setBuriedLifetime(10);
 
         $this->queue->push($job);
         $this->queue->pop(); // why must the job be running?
@@ -371,7 +372,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setBuriedLifetime(10);
+        $this->queue->getOptions()->setBuriedLifetime(10);
         $this->queue->push($job);
 
         $this->queue->pop(); // why must the job be running?
@@ -398,7 +399,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setBuriedLifetime(DoctrineQueue::LIFETIME_UNLIMITED);
+        $this->queue->getOptions()->setBuriedLifetime(DoctrineQueue::LIFETIME_UNLIMITED);
         $this->queue->push($job);
 
         $this->queue->pop(); // why must the job be running?
@@ -424,7 +425,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->queue->setBuriedLifetime(10);
+        $this->queue->getOptions()->setBuriedLifetime(10);
         $this->queue->push($job);
 
         $this->queue->pop(); // why must the job be running?

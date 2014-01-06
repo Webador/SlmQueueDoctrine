@@ -13,14 +13,14 @@ class DoctrineOptions extends AbstractOptions
     /**
      * @var string
      */
-    protected $connection;
+    protected $connection = 'doctrine.connection.orm_default';
 
     /**
      * Table name which should be used to store jobs
      *
      * @var string
      */
-    protected $tableName;
+    protected $tableName = 'queue_default';
 
     /**
      * how long to keep deleted (successful) jobs (in minutes)

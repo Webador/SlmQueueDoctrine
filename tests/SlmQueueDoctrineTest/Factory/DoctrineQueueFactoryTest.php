@@ -27,7 +27,7 @@ class DoctrineQueueFactoryTest extends PHPUnit_Framework_TestCase
         $factory            = new DoctrineQueueFactory();
         $service            = $factory->createService($queuePluginManager, 'mydoctrinequeue', 'my-doctrine-queue');
 
-        $this->assertEquals($service->getDeletedLifetime(), $config['slm_queue']['options']['queues']['my-doctrine-queue']['deleted_lifetime']);
-        $this->assertEquals($service->getBuriedLifetime(), $config['slm_queue']['options']['queues']['my-doctrine-queue']['buried_lifetime']);
+        $this->assertEquals($service->getOptions()->getDeletedLifetime(), $config['slm_queue']['options']['queues']['my-doctrine-queue']['deleted_lifetime']);
+        $this->assertEquals($service->getOptions()->getBuriedLifetime(), $config['slm_queue']['options']['queues']['my-doctrine-queue']['buried_lifetime']);
     }
 }

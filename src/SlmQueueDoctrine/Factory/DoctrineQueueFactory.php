@@ -19,24 +19,15 @@ class DoctrineQueueFactory implements FactoryInterface
     {
         $parentLocator = $serviceLocator->getServiceLocator();
 
-        /** @var $queueOptions DoctrineOptions */
-        $queueOptions = $parentLocator->get('SlmQueueDoctrine\Options\DoctrineOptions');
-        $queuesOptions   = $parentLocator->get('SlmQueue\Options\ModuleOptions')->getQueues();
-
-        if (isset($queuesOptions[$requestedName])) {
-            $queueOptions->setFromArray($queuesOptions[$requestedName]);
-        }
+        $queuesOptions = $parentLocator->get('SlmQueue\Options\ModuleOptions')->getQueues();
+        $options       = isset($queuesOptions[$requestedName]) ? $queuesOptions[$requestedName] : array();
+        $queueOptions  = new DoctrineOptions($options);
 
         /** @var $connection \Doctrine\DBAL\Connection */
         $connection       = $parentLocator->get($queueOptions->getConnection());
-        $tableName        = $queueOptions->getTableName();
         $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
-        $queue = new DoctrineQueue($connection, $tableName, $requestedName, $jobPluginManager);
-
-        $queue->setBuriedLifetime($queueOptions->getBuriedLifetime());
-        $queue->setDeletedLifetime($queueOptions->getDeletedLifetime());
-        $queue->setSleepWhenIdle($queueOptions->getSleepWhenIdle());
+        $queue = new DoctrineQueue($connection, $queueOptions, $requestedName, $jobPluginManager);
 
         return $queue;
     }

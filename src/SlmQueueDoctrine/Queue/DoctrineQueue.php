@@ -13,6 +13,7 @@ use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Exception;
+use SlmQueueDoctrine\Options\DoctrineOptions;
 
 class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 {
@@ -25,37 +26,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     const LIFETIME_UNLIMITED = -1;
 
     /**
-     * @var \Doctrine\DBAL\Connection;
-     */
-    protected $connection;
-
-    /**
-     * How long to keep deleted (successful) jobs (in minutes)
+     * Options for this queue
      *
-     * @var int
+     * @var DoctrineOptions $options
      */
-    protected $deletedLifetime;
-
-    /**
-     * How long to keep buried (failed) jobs (in minutes)
-     *
-     * @var int
-     */
-    protected $buriedLifetime;
-
-    /**
-     * How long show we sleep when no jobs available for processing (in seconds)
-     *
-     * @var int
-     */
-    protected $sleepWhenIdle = 1;
-
-    /**
-     * Table which should be used
-     *
-     * @var string
-     */
-    protected $tableName;
+    protected $options;
 
     /**
      * Constructor
@@ -65,63 +40,20 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @param string           $name
      * @param JobPluginManager $jobPluginManager
      */
-    public function __construct(Connection $connection, $tableName, $name, JobPluginManager $jobPluginManager)
+    public function __construct(Connection $connection, DoctrineOptions $options, $name, JobPluginManager $jobPluginManager)
     {
         $this->connection = $connection;
-        $this->tableName  = $tableName;
-
-        $this->deletedLifetime = static::LIFETIME_DISABLED;
-        $this->buriedLifetime  = static::LIFETIME_DISABLED;
+        $this->options    = clone $options;
 
         parent::__construct($name, $jobPluginManager);
     }
 
     /**
-     * @param int $buriedLifetime
+     * @return \SlmQueueDoctrine\Options\DoctrineOptions
      */
-    public function setBuriedLifetime($buriedLifetime)
+    public function getOptions()
     {
-        $this->buriedLifetime = (int) $buriedLifetime;
-    }
-
-    /**
-     * @param int
-     */
-    public function getBuriedLifetime()
-    {
-        return $this->buriedLifetime;
-    }
-
-    /**
-     * @param int $deletedLifetime
-     */
-    public function setDeletedLifetime($deletedLifetime)
-    {
-        $this->deletedLifetime = (int) $deletedLifetime;
-    }
-
-    /**
-     * @param int
-     */
-    public function getDeletedLifetime()
-    {
-        return $this->deletedLifetime;
-    }
-
-    /**
-     * @param int $sleepWhenIdle
-     */
-    public function setSleepWhenIdle($sleepWhenIdle)
-    {
-        $this->sleepWhenIdle = (int) $sleepWhenIdle;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSleepWhenIdle()
-    {
-        return $this->sleepWhenIdle;
+        return $this->options;
     }
 
     /**
@@ -133,7 +65,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         $scheduled = $this->parseOptionsToDateTime($options);
 
-        $this->connection->insert($this->tableName, array(
+        $this->connection->insert($this->options->getTableName(), array(
                 'queue'     => $this->getName(),
                 'status'    => self::STATUS_PENDING,
                 'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
@@ -166,7 +98,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         try {
             $platform = $conn->getDatabasePlatform();
             $select =  'SELECT * ' .
-                'FROM ' . $platform->appendLockHint($this->tableName, LockMode::PESSIMISTIC_WRITE) . ' ' .
+                'FROM ' . $platform->appendLockHint($this->options->getTableName(), LockMode::PESSIMISTIC_WRITE) . ' ' .
                 'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
                 'ORDER BY scheduled ASC '.
                 'LIMIT 1 ' .
@@ -176,7 +108,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 array(Type::SMALLINT, Type::STRING, Type::DATETIME));
 
             if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                $update = 'UPDATE ' . $this->tableName . ' ' .
+                $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
                     'SET status = ?, executed = ? ' .
                     'WHERE id = ? AND status = ?';
 
@@ -197,7 +129,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         if ($row === false) {
-            sleep($this->sleepWhenIdle);
+            sleep($this->options->getSleepWhenIdle());
 
             return null;
         }
@@ -216,10 +148,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function delete(JobInterface $job, array $options = array())
     {
-        if ($this->getDeletedLifetime() === static::LIFETIME_DISABLED) {
-            $this->connection->delete($this->tableName, array('id' => $job->getId()));
+        if ($this->options->getDeletedLifetime() === static::LIFETIME_DISABLED) {
+            $this->connection->delete($this->options->getTableName(), array('id' => $job->getId()));
         } else {
-            $update = 'UPDATE ' . $this->tableName . ' ' .
+            $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
                 'SET status = ?, finished = ? ' .
                 'WHERE id = ? AND status = ?';
 
@@ -240,13 +172,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function bury(JobInterface $job, array $options = array())
     {
-        if ($this->getBuriedLifetime() === static::LIFETIME_DISABLED) {
-            $this->connection->delete($this->tableName, array('id' => $job->getId()));
+        if ($this->options->getBuriedLifetime() === static::LIFETIME_DISABLED) {
+            $this->connection->delete($this->options->getTableName(), array('id' => $job->getId()));
         } else {
             $message = isset($options['message']) ? $options['message'] : null;
             $trace   = isset($options['trace']) ? $options['trace'] : null;
 
-            $update = 'UPDATE ' . $this->tableName . ' ' .
+            $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
                 'SET status = ?, finished = ?, message = ?, trace = ? ' .
                 'WHERE id = ? AND status = ?';
 
@@ -267,7 +199,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         $executedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($executionTime * 60)));
 
-        $update = 'UPDATE ' . $this->tableName . ' ' .
+        $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
             'SET status = ? ' .
             'WHERE executed < ? AND status = ? AND queue = ? AND finished IS NULL';
 
@@ -287,7 +219,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function peek($id)
     {
-        $sql  = 'SELECT * FROM ' . $this->tableName.' WHERE id = ?';
+        $sql  = 'SELECT * FROM ' . $this->options->getTableName().' WHERE id = ?';
         $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
 
         if (!$row) {
@@ -314,7 +246,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         $scheduled = $this->parseOptionsToDateTime($options);
 
-        $update = 'UPDATE ' . $this->tableName . ' ' .
+        $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
             'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
             'WHERE id = ? AND status = ?';
 
@@ -404,20 +336,20 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected function purge()
     {
-        if ($this->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
-            $buriedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->getBuriedLifetime() * 60)));
+        if ($this->options->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
+            $buriedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->options->getBuriedLifetime() * 60)));
 
-            $delete = 'DELETE FROM ' . $this->tableName. ' ' .
+            $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
             $this->connection->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
                 array(Type::DATETIME, Type::INTEGER, Type::STRING));
         }
 
-        if ($this->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
-            $deletedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->getDeletedLifetime() * 60)));
+        if ($this->options->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
+            $deletedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->options->getDeletedLifetime() * 60)));
 
-            $delete = 'DELETE FROM ' . $this->tableName. ' ' .
+            $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
             $this->connection->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
