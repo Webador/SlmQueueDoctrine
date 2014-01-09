@@ -19,7 +19,8 @@ class DoctrineQueueFactory implements FactoryInterface
     {
         $parentLocator = $serviceLocator->getServiceLocator();
 
-        $queuesOptions = $parentLocator->get('SlmQueue\Options\ModuleOptions')->getQueues();
+        $config        = $parentLocator->get('Config');
+        $queuesOptions = $config['slm_queue']['queues'];
         $options       = isset($queuesOptions[$requestedName]) ? $queuesOptions[$requestedName] : array();
         $queueOptions  = new DoctrineOptions($options);
 

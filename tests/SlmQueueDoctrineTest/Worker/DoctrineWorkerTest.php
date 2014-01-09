@@ -32,8 +32,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->queueMock  = $this->getMock('SlmQueueDoctrine\Queue\DoctrineQueueInterface');
         $queueManagerMock = $this->getMock('SlmQueue\Queue\QueuePluginManager');
-        $moduleOptions    = $this->serviceManager->get('SlmQueue\Options\ModuleOptions');
-        $workerOptions    = $moduleOptions->getWorker();
+        $workerOptions    = $this->serviceManager->get('SlmQueue\Options\WorkerOptions');
 
         $this->worker = new DoctrineWorker($queueManagerMock, $workerOptions);
     }
