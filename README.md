@@ -25,23 +25,47 @@ add the following line into your `composer.json` file:
 }
 ```
 
-Then, enable the module by adding `SlmQueueDoctrine` in your application.config.php file. You may also want to
-configure the module: just copy the `slm_queue_doctrine.local.php.dist` (you can find this file in the config
-folder of SlmQueueDoctrine) into your config/autoload folder, and override what you want.
-
-To be written:
-* Configure Doctrine connection
-* Import SQL from data/queue_default.sql
-
+Then, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
 
 Documentation
 -------------
 
 Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentation](https://github.com/juriansluiman/SlmQueue).
 
-### Setting the connection parameters
+### Configuring the connection
 
-Copy the `slm_queue_doctrine.local.php.dist` file to your `config/autoload` folder, and follow the instructions.
+You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here is some more [information](https://github.com/doctrine/DoctrineORMModule#connection-settings).
+
+Connection parameters can be defined in the application configuration:
+
+```
+<?php
+return array(
+    'doctrine' => array(
+        'connection' => array(
+            // default connection name
+            'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => array(
+                    'host'     => 'localhost',
+                    'port'     => '3306',
+                    'user'     => 'username',
+                    'password' => 'password',
+                    'dbname'   => 'database',
+                )
+            )
+        )
+    ),
+);
+```
+
+### Creating the table
+
+You must create the required table that will contain the queue's you may use the schema located in 'data/queue_default.sql'. If you change the table name look at [Configuring queues](./#configuring-queues)
+
+```
+>mysql database < data/queue_default.sql
+```
 
 ### Adding queues
 
@@ -72,25 +96,24 @@ return array(
 ``` 
 ### Configuring queues
 
-These options are set occross all queues
-
-- delete_lifetime (defaults to 0) : How long to keep deleted (successful) jobs (in minutes)
-- buried_lifetime (defaults to 0) : How long to keep buried (failed) jobs (in minutes)
-
 The following options can be set per queue ;
 	
+- connection (defaults to 'doctrine.connection.orm_default') : Name of the registered doctrine connection service
+- table_name (defaults to 'queue_default') : Table name which should be used to store jobs
+- delete_lifetime (defaults to 0) : How long to keep deleted (successful) jobs (in minutes)
+- buried_lifetime (defaults to 0) : How long to keep buried (failed) jobs (in minutes)
 - sleep_when_idle (defaults to 1) : How long show we sleep when no jobs available for processing (in seconds)
 
 
 ```php
 return array(
- 'slm_queue' => array(
-     'queues' => array(
-         'foo' => array(
-             'sleep_when_idle' => 1
-         )
-     )
- )
+  'slm_queue' => array(
+    'queues' => array(
+      'foo' => array(
+        'sleep_when_idle' => 1
+      )
+    )
+  )
 );
  ```
 
@@ -175,3 +198,4 @@ To recover jobs which are in the 'running' state for prolonged period of time (s
 `php index.php queue doctrine <queueName> --recover [--executionTime=]`
 
 *Note : Workers that are processing a job that is being recovered are NOT stopped.*
+)
