@@ -11,6 +11,8 @@ use Zend\Stdlib\AbstractOptions;
 class DoctrineOptions extends AbstractOptions
 {
     /**
+     * Name of the registered doctrine connection service
+     *
      * @var string
      */
     protected $connection = 'doctrine.connection.orm_default';
