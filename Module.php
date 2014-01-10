@@ -13,7 +13,8 @@ class Module implements
     Feature\AutoloaderProviderInterface,
     Feature\ConfigProviderInterface,
     Feature\ConsoleBannerProviderInterface,
-    Feature\ConsoleUsageProviderInterface
+    Feature\ConsoleUsageProviderInterface,
+    Feature\DependencyIndicatorInterface
 {
     /**
      * {@inheritDoc}
