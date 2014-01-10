@@ -3,7 +3,6 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueueDoctrine\Options\DoctrineOptions'  => 'SlmQueueDoctrine\Factory\DoctrineOptionsFactory',
             'SlmQueueDoctrine\Worker\DoctrineWorker'    => 'SlmQueueDoctrine\Factory\DoctrineWorkerFactory',
         )
     ),
@@ -40,13 +39,4 @@ return array(
             ),
         ),
     ),
-
-    'slm_queue' => array(
-        'doctrine' => array(
-            'connection'       => 'doctrine.connection.orm_default',
-            'table_name'       => 'queue_default',
-            'deleted_lifetime' => '60',
-            'buried_lifetime'  => '60'
-        )
-    )
 );

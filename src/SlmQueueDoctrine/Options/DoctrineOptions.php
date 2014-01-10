@@ -11,16 +11,18 @@ use Zend\Stdlib\AbstractOptions;
 class DoctrineOptions extends AbstractOptions
 {
     /**
+     * Name of the registered doctrine connection service
+     *
      * @var string
      */
-    protected $connection;
+    protected $connection = 'doctrine.connection.orm_default';
 
     /**
      * Table name which should be used to store jobs
      *
      * @var string
      */
-    protected $tableName;
+    protected $tableName = 'queue_default';
 
     /**
      * how long to keep deleted (successful) jobs (in minutes)
@@ -35,6 +37,13 @@ class DoctrineOptions extends AbstractOptions
      * @var int
      */
     protected $buriedLifetime = DoctrineQueue::LIFETIME_DISABLED;
+
+    /**
+     * How long show we sleep when no jobs available for processing (in seconds)
+     *
+     * @var int
+     */
+    protected $sleepWhenIdle = 1;
 
     /**
      * Set the name of the doctrine connection service
@@ -107,4 +116,21 @@ class DoctrineOptions extends AbstractOptions
     {
         return $this->tableName;
     }
+
+    /**
+     * @param int $sleepWhenIdle
+     */
+    public function setSleepWhenIdle($sleepWhenIdle)
+    {
+        $this->sleepWhenIdle = $sleepWhenIdle;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSleepWhenIdle()
+    {
+        return $this->sleepWhenIdle;
+    }
+
 }
