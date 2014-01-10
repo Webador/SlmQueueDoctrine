@@ -20,12 +20,12 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zend-config": "2.*",
-        "zendframework/zend-mvc": "2.*",
-        "zendframework/zend-servicemanager": "2.*",
-        "zendframework/zend-stdlib": "2.*",
-        "slm/queue": ">=0.3.0-beta1",
-        "doctrine/doctrine-orm-module":  ">=0.6"
+        "zendframework/zend-config": "~2.2",
+        "zendframework/zend-mvc": "~2.2",
+        "zendframework/zend-servicemanager": "~2.2",
+        "zendframework/zend-stdlib": "~2.2",
+        "slm/queue": "0.3.0-beta1",
+        "doctrine/doctrine-orm-module":  "~0.7"
     },
     "require-dev": {
         "zendframework/zendframework": "2.*"
