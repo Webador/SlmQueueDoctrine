@@ -39,4 +39,18 @@ return array(
             ),
         ),
     ),
+    'slm_queue' => array(
+
+        /**
+         * Listener manager configuration
+         */
+        'listener_manager' => array(
+            'invokables' => array(
+                'SlmQueueDoctrine\Strategy\IdleNapStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\IdleNapStrategy', // required hardwired strategy
+
+                // some idea's for strategies
+                // 'SlmQueueDoctrine\Strategy\ClearEnititManagerStrategy'
+            ),
+        ),
+    )
 );

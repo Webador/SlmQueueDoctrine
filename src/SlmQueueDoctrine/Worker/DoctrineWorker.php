@@ -8,12 +8,24 @@ use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrine\Job\Exception as JobException;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * Worker for Doctrine
  */
 class DoctrineWorker extends AbstractWorker
 {
+    public function configureStrategies(array $strategies = array())
+    {
+        $strategies_required = array(
+            array('name'=>'SlmQueueDoctrine\Strategy\IdleNapStrategy', 'options' => $this->options->toArray()),
+        );
+
+        $strategies = ArrayUtils::merge($strategies, $strategies_required);
+
+        parent::configureStrategies($strategies);
+    }
+
     /**
      * {@inheritDoc}
      */
