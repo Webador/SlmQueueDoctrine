@@ -6,16 +6,29 @@ use SlmQueue\Listener\Strategy\AbstractStrategy;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
-class IdleNapStrategy extends AbstractStrategy {
-
-    protected $sleep_when_idle = 1;
+class IdleNapStrategy extends AbstractStrategy
+{
+    /**
+     * How long should we sleep when the worker is idle before trying again
+     *
+     * @var int
+     */
+    protected $napDuration = 1;
 
     /**
-     * @param int $sleep_when_idle
+     * @param int $napDuration
      */
-    public function setSleepWhenIdle($sleep_when_idle)
+    public function setNapDuration($napDuration)
     {
-        $this->sleep_when_idle = $sleep_when_idle;
+        $this->napDuration = (int) $napDuration;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNapDuration()
+    {
+        return $this->napDuration;
     }
 
     /**
@@ -23,12 +36,15 @@ class IdleNapStrategy extends AbstractStrategy {
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onIdle'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onIdle'));
     }
 
+    /**
+     * @param WorkerEvent $event
+     */
     public function onIdle(WorkerEvent $event)
     {
-        sleep($this->sleep_when_idle);
+        sleep($this->napDuration);
     }
 
 }

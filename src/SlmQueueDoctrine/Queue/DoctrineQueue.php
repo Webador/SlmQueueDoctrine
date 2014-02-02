@@ -129,8 +129,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         if ($row === false) {
-            sleep($this->options->getSleepWhenIdle());
-
             return null;
         }
 

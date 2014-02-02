@@ -40,16 +40,22 @@ return array(
         ),
     ),
     'slm_queue' => array(
-
         /**
-         * Listener manager configuration
+         * Worker options
          */
-        'listener_manager' => array(
+        'strategies' => array(
+            'common' => array(
+                array('name' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy', 'options' => array('nap_duration' => 5)),
+            ),
+            'queues' => array(
+            ),
+        ),
+        /**
+         * Strategy manager configuration
+         */
+        'strategy_manager' => array(
             'invokables' => array(
-                'SlmQueueDoctrine\Strategy\IdleNapStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\IdleNapStrategy', // required hardwired strategy
-
-                // some idea's for strategies
-                // 'SlmQueueDoctrine\Strategy\ClearEnititManagerStrategy'
+                'SlmQueueDoctrine\Strategy\IdleNapStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\IdleNapStrategy',
             ),
         ),
     )
