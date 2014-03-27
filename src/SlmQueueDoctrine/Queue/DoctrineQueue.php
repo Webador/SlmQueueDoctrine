@@ -40,8 +40,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @param string           $name
      * @param JobPluginManager $jobPluginManager
      */
-    public function __construct(Connection $connection, DoctrineOptions $options, $name, JobPluginManager $jobPluginManager)
-    {
+    public function __construct(
+        Connection $connection,
+        DoctrineOptions $options,
+        $name,
+        JobPluginManager $jobPluginManager
+    ) {
         $this->connection = $connection;
         $this->options    = clone $options;
 
@@ -66,19 +70,18 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $scheduled = $this->parseOptionsToDateTime($options);
 
         $this->connection->insert($this->options->getTableName(), array(
-                'queue'     => $this->getName(),
-                'status'    => self::STATUS_PENDING,
-                'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
-                'data'      => $job->jsonSerialize(),
-                'scheduled' => $scheduled
-            ), array(
-                Type::STRING,
-                Type::SMALLINT,
-                Type::DATETIME,
-                Type::TEXT,
-                Type::DATETIME,
-            )
-        );
+            'queue'     => $this->getName(),
+            'status'    => self::STATUS_PENDING,
+            'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+            'data'      => $job->jsonSerialize(),
+            'scheduled' => $scheduled
+        ), array(
+            Type::STRING,
+            Type::SMALLINT,
+            Type::DATETIME,
+            Type::TEXT,
+            Type::DATETIME,
+        ));
 
         $id = $this->connection->lastInsertId();
         $job->setId($id);
@@ -104,8 +107,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'LIMIT 1 ' .
                 $platform->getWriteLockSQL();
 
-            $stmt = $conn->executeQuery($select, array(static::STATUS_PENDING, $this->getName(), new DateTime),
-                array(Type::SMALLINT, Type::STRING, Type::DATETIME));
+            $stmt = $conn->executeQuery(
+                $select,
+                array(static::STATUS_PENDING, $this->getName(), new DateTime),
+                array(Type::SMALLINT, Type::STRING, Type::DATETIME)
+            );
 
             if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
