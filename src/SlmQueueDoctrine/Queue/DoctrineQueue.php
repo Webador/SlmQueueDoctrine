@@ -118,7 +118,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     'SET status = ?, executed = ? ' .
                     'WHERE id = ? AND status = ?';
 
-                $rows = $conn->executeUpdate($update,
+                $rows = $conn->executeUpdate(
+                    $update,
                     array(static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING),
                     array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
                 );
@@ -162,7 +163,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'SET status = ?, finished = ? ' .
                 'WHERE id = ? AND status = ?';
 
-            $rows = $this->connection->executeUpdate($update,
+            $rows = $this->connection->executeUpdate(
+                $update,
                 array(static::STATUS_DELETED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $job->getId(), static::STATUS_RUNNING),
                 array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
             );
@@ -190,7 +192,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'SET status = ?, finished = ?, message = ?, trace = ? ' .
                 'WHERE id = ? AND status = ?';
 
-            $rows = $this->connection->executeUpdate($update,
+            $rows = $this->connection->executeUpdate(
+                $update,
                 array(static::STATUS_BURIED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $message, $trace, $job->getId(), static::STATUS_RUNNING),
                 array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT)
             );
@@ -212,7 +215,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'SET status = ? ' .
             'WHERE executed < ? AND status = ? AND queue = ? AND finished IS NULL';
 
-        $rows = $this->connection->executeUpdate($update,
+        $rows = $this->connection->executeUpdate(
+            $update,
             array(static::STATUS_PENDING, $executedLifetime, static::STATUS_RUNNING, $this->getName()),
             array(Type::SMALLINT, Type::DATETIME, Type::SMALLINT, Type::STRING));
 
@@ -259,7 +263,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
             'WHERE id = ? AND status = ?';
 
-        $rows = $this->connection->executeUpdate($update,
+        $rows = $this->connection->executeUpdate(
+            $update,
             array(static::STATUS_PENDING, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $scheduled, $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
             array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
         );
