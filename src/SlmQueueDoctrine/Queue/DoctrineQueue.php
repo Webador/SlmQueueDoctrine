@@ -120,7 +120,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
                 $rows = $conn->executeUpdate($update,
                     array(static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING),
-                    array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
+                    array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
+                );
 
                 if ($rows != 1) {
                     throw new Exception\LogicException("Race-condition detected while updating item in queue.");
@@ -163,7 +164,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $rows = $this->connection->executeUpdate($update,
                 array(static::STATUS_DELETED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $job->getId(), static::STATUS_RUNNING),
-                array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT));
+                array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
+            );
 
             if ($rows != 1) {
                 throw new Exception\LogicException("Race-condition detected while updating item in queue.");
@@ -190,7 +192,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $rows = $this->connection->executeUpdate($update,
                 array(static::STATUS_BURIED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $message, $trace, $job->getId(), static::STATUS_RUNNING),
-                array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT));
+                array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT)
+            );
 
             if ($rows != 1) {
                 throw new Exception\LogicException("Race-condition detected while updating item in queue.");
@@ -295,8 +298,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         if (isset($options['scheduled'])) {
             switch (true) {
                 case is_numeric($options['scheduled']):
-                    $scheduled = new DateTime(sprintf("@%d", (int) $options['scheduled']),
-                        new DateTimeZone(date_default_timezone_get()));
+                    $scheduled = new DateTime(
+                        sprintf("@%d", (int) $options['scheduled']),
+                        new DateTimeZone(date_default_timezone_get())
+                    );
                     break;
                 case is_string($options['scheduled']):
                     $scheduled = new DateTime($options['scheduled'], new DateTimeZone(date_default_timezone_get()));
@@ -348,8 +353,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
-            $this->connection->executeUpdate($delete, array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
-                array(Type::DATETIME, Type::INTEGER, Type::STRING));
+            $this->connection->executeUpdate(
+                $delete,
+                array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
+                array(Type::DATETIME, Type::INTEGER, Type::STRING)
+            );
         }
 
         if ($this->options->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
@@ -358,8 +366,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
-            $this->connection->executeUpdate($delete, array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
-                array(Type::DATETIME, Type::INTEGER, Type::STRING));
+            $this->connection->executeUpdate(
+                $delete,
+                array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
+                array(Type::DATETIME, Type::INTEGER, Type::STRING)
+            );
         }
     }
 }
