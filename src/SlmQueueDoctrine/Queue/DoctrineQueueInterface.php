@@ -1,6 +1,7 @@
 <?php
 
 namespace SlmQueueDoctrine\Queue;
+
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Job\JobInterface;
 

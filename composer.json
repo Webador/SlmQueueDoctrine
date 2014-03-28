@@ -29,7 +29,9 @@
         "doctrine/doctrine-orm-module":  "~0.7"
     },
     "require-dev": {
-        "zendframework/zendframework": "2.*"
+        "zendframework/zendframework": "2.*",
+        "phpunit/phpunit": "~3.7",
+        "squizlabs/php_codesniffer": "1.5.*"
     },
     "extra": {
         "branch-alias": {
