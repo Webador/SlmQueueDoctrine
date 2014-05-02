@@ -38,7 +38,7 @@ You need to register a doctrine connection which SlmQueueDoctrine will use to ac
 
 Connection parameters can be defined in the application configuration:
 
-```
+```php
 <?php
 return array(
     'doctrine' => array(
@@ -135,7 +135,7 @@ Valid options are:
 	* DateTimeInterval instance
 
 Examples:
-
+```php
 	// scheduled for execution asap
     $queue->push($job);
 
@@ -169,6 +169,7 @@ Examples:
     $queue->push($job, array(
         'delay' => new DateInterval("PT200S"))
     ));
+```
 
 
 ### Worker actions
