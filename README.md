@@ -38,7 +38,7 @@ You need to register a doctrine connection which SlmQueueDoctrine will use to ac
 
 Connection parameters can be defined in the application configuration:
 
-```
+```php
 <?php
 return array(
     'doctrine' => array(
