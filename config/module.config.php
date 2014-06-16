@@ -3,7 +3,7 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueueDoctrine\Worker\DoctrineWorker'    => 'SlmQueueDoctrine\Factory\DoctrineWorkerFactory',
+            'SlmQueueDoctrine\Worker\DoctrineWorker'    => 'SlmQueue\Factory\WorkerFactory',
         )
     ),
 
