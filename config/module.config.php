@@ -45,7 +45,8 @@ return array(
          */
         'strategies' => array(
             'common' => array(
-                array('name' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy', 'options' => array('nap_duration' => 5)),
+                array('name' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy', 'options' => array('nap_duration' => 1)),
+                array('name' => 'SlmQueueDoctrine\Strategy\ClearOMStrategy')
             ),
             'queues' => array(
             ),
@@ -56,7 +57,8 @@ return array(
         'strategy_manager' => array(
             'invokables' => array(
                 'SlmQueueDoctrine\Strategy\IdleNapStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\IdleNapStrategy',
-            ),
+                'SlmQueueDoctrine\Strategy\ClearOMStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\ClearOMStrategy'
+            )
         ),
     )
 );
