@@ -59,13 +59,16 @@ return array(
 );
 ```
 
-### Creating the table
+### Creating the table from SQL file
 
 You must create the required table that will contain the queue's you may use the schema located in 'data/queue_default.sql'. If you change the table name look at [Configuring queues](./#configuring-queues)
 
 ```
 >mysql database < data/queue_default.sql
 ```
+### Creating the table from Doctrine Entity
+There is an alternative way to create 'queue_default' table in your database by copying Doctrine Entity 'date/DefaultQueue.php' to your entity folder ('Application\Entity' in our example) and executing Doctrine's 'orm:schema-tool:update' command which should create the table for you. Notice that DefaultQueue entity is only used for table creation and is not used by this module internally.
+
 
 ### Adding queues
 
