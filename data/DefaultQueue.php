@@ -172,7 +172,7 @@ class DefaultQueue
      */
     public function setCreated($created)
     {
-        $this->created = $created;
+        $this->created = clone $created;
 
         return $this;
     }
@@ -184,7 +184,7 @@ class DefaultQueue
      */
     public function getCreated()
     {
-        return $this->created;
+        return clone $this->created;
     }
 
     /**
@@ -195,7 +195,7 @@ class DefaultQueue
      */
     public function setScheduled($scheduled)
     {
-        $this->scheduled = $scheduled;
+        $this->scheduled = clone $scheduled;
 
         return $this;
     }
@@ -207,7 +207,7 @@ class DefaultQueue
      */
     public function getScheduled()
     {
-        return $this->scheduled;
+        return clone $this->scheduled;
     }
 
     /**
@@ -218,7 +218,7 @@ class DefaultQueue
      */
     public function setExecuted($executed)
     {
-        $this->executed = $executed;
+        $this->executed = clone $executed;
 
         return $this;
     }
@@ -230,7 +230,7 @@ class DefaultQueue
      */
     public function getExecuted()
     {
-        return $this->executed;
+        return clone $this->executed;
     }
 
     /**
@@ -241,7 +241,7 @@ class DefaultQueue
      */
     public function setFinished($finished)
     {
-        $this->finished = $finished;
+        $this->finished = clone $finished;
 
         return $this;
     }
@@ -253,7 +253,7 @@ class DefaultQueue
      */
     public function getFinished()
     {
-        return $this->finished;
+        return clone $this->finished;
     }
 
     /**
