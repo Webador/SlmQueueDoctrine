@@ -3,6 +3,7 @@
 namespace Application\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * DefaultQueue
@@ -170,7 +171,7 @@ class DefaultQueue
      * @param \DateTime $created
      * @return DefaultQueue
      */
-    public function setCreated($created)
+    public function setCreated(DateTime $created)
     {
         $this->created = clone $created;
 
@@ -193,7 +194,7 @@ class DefaultQueue
      * @param \DateTime $scheduled
      * @return DefaultQueue
      */
-    public function setScheduled($scheduled)
+    public function setScheduled(DateTime $scheduled)
     {
         $this->scheduled = clone $scheduled;
 
@@ -216,7 +217,7 @@ class DefaultQueue
      * @param \DateTime $executed
      * @return DefaultQueue
      */
-    public function setExecuted($executed)
+    public function setExecuted(DateTime $executed)
     {
         $this->executed = clone $executed;
 
@@ -239,7 +240,7 @@ class DefaultQueue
      * @param \DateTime $finished
      * @return DefaultQueue
      */
-    public function setFinished($finished)
+    public function setFinished(DateTime $finished)
     {
         $this->finished = clone $finished;
 
