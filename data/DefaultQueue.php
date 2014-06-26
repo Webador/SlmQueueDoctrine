@@ -173,7 +173,11 @@ class DefaultQueue
      */
     public function setCreated(DateTime $created)
     {
-        $this->created = clone $created;
+        if($created){
+            $this->created = clone $created;
+        }else{
+            $this->created = null;
+        }
 
         return $this;
     }
@@ -185,7 +189,11 @@ class DefaultQueue
      */
     public function getCreated()
     {
-        return clone $this->created;
+        if($this->created){
+            return clone $this->created;
+        }
+        
+        return null;
     }
 
     /**
@@ -196,7 +204,11 @@ class DefaultQueue
      */
     public function setScheduled(DateTime $scheduled)
     {
-        $this->scheduled = clone $scheduled;
+        if($scheduled){
+            $this->scheduled = clone $scheduled;
+        }else{
+            $this->scheduled = null;
+        }
 
         return $this;
     }
@@ -208,7 +220,11 @@ class DefaultQueue
      */
     public function getScheduled()
     {
-        return clone $this->scheduled;
+        if($this->scheduled){
+            return clone $this->scheduled;
+        }
+        
+        return null;
     }
 
     /**
@@ -219,7 +235,11 @@ class DefaultQueue
      */
     public function setExecuted(DateTime $executed)
     {
-        $this->executed = clone $executed;
+        if($executed){
+            $this->executed = clone $executed;
+        }else{
+            $this->executed = null; 
+        }
 
         return $this;
     }
@@ -231,7 +251,11 @@ class DefaultQueue
      */
     public function getExecuted()
     {
-        return clone $this->executed;
+        if($this->executed){
+            return clone $this->executed;
+        }
+        
+        return null;
     }
 
     /**
@@ -242,7 +266,11 @@ class DefaultQueue
      */
     public function setFinished(DateTime $finished)
     {
-        $this->finished = clone $finished;
+        if($finished){
+            $this->finished = clone $finished;
+        } else{
+            $this->finished = null;  
+        }
 
         return $this;
     }
@@ -254,7 +282,11 @@ class DefaultQueue
      */
     public function getFinished()
     {
-        return clone $this->finished;
+        if($this->finished){
+            return clone $this->finished;
+        }
+        
+        return null;
     }
 
     /**
