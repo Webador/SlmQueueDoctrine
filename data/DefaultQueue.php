@@ -227,7 +227,7 @@ class DefaultQueue
      */
     public function setExecuted(DateTime $executed = null)
     {
-        $this->executed = ($executed ? clone $executed : null);
+        $this->executed = $executed ? clone $executed : null;
 
         return $this;
     }
@@ -254,7 +254,7 @@ class DefaultQueue
      */
     public function setFinished(DateTime $finished = null)
     {
-        $this->finished = ($finished ? clone $finished : null);
+        $this->finished = $finished ? clone $finished : null;
 
         return $this;
     }
