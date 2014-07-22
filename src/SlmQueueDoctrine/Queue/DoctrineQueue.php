@@ -25,6 +25,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     const LIFETIME_DISABLED  = 0;
     const LIFETIME_UNLIMITED = -1;
 
+    const DATABASE_PLATFORM_POSTGRES = 'postgresql';
+
     /**
      * Options for this queue
      *
@@ -83,7 +85,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             Type::DATETIME,
         ));
 
-        $id = $this->connection->lastInsertId();
+        if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
+            $id = $this->connection->lastInsertId($this->options->getTableName() . '_id_seq');
+        } else {
+            $id = $this->connection->lastInsertId();
+        }
+
         $job->setId($id);
     }
 
