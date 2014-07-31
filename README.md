@@ -170,7 +170,7 @@ Examples:
 
     // scheduled for execution at now + 300 seconds
     $queue->push($job, array(
-        'delay' => new DateInterval("PT200S"))
+        'delay' => new DateInterval("PT300S"))
     ));
 ```
 
