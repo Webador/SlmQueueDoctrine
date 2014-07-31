@@ -37,7 +37,7 @@ class DefaultQueue
     private $data;
 
     /**
-     * @var string
+     * @var int
      *
      * @ORM\Column(name="status", type="smallint", length=1, nullable=false)
      */
