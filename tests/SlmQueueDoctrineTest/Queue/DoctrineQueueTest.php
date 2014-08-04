@@ -26,8 +26,6 @@ class DoctrineQueueTest extends TestCase
         $this->createDb();
 
         $options     = new DoctrineOptions();
-        // we want tests to run as fast as possible
-        $options->setSleepWhenIdle(0);
 
         $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), $options, 'some-queue-name',
             ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
@@ -54,44 +52,6 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->getOptions()->setDeletedLifetime(10);
         $this->assertEquals(10, $this->queue->getOptions()->getDeletedLifetime());
-    }
-
-    public function testSleepWhenIdleOption()
-    {
-        // reset queue with real defaults
-        $this->queue->getOptions()->setSleepWhenIdle(1);
-
-        // default
-        $this->assertEquals(1, $this->queue->getOptions()->getSleepWhenIdle());
-
-        $this->queue->getOptions()->setSleepWhenIdle(2);
-        $this->assertEquals(2, $this->queue->getOptions()->getSleepWhenIdle());
-
-        $this->queue->getOptions()->setSleepWhenIdle(1);
-        $start = microtime(true);
-        $this->queue->pop();
-        $this->queue->pop();
-        $this->queue->pop();
-
-        $this->assertTrue((microtime(true) - $start) >= ($this->queue->getOptions()->getSleepWhenIdle() * 3),
-            "When no job is returned pop should sleep for a while");
-
-        $job = new SimpleJob();
-        $this->queue->push($job);
-        $this->queue->push($job);
-        $this->queue->push($job);
-        $this->queue->push($job);
-        $this->queue->push($job);
-
-        $start = microtime(true);
-        $this->queue->pop();
-        $this->queue->pop();
-        $this->queue->pop();
-        $this->queue->pop();
-        $this->queue->pop();
-
-        $this->assertTrue(microtime(true) - $start < $this->queue->getOptions()->getSleepWhenIdle(),
-            "When jobs are returned this should be as quick as possible");
     }
 
     public function testJobCanBePushed()

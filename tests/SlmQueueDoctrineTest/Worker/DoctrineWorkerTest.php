@@ -32,9 +32,8 @@ class DoctrineWorkerTest extends TestCase
 
         $this->queueMock  = $this->getMock('SlmQueueDoctrine\Queue\DoctrineQueueInterface');
         $queueManagerMock = $this->getMock('SlmQueue\Queue\QueuePluginManager');
-        $workerOptions    = $this->serviceManager->get('SlmQueue\Options\WorkerOptions');
 
-        $this->worker = new DoctrineWorker($queueManagerMock, $workerOptions);
+        $this->worker = new DoctrineWorker($queueManagerMock, array());
     }
 
     public function testAssertJobIsDeletedIfNoExceptionIsThrown()
