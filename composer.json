@@ -19,13 +19,19 @@
             "homepage": "http://www.goalio.de"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/basz/SlmQueue.git"
+        }
+    ],
     "require": {
         "php": ">=5.3.3",
         "zendframework/zend-config": "~2.2",
         "zendframework/zend-mvc": "~2.2",
         "zendframework/zend-servicemanager": "~2.2",
         "zendframework/zend-stdlib": "~2.2",
-        "slm/queue": "0.3.*",
+        "slm/queue": "dev-feature/worker-listener as 0.4.0",
         "doctrine/doctrine-orm-module":  "~0.7"
     },
     "require-dev": {
