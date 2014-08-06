@@ -75,7 +75,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'queue'     => $this->getName(),
             'status'    => self::STATUS_PENDING,
             'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
-            'data'      => $job->jsonSerialize(),
+            'data'      => $this->serializeJob($job),
             'scheduled' => $scheduled
         ), array(
             Type::STRING,
@@ -147,11 +147,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             return null;
         }
 
-        $data = json_decode($row['data'], true);
         // Add job ID to meta data
-        $data['metadata']['id'] = $row['id'];
-
-        return $this->createJob($data['class'], $data['content'], $data['metadata']);
+        return $this->unserializeJob($row['data'], array('id' => $row['id']));
     }
 
     /**
@@ -244,11 +241,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
-        $data = json_decode($row['data'], true);
         // Add job ID to meta data
-        $data['metadata']['id'] = $row['id'];
-
-        return $this->createJob($data['class'], $data['content'], $data['metadata']);
+        return $this->unserializeJob($row['data'], array('id' => $row['id']));
     }
 
     /**
@@ -270,7 +264,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         $rows = $this->connection->executeUpdate(
             $update,
-            array(static::STATUS_PENDING, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $scheduled, $job->jsonSerialize(), $job->getId(), static::STATUS_RUNNING),
+            array(static::STATUS_PENDING, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $scheduled, $this->serializeJob($job), $job->getId(), static::STATUS_RUNNING),
             array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
         );
 
