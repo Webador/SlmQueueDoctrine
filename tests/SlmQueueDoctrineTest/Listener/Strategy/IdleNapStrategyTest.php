@@ -40,7 +40,7 @@ class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
         $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_IDLE, array($this->listener, 'onIdle'));
+            ->with(WorkerEvent::EVENT_PROCESS_IDLE, array($this->listener, 'onIdle'), 1);
 
         $this->listener->attach($evm);
     }

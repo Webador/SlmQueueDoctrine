@@ -6,6 +6,7 @@ use PHPUnit_Framework_TestCase;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueDoctrine\Listener\Strategy\ClearOMStrategy;
 use SlmQueueDoctrineTest\Asset\OMJob;
+use SlmQueueDoctrineTest\Asset\SimpleJob;
 
 class ClearOMStrategyTest extends PHPUnit_Framework_TestCase
 {
@@ -14,9 +15,25 @@ class ClearOMStrategyTest extends PHPUnit_Framework_TestCase
      */
     protected $listener;
 
+    /**
+     * @var WorkerEvent
+     */
+    protected $event;
+
     public function setUp()
     {
+        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
+
+        $ev     = new WorkerEvent($worker, $queue);
+        $job    = new SimpleJob();
+
+        $ev->setJob($job);
+
         $this->listener = new ClearOMStrategy();
+        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
@@ -30,26 +47,22 @@ class ClearOMStrategyTest extends PHPUnit_Framework_TestCase
         $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB_PRE, array($this->listener, 'onClear'));
+            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onClear'), -1000);
 
         $this->listener->attach($evm);
     }
 
     public function testOnClearHandler()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $ev    = new WorkerEvent($queue);
         $job   = new OMJob();
         $om    = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
 
         $job->setObjectManager($om);
-        $ev->setJob($job);
+
+        $this->event->setJob($job);
 
         $om->expects($this->once())->method('clear');
 
-        $this->listener->onClear($ev);
+        $this->listener->onClear($this->event);
     }
 }
