@@ -44,7 +44,7 @@ return array(
          * Worker options
          */
         'strategies' => array(
-            'common' => array(
+            'default' => array(
                 array('name' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy', 'options' => array('nap_duration' => 1)),
                 array('name' => 'SlmQueueDoctrine\Strategy\ClearOMStrategy')
             ),
