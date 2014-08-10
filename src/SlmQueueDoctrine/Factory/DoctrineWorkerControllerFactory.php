@@ -19,6 +19,9 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
         $worker = $serviceLocator->getServiceLocator()
                                  ->get('SlmQueueDoctrine\Worker\DoctrineWorker');
 
-        return new DoctrineWorkerController($worker);
+        $queuePluginManager = $serviceLocator->getServiceLocator()
+                                             ->get('SlmQueue\Queue\QueuePluginManager');
+
+        return new DoctrineWorkerController($worker, $queuePluginManager);
     }
 }
