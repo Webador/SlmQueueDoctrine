@@ -36,7 +36,11 @@ class IdleNapStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onIdle'));
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_IDLE,
+            array($this, 'onIdle'),
+            1
+        );
     }
 
     /**
