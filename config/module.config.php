@@ -45,8 +45,8 @@ return array(
          */
         'strategies' => array(
             'default' => array(
-                array('name' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy', 'options' => array('nap_duration' => 1)),
-                array('name' => 'SlmQueueDoctrine\Strategy\ClearOMStrategy')
+                'SlmQueueDoctrine\Strategy\IdleNapStrategy' => array('nap_duration' => 1),
+                'SlmQueueDoctrine\Strategy\ClearOMStrategy'
             ),
             'queues' => array(
             ),
