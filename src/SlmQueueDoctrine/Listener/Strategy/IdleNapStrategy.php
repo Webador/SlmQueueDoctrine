@@ -50,5 +50,4 @@ class IdleNapStrategy extends AbstractStrategy
     {
         sleep($this->napDuration);
     }
-
 }
