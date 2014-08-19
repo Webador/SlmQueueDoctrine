@@ -56,8 +56,8 @@ return array(
          */
         'strategy_manager' => array(
             'invokables' => array(
-                'SlmQueueDoctrine\Strategy\IdleNapStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\IdleNapStrategy',
-                'SlmQueueDoctrine\Strategy\ClearOMStrategy'   => 'SlmQueueDoctrine\Listener\Strategy\ClearOMStrategy'
+                'SlmQueueDoctrine\Strategy\IdleNapStrategy'   => 'SlmQueueDoctrine\Strategy\IdleNapStrategy',
+                'SlmQueueDoctrine\Strategy\ClearOMStrategy'   => 'SlmQueueDoctrine\Strategy\ClearOMStrategy'
             )
         ),
     )

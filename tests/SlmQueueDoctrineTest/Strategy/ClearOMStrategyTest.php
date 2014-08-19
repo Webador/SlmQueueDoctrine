@@ -4,7 +4,7 @@ namespace SlmQueueDoctrineTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Worker\WorkerEvent;
-use SlmQueueDoctrine\Listener\Strategy\ClearOMStrategy;
+use SlmQueueDoctrine\Strategy\ClearOMStrategy;
 use SlmQueueDoctrineTest\Asset\OMJob;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 
@@ -38,7 +38,7 @@ class ClearOMStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Listener\Strategy\AbstractStrategy', $this->listener);
+        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
     }
 
 

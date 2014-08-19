@@ -3,7 +3,7 @@
 namespace SlmQueueDoctrineTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Listener\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueueDoctrineTest\Asset;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;

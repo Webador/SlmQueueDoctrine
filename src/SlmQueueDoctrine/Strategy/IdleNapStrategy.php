@@ -1,8 +1,8 @@
 <?php
 
-namespace SlmQueueDoctrine\Listener\Strategy;
+namespace SlmQueueDoctrine\Strategy;
 
-use SlmQueue\Listener\Strategy\AbstractStrategy;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 

@@ -4,7 +4,7 @@ namespace SlmQueueDoctrineTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Worker\WorkerEvent;
-use SlmQueueDoctrine\Listener\Strategy\IdleNapStrategy;
+use SlmQueueDoctrine\Strategy\IdleNapStrategy;
 
 class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Listener\Strategy\AbstractStrategy', $this->listener);
+        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
     }
 
     public function testNapDurationDefault()
