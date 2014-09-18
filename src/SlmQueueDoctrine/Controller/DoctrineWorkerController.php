@@ -22,9 +22,7 @@ class DoctrineWorkerController extends AbstractWorkerController
         $queueName     = $this->params('queue');
         $executionTime = $this->params('executionTime', 0);
 
-        /** @var $queueManager \SlmQueue\Queue\QueuePluginManager */
-        $queueManager = $this->getServiceLocator()->get('SlmQueue\Queue\QueuePluginManager');
-        $queue        = $queueManager->get($queueName);
+        $queue         = $this->queuePluginManager->get($queueName);
 
         if (!$queue instanceof DoctrineQueueInterface) {
             return sprintf("\nQueue % does not support the recovering of job\n\n", $queueName);
