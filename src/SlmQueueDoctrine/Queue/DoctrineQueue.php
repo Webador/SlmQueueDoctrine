@@ -372,31 +372,64 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     protected function purge()
     {
         if ($this->options->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
+            $done    = false;
+            $retry   = 0;
             $options = array('delay' => - ($this->options->getBuriedLifetime() * 60));
+
             $buriedLifetime = $this->parseOptionsToDateTime($options);
 
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
-            $this->connection->executeUpdate(
-                $delete,
-                array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
-                array(Type::DATETIME, Type::INTEGER, Type::STRING)
-            );
+            while (!$done and $retry < 5) {
+                try {
+                    $this->connection->beginTransaction();
+
+                    $this->connection->executeUpdate(
+                        $delete,
+                        array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
+                        array(Type::DATETIME, Type::INTEGER, Type::STRING)
+                    );
+
+                    $this->connection->commit();
+                    $done = true;
+                } catch (DBALException $e) {
+                    $this->connection->rollBack();
+                    $retry++;
+                    usleep(250);
+                }
+            }
         }
 
         if ($this->options->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
+            $done  = false;
+            $retry = 0;
+
             $options = array('delay' => - ($this->options->getDeletedLifetime() * 60));
             $deletedLifetime = $this->parseOptionsToDateTime($options);
 
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
-            $this->connection->executeUpdate(
-                $delete,
-                array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
-                array(Type::DATETIME, Type::INTEGER, Type::STRING)
-            );
+
+            while (!$done and $retry < 5) {
+                try {
+                    $this->connection->beginTransaction();
+
+                    $this->connection->executeUpdate(
+                        $delete,
+                        array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
+                        array(Type::DATETIME, Type::INTEGER, Type::STRING)
+                    );
+
+                    $this->connection->commit();
+                    $done = true;
+                } catch (DBALException $e) {
+                    $this->connection->rollBack();
+                    $retry++;
+                    usleep(250);
+                }
+            }
         }
     }
 }
