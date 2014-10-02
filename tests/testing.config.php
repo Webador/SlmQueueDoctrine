@@ -20,7 +20,7 @@ return array(
     'slm_queue' => array(
         'worker_strategies' => array(
             'default' => array(
-                'SlmQueue\Strategies\MaxRunsStrategy' => array('max_runs' => 1)
+                'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 1)
             )
         ),
         'queues' => array(
