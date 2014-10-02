@@ -398,6 +398,8 @@ class DoctrineQueueTest extends TestCase
 
     public function testPeek()
     {
+        $this->markTestSkipped('Test skipped until SlmQueue:0.5.0 (see https://github.com/juriansluiman/SlmQueue/pull/111)');
+
         $job = new SimpleJob();
         $this->queue->push($job);
 
