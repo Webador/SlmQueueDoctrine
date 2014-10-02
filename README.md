@@ -105,7 +105,6 @@ The following options can be set per queue ;
 - table_name (defaults to 'queue_default') : Table name which should be used to store jobs
 - delete_lifetime (defaults to 0) : How long to keep deleted (successful) jobs (in minutes)
 - buried_lifetime (defaults to 0) : How long to keep buried (failed) jobs (in minutes)
-- sleep_when_idle (defaults to 1) : How long show we sleep when no jobs available for processing (in seconds)
 
 
 ```php
@@ -113,13 +112,45 @@ return array(
   'slm_queue' => array(
     'queues' => array(
       'foo' => array(
-        'sleep_when_idle' => 1
+        // ...
       )
     )
   )
 );
  ```
+ 
+Provided Worker Strategies
+--------------------------
 
+In addition to the provided strategies by [SlmQueue](https://github.com/juriansluiman/SlmQueue/blob/master/docs/6.Events.md) SlmQueueDoctrine comes with these strategies;
+
+#### ClearOMStrategy
+
+This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the ObjectManagerAwareInterface.
+
+listens to:
+
+- `process` event at priority -1000
+
+options:
+
+- none
+
+This strategy is enabled by default.
+
+#### IdleNapStrategy
+
+When no jobs are available in the queue this strategy will make the worker wait for a specific amount time before quering the database again.
+
+listens to:
+
+- `idle` event at priority 1
+
+options:
+
+- `nap_duration` defaults to 1 (second)
+
+This strategy is enabled by default.
 
 ### Operations on queues
 
