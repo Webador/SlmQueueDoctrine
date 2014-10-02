@@ -2,7 +2,6 @@
 
 namespace SlmQueueDoctrine\Strategy;
 
-use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\WorkerEvent;

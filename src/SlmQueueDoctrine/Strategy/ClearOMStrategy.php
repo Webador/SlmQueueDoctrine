@@ -33,5 +33,4 @@ class ClearOMStrategy extends AbstractStrategy
             $job->getObjectManager()->clear();
         }
     }
-
 }

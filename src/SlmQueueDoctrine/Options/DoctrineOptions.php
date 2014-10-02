@@ -109,5 +109,4 @@ class DoctrineOptions extends AbstractOptions
     {
         return $this->tableName;
     }
-
 }

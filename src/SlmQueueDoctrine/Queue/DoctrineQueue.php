@@ -167,7 +167,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $rows = $this->connection->executeUpdate(
                 $update,
-                array(static::STATUS_DELETED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $job->getId(), static::STATUS_RUNNING),
+                array(
+                    static::STATUS_DELETED,
+                    new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+                    $job->getId(),
+                    static::STATUS_RUNNING
+                ),
                 array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
             );
 
@@ -196,7 +201,14 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $rows = $this->connection->executeUpdate(
                 $update,
-                array(static::STATUS_BURIED, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $message, $trace, $job->getId(), static::STATUS_RUNNING),
+                array(
+                    static::STATUS_BURIED,
+                    new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+                    $message,
+                    $trace,
+                    $job->getId(),
+                    static::STATUS_RUNNING
+                ),
                 array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT)
             );
 
@@ -220,7 +232,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $rows = $this->connection->executeUpdate(
             $update,
             array(static::STATUS_PENDING, $executedLifetime, static::STATUS_RUNNING, $this->getName()),
-            array(Type::SMALLINT, Type::DATETIME, Type::SMALLINT, Type::STRING));
+            array(Type::SMALLINT, Type::DATETIME, Type::SMALLINT, Type::STRING)
+        );
 
         return $rows;
     }
@@ -264,7 +277,14 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         $rows = $this->connection->executeUpdate(
             $update,
-            array(static::STATUS_PENDING, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $scheduled, $this->serializeJob($job), $job->getId(), static::STATUS_RUNNING),
+            array(
+                static::STATUS_PENDING,
+                new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+                $scheduled,
+                $this->serializeJob($job),
+                $job->getId(),
+                static::STATUS_RUNNING
+            ),
             array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
         );
 
@@ -352,7 +372,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     protected function purge()
     {
         if ($this->options->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
-            $buriedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->options->getBuriedLifetime() * 60)));
+            $options = array('delay' => - ($this->options->getBuriedLifetime() * 60));
+            $buriedLifetime = $this->parseOptionsToDateTime($options);
 
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
@@ -365,7 +386,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         if ($this->options->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
-            $deletedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($this->options->getDeletedLifetime() * 60)));
+            $options = array('delay' => - ($this->options->getDeletedLifetime() * 60));
+            $deletedLifetime = $this->parseOptionsToDateTime($options);
 
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
