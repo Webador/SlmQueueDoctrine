@@ -2,8 +2,11 @@
 
 namespace SlmQueueDoctrine\Strategy;
 
+use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use SlmQueue\Strategy\AbstractStrategy;
+use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\WorkerEvent;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Zend\EventManager\EventManagerInterface;
 
 class IdleNapStrategy extends AbstractStrategy
@@ -48,6 +51,11 @@ class IdleNapStrategy extends AbstractStrategy
      */
     public function onIdle(WorkerEvent $event)
     {
-        sleep($this->napDuration);
+        /** @var AbstractWorker $worker */
+        $worker = $event->getTarget();
+
+        if ($worker instanceof DoctrineWorker) {
+            sleep($this->napDuration);
+        }
     }
 }
