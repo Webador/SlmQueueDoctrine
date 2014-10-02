@@ -124,7 +124,7 @@ Provided Worker Strategies
 
 In addition to the provided strategies by [SlmQueue](https://github.com/juriansluiman/SlmQueue/blob/master/docs/6.Events.md) SlmQueueDoctrine comes with these strategies;
 
-#### ClearOMStrategy
+#### ClearObjectManagerStrategy
 
 This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the ObjectManagerAwareInterface.
 

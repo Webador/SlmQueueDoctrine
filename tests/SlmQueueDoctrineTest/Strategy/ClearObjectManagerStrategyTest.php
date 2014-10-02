@@ -4,14 +4,14 @@ namespace SlmQueueDoctrineTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Worker\WorkerEvent;
-use SlmQueueDoctrine\Strategy\ClearOMStrategy;
+use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
 use SlmQueueDoctrineTest\Asset\OMJob;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 
-class ClearOMStrategyTest extends PHPUnit_Framework_TestCase
+class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var ClearOMStrategy
+     * @var ClearObjectManagerStrategy
      */
     protected $listener;
 
@@ -32,7 +32,7 @@ class ClearOMStrategyTest extends PHPUnit_Framework_TestCase
 
         $ev->setJob($job);
 
-        $this->listener = new ClearOMStrategy();
+        $this->listener = new ClearObjectManagerStrategy();
         $this->event    = $ev;
     }
 

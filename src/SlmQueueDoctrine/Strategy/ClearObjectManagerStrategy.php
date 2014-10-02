@@ -7,7 +7,7 @@ use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
-class ClearOMStrategy extends AbstractStrategy
+class ClearObjectManagerStrategy extends AbstractStrategy
 {
     /**
      * {@inheritDoc}
