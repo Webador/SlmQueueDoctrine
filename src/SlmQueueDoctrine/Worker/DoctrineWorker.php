@@ -7,8 +7,8 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\WorkerEvent;
-use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrine\Job\Exception as JobException;
+use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 
 /**
  * Worker for Doctrine

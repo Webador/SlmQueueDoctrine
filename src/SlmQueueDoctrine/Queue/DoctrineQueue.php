@@ -2,16 +2,16 @@
 
 namespace SlmQueueDoctrine\Queue;
 
+use DateInterval;
 use DateTime;
 use DateTimeZone;
-use DateInterval;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
-use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\AbstractQueue;
 use SlmQueueDoctrine\Exception;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 
