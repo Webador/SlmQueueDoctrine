@@ -1,3 +1,11 @@
+# 0.4.0-beta1
+
+* [BC] SlmQueueDoctrine has been upgraded to SlmQueue 0.4. This feature includes a new, flexible and modular event system.
+
+# 0.3.0
+
+* Initial release for 0.3.* branch
+
 # 0.3.0-beta1
 
 First release of SlmQueueDoctrine which bring it on par with its parent SlmQueue 0.3.0-beta1
