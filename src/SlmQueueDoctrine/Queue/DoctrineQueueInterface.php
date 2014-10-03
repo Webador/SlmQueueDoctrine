@@ -2,8 +2,8 @@
 
 namespace SlmQueueDoctrine\Queue;
 
-use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Job\JobInterface;
+use SlmQueue\Queue\QueueInterface;
 
 interface DoctrineQueueInterface extends QueueInterface
 {

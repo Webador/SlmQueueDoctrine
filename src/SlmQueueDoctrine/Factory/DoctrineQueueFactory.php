@@ -3,9 +3,9 @@
 namespace SlmQueueDoctrine\Factory;
 
 use SlmQueueDoctrine\Options\DoctrineOptions;
+use SlmQueueDoctrine\Queue\DoctrineQueue;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SlmQueueDoctrine\Queue\DoctrineQueue;
 
 /**
  * DoctrineQueueFactory
