@@ -18,9 +18,10 @@
  */
 return array(
     'slm_queue' => array(
-        'worker' => array(
-            // Limit runs to 1 in test environment
-            'max_runs' => 1
+        'worker_strategies' => array(
+            'default' => array(
+                'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 1)
+            )
         ),
         'queues' => array(
             'my-doctrine-queue' => array(

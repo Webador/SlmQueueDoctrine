@@ -39,4 +39,27 @@ return array(
             ),
         ),
     ),
+    'slm_queue' => array(
+        /**
+         * Worker Strategies
+         */
+        'worker_strategies' => array(
+            'default' => array(
+                'SlmQueueDoctrine\Strategy\IdleNapStrategy' => array('nap_duration' => 1),
+                'SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy'
+            ),
+            'queues' => array(
+            ),
+        ),
+        /**
+         * Strategy manager configuration
+         */
+        'strategy_manager' => array(
+            'invokables' => array(
+                'SlmQueueDoctrine\Strategy\IdleNapStrategy' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy',
+                'SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy'
+                                                            => 'SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy'
+            )
+        ),
+    )
 );
