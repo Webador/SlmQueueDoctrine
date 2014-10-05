@@ -47,7 +47,7 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
         $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onClear'), -1000);
+            ->with(WorkerEvent::EVENT_PROCESS_JOB, array($this->listener, 'onClear'), -1000);
 
         $this->listener->attach($evm);
     }

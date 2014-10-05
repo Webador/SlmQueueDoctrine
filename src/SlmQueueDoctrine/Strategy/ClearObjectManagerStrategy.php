@@ -15,7 +15,7 @@ class ClearObjectManagerStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS,
+            WorkerEvent::EVENT_PROCESS_JOB,
             array($this, 'onClear'),
             -1000
         );
