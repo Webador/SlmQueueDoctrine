@@ -1,3 +1,8 @@
+# 0.4.0-beta2
+
+- Prevents possible MySQL deadlock errors while purging the database of buried and deleted jobs by wrapping the purge
+ logic in a transaction.
+
 # 0.4.0-beta1
 
 * [BC] SlmQueueDoctrine has been upgraded to SlmQueue 0.4. This feature includes a new, flexible and modular event system.
