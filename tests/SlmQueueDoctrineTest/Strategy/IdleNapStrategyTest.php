@@ -48,16 +48,13 @@ class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testOnIdleHandler()
     {
-        $worker = $this->getMockBuilder('SlmQueueDoctrine\Worker\DoctrineWorker')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $queue = $this->getMock('SlmQueueDoctrine\Queue\DoctrineQueueInterface');
+        $ev    = $this->getMockBuilder('SlmQueue\Worker\WorkerEvent')
+                      ->disableOriginalConstructor()
+                      ->getMock();
 
-        $ev = $this->getMockBuilder('SlmQueue\Worker\WorkerEvent')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $ev->expects($this->at(0))->method('getTarget')->will($this->returnValue($worker));
-        $ev->expects($this->at(1))->method('getTarget')->will($this->returnValue(null));
+        $ev->expects($this->at(0))->method('getQueue')->will($this->returnValue($queue));
+        $ev->expects($this->at(1))->method('getQueue')->will($this->returnValue(null));
 
         $start_time = microtime(true);
         $this->listener->onIdle($ev);
