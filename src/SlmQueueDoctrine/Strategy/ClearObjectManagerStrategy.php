@@ -29,7 +29,7 @@ class ClearObjectManagerStrategy extends AbstractStrategy
         /** @var ObjectManagerAwareInterface $job */
         $job = $event->getJob();
 
-        if ($job instanceof ObjectManagerAwareInterface) {
+        if ($job instanceof ObjectManagerAwareInterface && $job->getObjectManager()) {
             $job->getObjectManager()->clear();
         }
     }
