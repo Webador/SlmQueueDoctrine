@@ -1,7 +1,6 @@
-# 0.4.0-beta2
+# 0.4.0
 
-- Prevents possible MySQL deadlock errors while purging the database of buried and deleted jobs by wrapping the purge
- logic in a transaction.
+- Silenced possible MySQL deadlock errors while purging the database of buried and deleted jobs.
 
 # 0.4.0-beta1
 

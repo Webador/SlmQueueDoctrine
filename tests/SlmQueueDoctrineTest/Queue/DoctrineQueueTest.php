@@ -2,15 +2,15 @@
 
 namespace SlmQueueDoctrineTest\Queue;
 
+use DateInterval;
 use DateTime;
 use DateTimeZone;
-use DateInterval;
+use Doctrine\DBAL\DBALException;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Zend\ServiceManager\ServiceManager;
 
 class DoctrineQueueTest extends TestCase
 {
@@ -440,5 +440,37 @@ class DoctrineQueueTest extends TestCase
 
         $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
         $this->queue->release($job);
+    }
+
+    /**
+     * @group uh
+     */
+
+    public function testPurgeDBALExceptionAreIgnored()
+    {
+        // open protected method
+        $class = new \ReflectionClass('SlmQueueDoctrine\Queue\DoctrineQueue');
+        $method = $class->getMethod('purge');
+        $method->setAccessible(true);
+
+        $connection    = $this->getMockBuilder('Doctrine\DBAL\Connection')->disableOriginalConstructor()->getMock();
+        $pluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $options       = new \SlmQueueDoctrine\Options\DoctrineOptions();
+
+        $queue  = new DoctrineQueue($connection, $options, 'some-queue-name', $pluginManager);
+
+        $queue->getOptions()->setDeletedLifetime(1);
+        $queue->getOptions()->setBuriedLifetime(1);
+
+        // sets simulated Deadlock exception
+        $connection->expects($this->at(0))->method('executeUpdate')
+            ->willThrowException(new DBALException('SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when ' .
+                    'trying to get lock; try restarting transaction'));
+        $connection->expects($this->at(1))->method('executeUpdate')
+            ->willThrowException(new DBALException('SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when ' .
+                    'trying to get lock; try restarting transaction'));
+
+        // invoke protected method
+        $method->invokeArgs($queue, array());
     }
 }
