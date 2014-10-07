@@ -130,7 +130,7 @@ This strategy will clear the ObjectManager before execution of individual jobs. 
 
 listens to:
 
-- `process` event at priority -1000
+- `process.job` event at priority 1000
 
 options:
 
@@ -144,7 +144,7 @@ When no jobs are available in the queue this strategy will make the worker wait 
 
 listens to:
 
-- `idle` event at priority 1
+- `process.idle` event at priority 1
 
 options:
 
