@@ -1,3 +1,7 @@
+# 0.4.0-beta3
+
+* [BC] Due to changes in SlmQueue ([changelog](https://github.com/juriansluiman/SlmQueue/blob/master/CHANGELOG.md)) existing jobs won't be able to be executed correctly.
+
 # 0.4.0-beta1
 
 * [BC] SlmQueueDoctrine has been upgraded to SlmQueue 0.4. This feature includes a new, flexible and modular event system.
