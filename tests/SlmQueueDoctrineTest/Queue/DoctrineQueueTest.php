@@ -66,6 +66,18 @@ class DoctrineQueueTest extends TestCase
         $this->assertEquals(1, $result['count']);
     }
 
+    public function testPushPop()
+    {
+        $this->markTestSkipped('Test skipped until SlmQueue:0.5.0 (see https://github.com/juriansluiman/SlmQueue/pull/111)');
+
+        $job = new SimpleJob();
+        $this->queue->push($job);
+
+        $poppedJob = $this->queue->pop();
+
+        $this->assertEquals($job, $poppedJob);
+    }
+
     public function testJobCanBePushedMoreThenOnce()
     {
         $job = new SimpleJob();
