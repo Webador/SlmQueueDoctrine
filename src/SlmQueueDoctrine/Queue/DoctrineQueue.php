@@ -148,7 +148,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row['data'], array('id' => $row['id']));
+        return $this->unserializeJob($row['data'], array('__id__' => $row['id']));
     }
 
     /**
@@ -255,7 +255,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row['data'], array('id' => $row['id']));
+        return $this->unserializeJob($row['data'], array('__id__' => $row['id']));
     }
 
     /**
