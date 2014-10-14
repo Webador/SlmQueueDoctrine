@@ -1,3 +1,7 @@
+# 0.4.0
+
+- First stable release in 0.4.x branch
+
 # 0.4.0-beta3
 
 * [BC] Due to changes in SlmQueue ([changelog](https://github.com/juriansluiman/SlmQueue/blob/master/CHANGELOG.md)) existing jobs won't be able to be executed correctly.
