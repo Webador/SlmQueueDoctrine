@@ -103,7 +103,7 @@ The following options can be set per queue ;
 	
 - connection (defaults to 'doctrine.connection.orm_default') : Name of the registered doctrine connection service
 - table_name (defaults to 'queue_default') : Table name which should be used to store jobs
-- delete_lifetime (defaults to 0) : How long to keep deleted (successful) jobs (in minutes)
+- deleted_lifetime (defaults to 0) : How long to keep deleted (successful) jobs (in minutes)
 - buried_lifetime (defaults to 0) : How long to keep buried (failed) jobs (in minutes)
 
 
