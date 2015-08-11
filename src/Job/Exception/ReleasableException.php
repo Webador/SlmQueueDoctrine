@@ -6,9 +6,10 @@ use RuntimeException;
 use SlmQueueDoctrine\Exception\ExceptionInterface;
 
 /**
- * BuryableException
+ * ReleasableException. Throw this exception in the "execute" method of your job so that the worker
+ * puts back the job into the queue
  */
-class BuryableException extends RuntimeException implements ExceptionInterface
+class ReleasableException extends RuntimeException implements ExceptionInterface
 {
     /**
      * @var array
@@ -17,12 +18,12 @@ class BuryableException extends RuntimeException implements ExceptionInterface
 
     /**
      * Valid options are:
-     *      - message: Message why this has happened
-     *      - trace: Stack trace for further investigation
+     *      - scheduled: the time when the job should run the next time
+     *      - delay: the delay in seconds before a job become available to be popped (default to 0 - no delay -)
      *
      * @param array $options
      */
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         $this->options = $options;
     }

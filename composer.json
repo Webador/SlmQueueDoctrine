@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.5",
         "zendframework/zend-config": "~2.2",
         "zendframework/zend-mvc": "~2.2",
         "zendframework/zend-servicemanager": "~2.2",
@@ -35,15 +35,20 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.5.x-dev"
+            "dev-master": "0.6.x-dev"
         }
     },
     "autoload": {
-        "psr-0": {
-            "SlmQueueDoctrine": "src/"
+        "psr-4": {
+            "SlmQueueDoctrine\\": "src/"
         },
         "classmap": [
             "./Module.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SlmQueueDoctrineTest\\": "tests/"
+        }
     }
 }

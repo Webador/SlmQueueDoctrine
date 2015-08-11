@@ -16,33 +16,37 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-return array(
-    'slm_queue' => array(
-        'worker_strategies' => array(
-            'default' => array(
-                'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 1)
-            )
-        ),
-        'queues' => array(
-            'my-doctrine-queue' => array(
+use Doctrine\DBAL\Driver\PDOSqlite\Driver;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueueDoctrine\Factory\DoctrineQueueFactory;
+
+return [
+    'slm_queue' => [
+        'worker_strategies' => [
+            'default' => [
+                MaxRunsStrategy::class => ['max_runs' => 1]
+            ]
+        ],
+        'queues'            => [
+            'my-doctrine-queue' => [
                 'deleted_lifetime' => -1,
                 'buried_lifetime'  => -1,
-            ),
-        ),
-        'queue_manager' => array(
-            'factories' => array(
-                'newsletter' => 'SlmQueueDoctrine\Factory\DoctrineQueueFactory'
-            )
-        )
-    ),
-    'doctrine' => array(
-        'connection' => array(
-            'orm_default' => array(
-                'driverClass'   => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
-                'params' => array(
+            ],
+        ],
+        'queue_manager'     => [
+            'factories' => [
+                'newsletter' => DoctrineQueueFactory::class
+            ]
+        ]
+    ],
+    'doctrine'  => [
+        'connection' => [
+            'orm_default' => [
+                'driverClass' => Driver::class,
+                'params'      => [
                     'memory' => true,
-                ),
-            ),
-        ),
-    )
-);
+                ],
+            ],
+        ],
+    ]
+];

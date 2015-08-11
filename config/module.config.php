@@ -1,65 +1,69 @@
 <?php
 
-return array(
-    'service_manager' => array(
-        'factories' => array(
-            'SlmQueueDoctrine\Worker\DoctrineWorker'    => 'SlmQueue\Factory\WorkerFactory',
-        )
-    ),
+use SlmQueue\Factory\WorkerFactory;
+use SlmQueueDoctrine\Controller\DoctrineWorkerController;
+use SlmQueueDoctrine\Factory\DoctrineWorkerControllerFactory;
+use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
+use SlmQueueDoctrine\Strategy\IdleNapStrategy;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 
-    'controllers' => array(
-        'factories' => array(
-            'SlmQueueDoctrine\Controller\DoctrineWorkerController' => 'SlmQueueDoctrine\Factory\DoctrineWorkerControllerFactory',
-        ),
-    ),
-
-    'console'   => array(
-        'router' => array(
-            'routes' => array(
-                'slm-queue-doctrine-worker' => array(
+return [
+    'service_manager' => [
+        'factories' => [
+            DoctrineWorker::class => WorkerFactory::class,
+        ]
+    ],
+    'controllers'     => [
+        'factories' => [
+            DoctrineWorkerController::class => DoctrineWorkerControllerFactory::class,
+        ],
+    ],
+    'console'         => [
+        'router' => [
+            'routes' => [
+                'slm-queue-doctrine-worker'  => [
                     'type'    => 'Simple',
-                    'options' => array(
+                    'options' => [
                         'route'    => 'queue doctrine <queue> [--timeout=] --start',
-                        'defaults' => array(
-                            'controller' => 'SlmQueueDoctrine\Controller\DoctrineWorkerController',
+                        'defaults' => [
+                            'controller' => DoctrineWorkerController::class,
                             'action'     => 'process'
-                        ),
-                    ),
-                ),
-                'slm-queue-doctrine-recover' => array(
+                        ],
+                    ],
+                ],
+                'slm-queue-doctrine-recover' => [
                     'type'    => 'Simple',
-                    'options' => array(
+                    'options' => [
                         'route'    => 'queue doctrine <queue> --recover [--executionTime=]',
-                        'defaults' => array(
-                            'controller' => 'SlmQueueDoctrine\Controller\DoctrineWorkerController',
+                        'defaults' => [
+                            'controller' => DoctrineWorkerController::class,
                             'action'     => 'recover'
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    ),
-    'slm_queue' => array(
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'slm_queue'       => [
         /**
          * Worker Strategies
          */
-        'worker_strategies' => array(
-            'default' => array(
-                'SlmQueueDoctrine\Strategy\IdleNapStrategy' => array('nap_duration' => 1),
-                'SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy'
-            ),
-            'queues' => array(
-            ),
-        ),
+        'worker_strategies' => [
+            'default' => [
+                IdleNapStrategy::class => ['nap_duration' => 1],
+                ClearObjectManagerStrategy::class
+            ],
+            'queues'  => [
+            ],
+        ],
         /**
          * Strategy manager configuration
          */
-        'strategy_manager' => array(
-            'invokables' => array(
-                'SlmQueueDoctrine\Strategy\IdleNapStrategy' => 'SlmQueueDoctrine\Strategy\IdleNapStrategy',
-                'SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy'
-                                                            => 'SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy'
-            )
-        ),
-    )
-);
+        'strategy_manager'  => [
+            'invokables' => [
+                IdleNapStrategy::class            => IdleNapStrategy::class,
+                ClearObjectManagerStrategy::class => ClearObjectManagerStrategy::class
+            ]
+        ],
+    ]
+];

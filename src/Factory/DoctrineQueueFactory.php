@@ -2,6 +2,7 @@
 
 namespace SlmQueueDoctrine\Factory;
 
+use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use Zend\ServiceManager\FactoryInterface;
@@ -21,12 +22,12 @@ class DoctrineQueueFactory implements FactoryInterface
 
         $config        = $parentLocator->get('Config');
         $queuesOptions = $config['slm_queue']['queues'];
-        $options       = isset($queuesOptions[$requestedName]) ? $queuesOptions[$requestedName] : array();
+        $options       = isset($queuesOptions[$requestedName]) ? $queuesOptions[$requestedName] : [];
         $queueOptions  = new DoctrineOptions($options);
 
         /** @var $connection \Doctrine\DBAL\Connection */
         $connection       = $parentLocator->get($queueOptions->getConnection());
-        $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
+        $jobPluginManager = $parentLocator->get(JobPluginManager::class);
 
         $queue = new DoctrineQueue($connection, $queueOptions, $requestedName, $jobPluginManager);
 

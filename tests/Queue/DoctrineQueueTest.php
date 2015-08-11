@@ -5,6 +5,9 @@ namespace SlmQueueDoctrineTest\Queue;
 use DateTime;
 use DateTimeZone;
 use DateInterval;
+use SlmQueue\Job\JobPluginManager;
+use SlmQueueDoctrine\Exception\JobNotFoundException;
+use SlmQueueDoctrine\Exception\LogicException;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
@@ -28,7 +31,7 @@ class DoctrineQueueTest extends TestCase
         $options     = new DoctrineOptions();
 
         $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), $options, 'some-queue-name',
-            ServiceManagerFactory::getServiceManager()->get('SlmQueue\Job\JobPluginManager'));
+            ServiceManagerFactory::getServiceManager()->get(JobPluginManager::class));
     }
 
     public function tearDown()
@@ -289,7 +292,7 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->delete($job);
 
-        $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
+        $this->setExpectedException(LogicException::class, 'Race-condition detected');
         $this->queue->delete($job);
     }
 
@@ -402,7 +405,7 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->bury($job);
 
-        $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
+        $this->setExpectedException(LogicException::class, 'Race-condition detected');
         $this->queue->bury($job);
     }
 
@@ -418,7 +421,7 @@ class DoctrineQueueTest extends TestCase
 
     public function testPeek_NonExistent()
     {
-        $this->setExpectedException('SlmQueueDoctrine\Exception\JobNotFoundException');
+        $this->setExpectedException(JobNotFoundException::class);
 
         $this->queue->peek(1);
     }
@@ -446,7 +449,7 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->setExpectedException('SlmQueueDoctrine\Exception\LogicException', 'Race-condition detected');
+        $this->setExpectedException(LogicException::class, 'Race-condition detected');
         $this->queue->release($job);
     }
 }
