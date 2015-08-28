@@ -34,6 +34,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected $options;
 
+    protected $idKey = 'id';
+    protected $dataKey = 'data';
+
     /**
      * Constructor
      *
@@ -50,6 +53,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     ) {
         $this->connection = $connection;
         $this->options    = clone $options;
+        $platform         = $connection->getDatabasePlatform();
+        $this->idKey      = $platform->getSQLResultCasing($this->idKey);
+        $this->dataKey    = $platform->getSQLResultCasing($this->dataKey);
 
         parent::__construct($name, $jobPluginManager);
     }
@@ -107,12 +113,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         try {
             $platform = $conn->getDatabasePlatform();
-            $select =  'SELECT * ' .
+            $select = 'SELECT * ' .
                 'FROM ' . $platform->appendLockHint($this->options->getTableName(), LockMode::PESSIMISTIC_WRITE) . ' ' .
                 'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
-                'ORDER BY scheduled ASC '.
-                'LIMIT 1 ' .
-                $platform->getWriteLockSQL();
+                'ORDER BY scheduled ASC';
+            $select  = $platform->modifyLimitQuery($select, 1);
 
             $stmt = $conn->executeQuery(
                 $select,
@@ -124,10 +129,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
                     'SET status = ?, executed = ? ' .
                     'WHERE id = ? AND status = ?';
-
                 $rows = $conn->executeUpdate(
                     $update,
-                    array(static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING),
+                    array(static::STATUS_RUNNING, new DateTime, $row[$this->idKey], static::STATUS_PENDING),
                     array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
                 );
 
@@ -148,7 +152,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row['data'], array('__id__' => $row['id']));
+        return $this->unserializeJob($row[$this->dataKey], array('__id__' => $row[$this->idKey]));
     }
 
     /**
@@ -255,7 +259,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row['data'], array('__id__' => $row['id']));
+        return $this->unserializeJob($row[$this->dataKey], array('__id__' => $row[$this->idKey]));
     }
 
     /**
