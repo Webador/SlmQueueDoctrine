@@ -34,6 +34,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected $options;
 
+    protected $idKey = 'id';
+    protected $dataKey = 'data';
+
     /**
      * Constructor
      *
@@ -50,6 +53,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     ) {
         $this->connection = $connection;
         $this->options    = clone $options;
+        $platform         = $connection->getDatabasePlatform();
+        $this->idKey      = $platform->getSQLResultCasing($this->idKey);
+        $this->dataKey    = $platform->getSQLResultCasing($this->dataKey);
 
         parent::__construct($name, $jobPluginManager);
     }
@@ -125,7 +131,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     'WHERE id = ? AND status = ?';
                 $rows = $conn->executeUpdate(
                     $update,
-                    array(static::STATUS_RUNNING, new DateTime, $row[$platform->getSQLResultCasing('id')], static::STATUS_PENDING),
+                    array(static::STATUS_RUNNING, new DateTime, $row[$this->idKey], static::STATUS_PENDING),
                     array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
                 );
 
@@ -146,7 +152,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row[$platform->getSQLResultCasing('data')], array('__id__' => $row[$platform->getSQLResultCasing('id')]));
+        return $this->unserializeJob($row[$this->dataKey], array('__id__' => $row[$this->idKey]));
     }
 
     /**
@@ -245,18 +251,15 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function peek($id)
     {
-        $conn = $this->connection;
-        $platform = $conn->getDatabasePlatform();
-
         $sql  = 'SELECT * FROM ' . $this->options->getTableName().' WHERE id = ?';
-        $row  = $conn->fetchAssoc($sql, array($id), array(Type::SMALLINT));
+        $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
 
         if (!$row) {
             throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row[$platform->getSQLResultCasing('data')], array('__id__' => $row[$platform->getSQLResultCasing('id')]));
+        return $this->unserializeJob($row[$this->dataKey], array('__id__' => $row[$this->idKey]));
     }
 
     /**
