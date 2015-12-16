@@ -4,7 +4,7 @@ SlmQueueDoctrine
 [![Latest Stable Version](https://poser.pugx.org/slm/queue-doctrine/v/stable.png)](https://packagist.org/packages/slm/queue-doctrine)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue-doctrine/v/unstable.png)](https://packagist.org/packages/slm/queue-doctrine)
 
-Version 0.4.0 Created by Stefan Kleff
+Version 0.5.0 Created by Stefan Kleff
 
 Requirements
 ------------
@@ -21,7 +21,7 @@ add the following line into your `composer.json` file:
 
 ```json
 "require": {
-	"slm/queue-doctrine": "0.4.*"
+	"slm/queue-doctrine": "~0.5"
 }
 ```
 
@@ -233,4 +233,4 @@ To recover jobs which are in the 'running' state for prolonged period of time (s
 `php index.php queue doctrine <queueName> --recover [--executionTime=]`
 
 *Note : Workers that are processing a job that is being recovered are NOT stopped.*
-)
+
