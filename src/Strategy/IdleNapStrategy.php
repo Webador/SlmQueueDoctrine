@@ -39,7 +39,7 @@ class IdleNapStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_IDLE,
-            array($this, 'onIdle'),
+            [$this, 'onIdle'],
             1
         );
     }

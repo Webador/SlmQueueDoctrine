@@ -14,7 +14,7 @@ interface DoctrineQueueInterface extends QueueInterface
      * @param  array        $options
      * @return void
      */
-    public function release(JobInterface $job, array $options = array());
+    public function release(JobInterface $job, array $options = []);
 
     /**
      * Bury a job. When a job is buried, it won't be retrieved from the queue
@@ -23,7 +23,7 @@ interface DoctrineQueueInterface extends QueueInterface
      * @param  array        $options
      * @return void
      */
-    public function bury(JobInterface $job, array $options = array());
+    public function bury(JobInterface $job, array $options = []);
 
     /**
      * Recover jobs which are in the state 'running' for more then $executionTime minutes

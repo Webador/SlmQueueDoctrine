@@ -67,23 +67,23 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
      */
-    public function push(JobInterface $job, array $options = array())
+    public function push(JobInterface $job, array $options = [])
     {
         $scheduled = $this->parseOptionsToDateTime($options);
 
-        $this->connection->insert($this->options->getTableName(), array(
+        $this->connection->insert($this->options->getTableName(), [
             'queue'     => $this->getName(),
             'status'    => self::STATUS_PENDING,
             'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
             'data'      => $this->serializeJob($job),
             'scheduled' => $scheduled
-        ), array(
+        ], [
             Type::STRING,
             Type::SMALLINT,
             Type::DATETIME,
             Type::TEXT,
             Type::DATETIME,
-        ));
+        ]);
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
             $id = $this->connection->lastInsertId($this->options->getTableName() . '_id_seq');
@@ -97,7 +97,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * {@inheritDoc}
      */
-    public function pop(array $options = array())
+    public function pop(array $options = [])
     {
         // First run garbage collection
         $this->purge();
@@ -116,8 +116,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $stmt = $conn->executeQuery(
                 $select,
-                array(static::STATUS_PENDING, $this->getName(), new DateTime),
-                array(Type::SMALLINT, Type::STRING, Type::DATETIME)
+                [static::STATUS_PENDING, $this->getName(), new DateTime],
+                [Type::SMALLINT, Type::STRING, Type::DATETIME]
             );
 
             if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
@@ -127,8 +127,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
                 $rows = $conn->executeUpdate(
                     $update,
-                    array(static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING),
-                    array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
+                    [static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING],
+                    [Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT]
                 );
 
                 if ($rows != 1) {
@@ -148,7 +148,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row['data'], array('__id__' => $row['id']));
+        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
     }
 
     /**
@@ -156,10 +156,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note: When $deletedLifetime === 0 the job will be deleted immediately
      */
-    public function delete(JobInterface $job, array $options = array())
+    public function delete(JobInterface $job, array $options = [])
     {
         if ($this->options->getDeletedLifetime() === static::LIFETIME_DISABLED) {
-            $this->connection->delete($this->options->getTableName(), array('id' => $job->getId()));
+            $this->connection->delete($this->options->getTableName(), ['id' => $job->getId()]);
         } else {
             $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
                 'SET status = ?, finished = ? ' .
@@ -167,13 +167,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $rows = $this->connection->executeUpdate(
                 $update,
-                array(
+                [
                     static::STATUS_DELETED,
                     new DateTime(null, new DateTimeZone(date_default_timezone_get())),
                     $job->getId(),
                     static::STATUS_RUNNING
-                ),
-                array(Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT)
+                ],
+                [Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT]
             );
 
             if ($rows != 1) {
@@ -187,10 +187,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note: When $buriedLifetime === 0 the job will be deleted immediately
      */
-    public function bury(JobInterface $job, array $options = array())
+    public function bury(JobInterface $job, array $options = [])
     {
         if ($this->options->getBuriedLifetime() === static::LIFETIME_DISABLED) {
-            $this->connection->delete($this->options->getTableName(), array('id' => $job->getId()));
+            $this->connection->delete($this->options->getTableName(), ['id' => $job->getId()]);
         } else {
             $message = isset($options['message']) ? $options['message'] : null;
             $trace   = isset($options['trace']) ? $options['trace'] : null;
@@ -201,15 +201,15 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $rows = $this->connection->executeUpdate(
                 $update,
-                array(
+                [
                     static::STATUS_BURIED,
                     new DateTime(null, new DateTimeZone(date_default_timezone_get())),
                     $message,
                     $trace,
                     $job->getId(),
                     static::STATUS_RUNNING
-                ),
-                array(Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT)
+                ],
+                [Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT]
             );
 
             if ($rows != 1) {
@@ -223,7 +223,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function recover($executionTime)
     {
-        $executedLifetime = $this->parseOptionsToDateTime(array('delay' => - ($executionTime * 60)));
+        $executedLifetime = $this->parseOptionsToDateTime(['delay' => - ($executionTime * 60)]);
 
         $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
             'SET status = ? ' .
@@ -231,8 +231,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         $rows = $this->connection->executeUpdate(
             $update,
-            array(static::STATUS_PENDING, $executedLifetime, static::STATUS_RUNNING, $this->getName()),
-            array(Type::SMALLINT, Type::DATETIME, Type::SMALLINT, Type::STRING)
+            [static::STATUS_PENDING, $executedLifetime, static::STATUS_RUNNING, $this->getName()],
+            [Type::SMALLINT, Type::DATETIME, Type::SMALLINT, Type::STRING]
         );
 
         return $rows;
@@ -248,14 +248,14 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     public function peek($id)
     {
         $sql  = 'SELECT * FROM ' . $this->options->getTableName().' WHERE id = ?';
-        $row  = $this->connection->fetchAssoc($sql, array($id), array(Type::SMALLINT));
+        $row  = $this->connection->fetchAssoc($sql, [$id], [Type::SMALLINT]);
 
         if (!$row) {
             throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
         // Add job ID to meta data
-        return $this->unserializeJob($row['data'], array('__id__' => $row['id']));
+        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
     }
 
     /**
@@ -267,7 +267,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @param  array                    $options
      * @throws Exception\LogicException
      */
-    public function release(JobInterface $job, array $options = array())
+    public function release(JobInterface $job, array $options = [])
     {
         $scheduled = $this->parseOptionsToDateTime($options);
 
@@ -277,15 +277,15 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         $rows = $this->connection->executeUpdate(
             $update,
-            array(
+            [
                 static::STATUS_PENDING,
                 new DateTime(null, new DateTimeZone(date_default_timezone_get())),
                 $scheduled,
                 $this->serializeJob($job),
                 $job->getId(),
                 static::STATUS_RUNNING
-            ),
-            array(Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT)
+            ],
+            [Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT]
         );
 
         if ($rows != 1) {
@@ -372,7 +372,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     protected function purge()
     {
         if ($this->options->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
-            $options = array('delay' => - ($this->options->getBuriedLifetime() * 60));
+            $options = ['delay' => - ($this->options->getBuriedLifetime() * 60)];
             $buriedLifetime = $this->parseOptionsToDateTime($options);
 
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
@@ -380,13 +380,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $this->connection->executeUpdate(
                 $delete,
-                array($buriedLifetime, static::STATUS_BURIED, $this->getName()),
-                array(Type::DATETIME, Type::INTEGER, Type::STRING)
+                [$buriedLifetime, static::STATUS_BURIED, $this->getName()],
+                [Type::DATETIME, Type::INTEGER, Type::STRING]
             );
         }
 
         if ($this->options->getDeletedLifetime() > static::LIFETIME_UNLIMITED) {
-            $options = array('delay' => - ($this->options->getDeletedLifetime() * 60));
+            $options = ['delay' => - ($this->options->getDeletedLifetime() * 60)];
             $deletedLifetime = $this->parseOptionsToDateTime($options);
 
             $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
@@ -394,8 +394,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $this->connection->executeUpdate(
                 $delete,
-                array($deletedLifetime, static::STATUS_DELETED, $this->getName()),
-                array(Type::DATETIME, Type::INTEGER, Type::STRING)
+                [$deletedLifetime, static::STATUS_DELETED, $this->getName()],
+                [Type::DATETIME, Type::INTEGER, Type::STRING]
             );
         }
     }

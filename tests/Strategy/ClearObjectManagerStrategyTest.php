@@ -2,11 +2,16 @@
 
 namespace SlmQueueDoctrineTest\Listener\Strategy;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use PHPUnit_Framework_TestCase;
+use SlmQueue\Queue\AbstractQueue;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\WorkerInterface;
 use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
 use SlmQueueDoctrineTest\Asset\OMJob;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
+use Zend\EventManager\EventManagerInterface;
 
 class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 {
@@ -22,13 +27,13 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
+        $queue  = $this->getMockBuilder(AbstractQueue::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
+        $worker = $this->getMock(WorkerInterface::class);
 
-        $ev     = new WorkerEvent($worker, $queue);
-        $job    = new SimpleJob();
+        $ev  = new WorkerEvent($worker, $queue);
+        $job = new SimpleJob();
 
         $ev->setJob($job);
 
@@ -38,24 +43,24 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        $this->assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
 
     public function testListensToCorrectEvents()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm = $this->getMock(EventManagerInterface::class);
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB, array($this->listener, 'onClear'), -1000);
+            ->with(WorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onClear'], -1000);
 
         $this->listener->attach($evm);
     }
 
     public function testOnClearHandler()
     {
-        $job   = new OMJob();
-        $om    = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $job = new OMJob();
+        $om  = $this->getMock(ObjectManager::class);
 
         $job->setObjectManager($om);
 

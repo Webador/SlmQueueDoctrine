@@ -5,6 +5,7 @@ namespace SlmQueueDoctrine\Controller;
 use SlmQueue\Controller\AbstractWorkerController;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
+use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 
 /**
@@ -22,8 +23,8 @@ class DoctrineWorkerController extends AbstractWorkerController
         $queueName     = $this->params('queue');
         $executionTime = $this->params('executionTime', 0);
 
-        /** @var $queueManager \SlmQueue\Queue\QueuePluginManager */
-        $queueManager = $this->getServiceLocator()->get('SlmQueue\Queue\QueuePluginManager');
+        /** @var $queueManager QueuePluginManager */
+        $queueManager = $this->getServiceLocator()->get(QueuePluginManager::class);
         $queue        = $queueManager->get($queueName);
 
         if (!$queue instanceof DoctrineQueueInterface) {

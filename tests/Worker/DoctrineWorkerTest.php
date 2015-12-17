@@ -4,6 +4,7 @@ namespace SlmQueueDoctrineTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrineTest\Asset;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
@@ -30,7 +31,7 @@ class DoctrineWorkerTest extends TestCase
     public function setUp()
     {
         $this->worker  = new DoctrineWorker(new EventManager());
-        $this->queue   = $this->getMock('SlmQueueDoctrine\Queue\DoctrineQueueInterface');
+        $this->queue   = $this->getMock(DoctrineQueueInterface::class);
         $this->job     = new Asset\SimpleJob();
 
         // set max runs so our tests won't run forever

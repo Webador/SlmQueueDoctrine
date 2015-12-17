@@ -35,8 +35,10 @@ class DoctrineWorker extends AbstractWorker
             $queue->bury($job, $exception->getOptions());
             return WorkerEvent::JOB_STATUS_FAILURE;
         } catch (Exception $exception) {
-            $queue->bury($job, array('message' => $exception->getMessage(),
-                                     'trace' => $exception->getTraceAsString()));
+            $queue->bury($job, [
+                'message' => $exception->getMessage(),
+                'trace'   => $exception->getTraceAsString()
+            ]);
             return WorkerEvent::JOB_STATUS_FAILURE;
         }
     }

@@ -2,7 +2,9 @@
 
 namespace SlmQueueDoctrine\Factory;
 
+use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueDoctrine\Controller\DoctrineWorkerController;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -17,8 +19,8 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $serviceLocator     = $serviceLocator->getServiceLocator();
-        $worker             = $serviceLocator->get('SlmQueueDoctrine\Worker\DoctrineWorker');
-        $queuePluginManager = $serviceLocator->get('SlmQueue\Queue\QueuePluginManager');
+        $worker             = $serviceLocator->get(DoctrineWorker::class);
+        $queuePluginManager = $serviceLocator->get(QueuePluginManager::class);
 
         return new DoctrineWorkerController($worker, $queuePluginManager);
     }
