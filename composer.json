@@ -23,7 +23,7 @@
         "php": ">=5.5",
         "zendframework/zend-config": "~2.2",
         "zendframework/zend-mvc": "~2.2",
-        "zendframework/zend-servicemanager": "~2.6 || ^3.0",
+        "zendframework/zend-servicemanager": "~2.7 || ^3.0",
         "zendframework/zend-stdlib": "~2.2",
         "slm/queue": "~0.5.0",
         "doctrine/doctrine-orm-module":  "~0.7"
