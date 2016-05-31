@@ -33,4 +33,3 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
         return $this($serviceLocator->getServiceLocator(), DoctrineWorkerController::class);
     }
 }
-

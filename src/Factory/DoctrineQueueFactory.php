@@ -41,4 +41,3 @@ class DoctrineQueueFactory implements FactoryInterface
         return $this($serviceLocator->getServiceLocator(), $requestedName);
     }
 }
-
