@@ -116,7 +116,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $stmt = $conn->executeQuery(
                 $select,
-                [static::STATUS_PENDING, $this->getName(), new DateTime],
+                [static::STATUS_PENDING, $this->getName(), new DateTime(null, new DateTimeZone(date_default_timezone_get()))],
                 [Type::SMALLINT, Type::STRING, Type::DATETIME]
             );
 
@@ -127,7 +127,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
                 $rows = $conn->executeUpdate(
                     $update,
-                    [static::STATUS_RUNNING, new DateTime, $row['id'], static::STATUS_PENDING],
+                    [static::STATUS_RUNNING, new DateTime(null, new DateTimeZone(date_default_timezone_get())), $row['id'], static::STATUS_PENDING],
                     [Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT]
                 );
 
