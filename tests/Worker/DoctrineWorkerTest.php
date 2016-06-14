@@ -38,7 +38,7 @@ class DoctrineWorkerTest extends TestCase
         $this->maxRuns = new MaxRunsStrategy();
         $this->maxRuns->setMaxRuns(1);
 
-        $this->worker->getEventManager()->attach($this->maxRuns);
+        $this->maxRuns->attach($this->worker->getEventManager());
     }
 
     public function testAssertJobIsDeletedIfNoExceptionIsThrown()
