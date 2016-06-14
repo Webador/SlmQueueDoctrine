@@ -7,6 +7,7 @@ use SlmQueueDoctrine\Controller\DoctrineWorkerController;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * WorkerFactory
@@ -16,12 +17,19 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $serviceLocator     = $serviceLocator->getServiceLocator();
-        $worker             = $serviceLocator->get(DoctrineWorker::class);
-        $queuePluginManager = $serviceLocator->get(QueuePluginManager::class);
+        $worker             = $container->get(DoctrineWorker::class);
+        $queuePluginManager = $container->get(QueuePluginManager::class);
 
         return new DoctrineWorkerController($worker, $queuePluginManager);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        return $this($serviceLocator->getServiceLocator(), DoctrineWorkerController::class);
     }
 }
