@@ -60,10 +60,10 @@ return [
          * Strategy manager configuration
          */
         'strategy_manager'  => [
-            'invokables' => [
-                IdleNapStrategy::class            => IdleNapStrategy::class,
-                ClearObjectManagerStrategy::class => ClearObjectManagerStrategy::class
-            ]
+            'factories' => [
+                IdleNapStrategy::class            => \Zend\ServiceManager\Factory\InvokableFactory::class,
+                ClearObjectManagerStrategy::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+            ],
         ],
-    ]
+    ],
 ];
