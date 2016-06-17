@@ -4,7 +4,8 @@ namespace SlmQueueDoctrine\Strategy;
 
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use SlmQueue\Strategy\AbstractStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\ProcessJobEvent;
 use Zend\EventManager\EventManagerInterface;
 
 class ClearObjectManagerStrategy extends AbstractStrategy
@@ -15,16 +16,16 @@ class ClearObjectManagerStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_JOB,
+            AbstractWorkerEvent::EVENT_PROCESS_JOB,
             [$this, 'onClear'],
             -1000
         );
     }
 
     /**
-     * @param WorkerEvent $event
+     * @param ProcessJobEvent $event
      */
-    public function onClear(WorkerEvent $event)
+    public function onClear(ProcessJobEvent $event)
     {
         /** @var ObjectManagerAwareInterface $job */
         $job = $event->getJob();
