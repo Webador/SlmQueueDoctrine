@@ -54,7 +54,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->worker->processJob($job, $this->queue);
 
-        $this->assertEquals('deleted', $job->getContent());
+        static::assertEquals('deleted', $job->getContent());
     }
 
     public function testAssertJobIsReleasedIfReleasableExceptionIsThrown()
@@ -70,7 +70,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->worker->processJob($job, $this->queue);
 
-        $this->assertEquals('released', $job->getContent());
+        static::assertEquals('released', $job->getContent());
     }
 
     public function testAssertJobIsBuriedIfBuryableExceptionIsThrown()
@@ -86,7 +86,7 @@ class DoctrineWorkerTest extends TestCase
 
         $this->worker->processJob($job, $this->queue);
 
-        $this->assertEquals('buried', $job->getContent());
+        static::assertEquals('buried', $job->getContent());
     }
 
     public function testAssertJobIsBuriedIfAnyExceptionIsThrown()
@@ -102,6 +102,6 @@ class DoctrineWorkerTest extends TestCase
 
         $this->worker->processJob($job, $this->queue);
 
-        $this->assertEquals('buried', $job->getContent());
+        static::assertEquals('buried', $job->getContent());
     }
 }

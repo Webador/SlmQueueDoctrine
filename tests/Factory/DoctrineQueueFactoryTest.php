@@ -16,7 +16,7 @@ class DoctrineQueueFactoryTest extends PHPUnit_Framework_TestCase
         $factory            = new DoctrineQueueFactory();
         $service            = $factory($sm, null);
 
-        $this->assertInstanceOf(DoctrineQueue::class, $service);
+        static::assertInstanceOf(DoctrineQueue::class, $service);
     }
 
     public function testSpecifiedQueueOptionsOverrideModuleDefaults()
@@ -27,7 +27,7 @@ class DoctrineQueueFactoryTest extends PHPUnit_Framework_TestCase
         $factory            = new DoctrineQueueFactory();
         $service            = $factory($sm, 'my-doctrine-queue');
 
-        $this->assertEquals($service->getOptions()->getDeletedLifetime(), $config['slm_queue']['queues']['my-doctrine-queue']['deleted_lifetime']);
-        $this->assertEquals($service->getOptions()->getBuriedLifetime(), $config['slm_queue']['queues']['my-doctrine-queue']['buried_lifetime']);
+        static::assertEquals($service->getOptions()->getDeletedLifetime(), $config['slm_queue']['queues']['my-doctrine-queue']['deleted_lifetime']);
+        static::assertEquals($service->getOptions()->getBuriedLifetime(), $config['slm_queue']['queues']['my-doctrine-queue']['buried_lifetime']);
     }
 }

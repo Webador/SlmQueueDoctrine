@@ -42,19 +42,19 @@ class DoctrineQueueTest extends TestCase
     public function testBuriedLifetimeOption()
     {
         // defaults disabled
-        $this->assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getBuriedLifetime());
+        static::assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getBuriedLifetime());
 
         $this->queue->getOptions()->setBuriedLifetime(10);
-        $this->assertEquals(10, $this->queue->getOptions()->getBuriedLifetime());
+        static::assertEquals(10, $this->queue->getOptions()->getBuriedLifetime());
     }
 
     public function testDeletedLifetimeOption()
     {
         // defaults disabled
-        $this->assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getDeletedLifetime());
+        static::assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getDeletedLifetime());
 
         $this->queue->getOptions()->setDeletedLifetime(10);
-        $this->assertEquals(10, $this->queue->getOptions()->getDeletedLifetime());
+        static::assertEquals(10, $this->queue->getOptions()->getDeletedLifetime());
     }
 
     public function testJobCanBePushed()
@@ -66,7 +66,7 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(1, $result['count']);
+        static::assertEquals(1, $result['count']);
     }
 
     public function testPushPop()
@@ -76,7 +76,7 @@ class DoctrineQueueTest extends TestCase
 
         $poppedJob = $this->queue->pop();
 
-        $this->assertEquals($job, $poppedJob);
+        static::assertEquals($job, $poppedJob);
     }
 
     public function testJobCanBePushedMoreThenOnce()
@@ -89,25 +89,25 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(2, $result['count']);
+        static::assertEquals(2, $result['count']);
     }
 
     public function testPushDefaults()
     {
         $job = new SimpleJob();
-        $this->assertNull($job->getId(), "Upon job instantiation its id should be null");
+        static::assertNull($job->getId(), "Upon job instantiation its id should be null");
 
         $this->queue->push($job);
-        $this->assertTrue(is_numeric($job->getId()), "After a job has been pushed its id should should be an id");
+        static::assertTrue(is_numeric($job->getId()), "After a job has been pushed its id should should be an id");
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals('some-queue-name', $result['queue'], "The queue-name is expected to be stored.");
-        $this->assertEquals(DoctrineQueue::STATUS_PENDING, $result['status'], "The status of a new job should be pending.");
+        static::assertEquals('some-queue-name', $result['queue'], "The queue-name is expected to be stored.");
+        static::assertEquals(DoctrineQueue::STATUS_PENDING, $result['status'], "The status of a new job should be pending.");
 
-        $this->assertEquals($result['created'], $result['scheduled'],
+        static::assertEquals($result['created'], $result['scheduled'],
             "By default a job should be scheduled the same time it was created");
     }
 
@@ -136,7 +136,7 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals($expectedResult, $result['scheduled'],
+        static::assertEquals($expectedResult, $result['scheduled'],
             "The job has not been scheduled correctly");
     }
 
@@ -166,7 +166,7 @@ class DoctrineQueueTest extends TestCase
         $created = new DateTime($result['created']);
         $scheduled = new DateTime($result['scheduled']);
 
-        $this->assertEquals($expectedResult, $scheduled->getTimestamp() - $created->getTimestamp(),
+        static::assertEquals($expectedResult, $scheduled->getTimestamp() - $created->getTimestamp(),
             "The job has not been scheduled correctly");
     }
 
@@ -179,14 +179,14 @@ class DoctrineQueueTest extends TestCase
 
         $returnedJob = $this->queue->pop();
 
-        $this->assertNotNull($returnedJob, "A job should have been returned.");
+        static::assertNotNull($returnedJob, "A job should have been returned.");
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(DoctrineQueue::STATUS_RUNNING, $result['status'], "The status of a popped should be running.");
-        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['executed']),
+        static::assertEquals(DoctrineQueue::STATUS_RUNNING, $result['status'], "The status of a popped should be running.");
+        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['executed']),
             "The executed field of a popped job should be set to a datetime");
     }
 
@@ -197,7 +197,7 @@ class DoctrineQueueTest extends TestCase
 
         $now = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
         $this->queue->push($job, array('scheduled' =>  time() + $now->getOffset() + 10));
-        $this->assertNull($this->queue->pop(), "Job is not due yet.");
+        static::assertNull($this->queue->pop(), "Job is not due yet.");
 
         $this->queue->push($job, array('scheduled' => time() + $now->getOffset() + 10)); // must not be returned
         $this->queue->push($job, array('scheduled' => time() + $now->getOffset() - 10));$returnedCount++;
@@ -214,8 +214,8 @@ class DoctrineQueueTest extends TestCase
             $jobs[] = $job;
         }
 
-        $this->assertEquals($firstJobId, $jobs[0]->getId(), "Job with the oldest scheduled date is expected to be popped first.");
-        $this->assertEquals($returnedCount, count($jobs), "The number of popped jobs is incorrect.");
+        static::assertEquals($firstJobId, $jobs[0]->getId(), "Job with the oldest scheduled date is expected to be popped first.");
+        static::assertEquals($returnedCount, count($jobs), "The number of popped jobs is incorrect.");
     }
 
     public function testDelete_WithZeroLifeTimeShouldBeInstant()
@@ -230,7 +230,7 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(0, $result['count']);
+        static::assertEquals(0, $result['count']);
     }
 
     public function testDelete_WithLifeTimeShouldMarked()
@@ -248,13 +248,13 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(1, $result['count']);
+        static::assertEquals(1, $result['count']);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
+        static::assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
     }
 
     public function testDelete_WithUnlimitedLifeTimeShouldMarked()
@@ -272,13 +272,13 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(1, $result['count']);
+        static::assertEquals(1, $result['count']);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
+        static::assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
     }
 
     public function testDelete_RaceCondition()
@@ -308,7 +308,7 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(0, $result['count']);
+        static::assertEquals(0, $result['count']);
     }
 
     public function testBury_Options()
@@ -325,8 +325,8 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertNull($result['message'], "The message of this job should be 'null'.");
-        $this->assertNull($result['trace'], "The message of this job should be 'null'.");
+        static::assertNull($result['message'], "The message of this job should be 'null'.");
+        static::assertNull($result['trace'], "The message of this job should be 'null'.");
 
         $this->queue->push($job);
         $this->queue->pop(); // why must the job be running?
@@ -336,8 +336,8 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertContains('hi', $result['message']);
-        $this->assertNotNull('because', $result['trace']);
+        static::assertContains('hi', $result['message']);
+        static::assertNotNull('because', $result['trace']);
 
     }
 
@@ -356,14 +356,14 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(1, $result['count']);
+        static::assertEquals(1, $result['count']);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
-        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+        static::assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
+        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
             "The finished field of a buried job should be set to a datetime");
 
     }
@@ -383,14 +383,14 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT count(*) as count FROM queue_default')->fetch();
 
-        $this->assertEquals(1, $result['count']);
+        static::assertEquals(1, $result['count']);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
-        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+        static::assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
+        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
             "The finished field of a buried job should be set to a datetime");
     }
 
@@ -416,7 +416,7 @@ class DoctrineQueueTest extends TestCase
 
         $peekedJob = $this->queue->peek($job->getId());
 
-        $this->assertEquals($job, $peekedJob);
+        static::assertEquals($job, $peekedJob);
     }
 
     public function testPeek_NonExistent()
@@ -439,9 +439,9 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        $this->assertEquals(DoctrineQueue::STATUS_PENDING, $result['status'], "The status of a released job should be 'pending'.");
+        static::assertEquals(DoctrineQueue::STATUS_PENDING, $result['status'], "The status of a released job should be 'pending'.");
 
-        $this->assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
             "The finished field of a released job should be set to a datetime");
     }
 
