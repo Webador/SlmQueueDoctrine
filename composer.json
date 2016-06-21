@@ -32,7 +32,7 @@
         "zendframework/zend-servicemanager": "~2.7 || ^3.0",
         "zendframework/zend-stdlib": "~2.2 || ^3.0",
         "slm/queue": "dev-eventmanager-deprecations as 0.6.0",
-        "doctrine/doctrine-orm-module":  "^0.7 || ^1.0"
+        "doctrine/doctrine-orm-module":  "~0.7 || ^1.0"
     },
     "require-dev": {
         "zendframework/zend-config": "~2.2",
