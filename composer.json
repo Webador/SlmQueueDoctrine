@@ -26,6 +26,7 @@
         }
     ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "php": "^5.5 || ^7.0",
         "zendframework/zend-eventmanager": "^2.6 || ^3.0",
