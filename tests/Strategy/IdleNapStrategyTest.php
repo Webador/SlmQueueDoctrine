@@ -3,69 +3,70 @@
 namespace SlmQueueDoctrineTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
-use SlmQueue\Strategy\AbstractStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrine\Strategy\IdleNapStrategy;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Zend\EventManager\EventManagerInterface;
 
 class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var IdleNapStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var IdleNapStrategy */
     protected $listener;
 
     public function setUp()
     {
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new DoctrineWorker($this->getMock(EventManagerInterface::class));
         $this->listener = new IdleNapStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf(AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+    }
+
+    public function testListensToCorrectEventAtCorrectPriority()
+    {
+        $evm      = $this->getMock(EventManagerInterface::class);
+        $priority = 1;
+
+        $evm->expects($this->at(0))->method('attach')
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onIdle'], 1);
+
+        $this->listener->attach($evm, $priority);
     }
 
     public function testNapDurationDefault()
     {
-        $this->assertTrue($this->listener->getNapDuration() == 1);
+        static::assertEquals(1, $this->listener->getNapDuration());
     }
 
     public function testNapDurationSetter()
     {
         $this->listener->setNapDuration(2);
 
-        $this->assertTrue($this->listener->getNapDuration() == 2);
-    }
-
-    public function testListensToCorrectEvents()
-    {
-        $evm = $this->getMock(EventManagerInterface::class);
-
-        $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onIdle'], 1);
-
-        $this->listener->attach($evm);
+        static::assertEquals(2, $this->listener->getNapDuration());
     }
 
     public function testOnIdleHandler()
     {
-        $queue = $this->getMock(DoctrineQueueInterface::class);
-        $ev    = $this->getMockBuilder(WorkerEvent::class)
-                      ->disableOriginalConstructor()
-                      ->getMock();
-
-        $ev->expects($this->at(0))->method('getQueue')->will($this->returnValue($queue));
-        $ev->expects($this->at(1))->method('getQueue')->will($this->returnValue(null));
+        $this->queue = $this->getMock(DoctrineQueueInterface::class);
 
         $start_time = microtime(true);
-        $this->listener->onIdle($ev);
+        $this->listener->onIdle(new ProcessIdleEvent($this->worker, $this->queue));
         $elapsed_time = microtime(true) - $start_time;
-        $this->assertGreaterThan(1, $elapsed_time);
+        static::assertGreaterThan(1, $elapsed_time);
+
+
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
 
         $start_time = microtime(true);
-        $this->listener->onIdle($ev);
+        $this->listener->onIdle(new ProcessIdleEvent($this->worker, $this->queue));
         $elapsed_time = microtime(true) - $start_time;
-        $this->assertLessThan(1, $elapsed_time);
+        static::assertLessThan(1, $elapsed_time);
     }
 }

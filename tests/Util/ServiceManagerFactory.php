@@ -50,9 +50,13 @@ class ServiceManagerFactory
      */
     public static function getServiceManager()
     {
-        $serviceManager = new ServiceManager(new ServiceManagerConfig(
+        $servicemanagerConfig = new ServiceManagerConfig(
             isset(static::$config['service_manager']) ? static::$config['service_manager'] : []
-        ));
+        );
+
+        $serviceManager = new ServiceManager();
+        $servicemanagerConfig->configureServiceManager($serviceManager);
+        
         $serviceManager->setService('ApplicationConfig', static::$config);
         $serviceManager->setAllowOverride(true);
         $serviceManager->setFactory('ServiceListener', ServiceListenerFactory::class);

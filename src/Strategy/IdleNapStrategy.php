@@ -3,7 +3,8 @@
 namespace SlmQueueDoctrine\Strategy;
 
 use SlmQueue\Strategy\AbstractStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use Zend\EventManager\EventManagerInterface;
 
@@ -35,19 +36,19 @@ class IdleNapStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_IDLE,
+            AbstractWorkerEvent::EVENT_PROCESS_IDLE,
             [$this, 'onIdle'],
             1
         );
     }
 
     /**
-     * @param WorkerEvent $event
+     * @param ProcessIdleEvent $event
      */
-    public function onIdle(WorkerEvent $event)
+    public function onIdle(ProcessIdleEvent $event)
     {
         $queue = $event->getQueue();
 
