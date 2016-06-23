@@ -116,12 +116,12 @@ class DoctrineQueueTest extends TestCase
         $now = new DateTime('1970-01-01 00:01:40');
 
         return array(
-            array(array('scheduled'=>100), '1970-01-01 00:01:40'),
-            array(array('scheduled'=>100, 'delay'=>10), '1970-01-01 00:01:50'), // delay is added to scheduled
-            array(array('scheduled'=>'100'), '1970-01-01 00:01:40'),
-            array(array('scheduled'=>'1970-01-01 00:01:40'), '1970-01-01 00:01:40'),
-            array(array('scheduled'=>'1970-01-01 00:01:40+03:00'), '1970-01-01 00:01:40'),
-            array(array('scheduled'=>$now), $now->format('Y-m-d H:i:s')),
+            array(array('scheduled'=>100), '1970-01-01 00:01:40.000000'),
+            array(array('scheduled'=>100, 'delay'=>10), '1970-01-01 00:01:50.000000'), // delay is added to scheduled
+            array(array('scheduled'=>'100'), '1970-01-01 00:01:40.000000'),
+            array(array('scheduled'=>'1970-01-01 00:01:40'), '1970-01-01 00:01:40.000000'),
+            array(array('scheduled'=>'1970-01-01 00:01:40+03:00'), '1970-01-01 00:01:40.000000'),
+            array(array('scheduled'=>$now), $now->format('Y-m-d H:i:s.u')),
         );
     }
 
