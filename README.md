@@ -4,7 +4,7 @@ SlmQueueDoctrine
 [![Latest Stable Version](https://poser.pugx.org/slm/queue-doctrine/v/stable.png)](https://packagist.org/packages/slm/queue-doctrine)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue-doctrine/v/unstable.png)](https://packagist.org/packages/slm/queue-doctrine)
 
-Version 0.5.0 Created by Stefan Kleff
+Created by Stefan Kleff
 
 Requirements
 ------------
