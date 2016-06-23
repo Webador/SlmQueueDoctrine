@@ -19,31 +19,23 @@
             "homepage": "http://www.goalio.de"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/basz/SlmQueue"
-        }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": "^5.5 || ^7.0",
         "zendframework/zend-eventmanager": "^2.6 || ^3.0",
-        "zendframework/zend-servicemanager": "~2.7 || ^3.0",
-        "zendframework/zend-stdlib": "~2.2 || ^3.0",
-        "slm/queue": "dev-eventmanager-deprecations as 0.6.0",
+        "zendframework/zend-servicemanager": "^2.7 || ^3.0",
+        "zendframework/zend-stdlib": "^2.2 || ^3.0",
+        "slm/queue": "^0.6",
         "doctrine/doctrine-orm-module":  "~0.7 || ^1.0"
     },
     "require-dev": {
-        "zendframework/zend-config": "~2.2",
+        "zendframework/zend-config": "^2.2",
         "zendframework/zend-modulemanager": "^2.5",
         "zendframework/zend-view": "^2.5",
         "zendframework/zend-log": "^2.5",
         "zendframework/zend-i18n": "^2.5",
         "zendframework/zend-serializer": "^2.5",
         "zendframework/zend-mvc": "^2.5",
-        "phpunit/phpunit": "~4.8",
+        "phpunit/phpunit": "^4.8",
         "squizlabs/php_codesniffer": "^2.1"
     },
     "extra": {
