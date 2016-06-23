@@ -35,6 +35,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     protected $options;
 
     /**
+     * Used to synchronize time calculations
+     *
+     * @var DateTime
+     */
+    private $now;
+
+    /**
      * Constructor
      *
      * @param Connection       $connection
@@ -69,20 +76,23 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function push(JobInterface $job, array $options = [])
     {
+        $time      = microtime(true);
+        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
         $scheduled = $this->parseOptionsToDateTime($options);
 
         $this->connection->insert($this->options->getTableName(), [
             'queue'     => $this->getName(),
             'status'    => self::STATUS_PENDING,
-            'created'   => new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+            'created'   => $this->now->format('Y-m-d H:i:s.u'),
             'data'      => $this->serializeJob($job),
-            'scheduled' => $scheduled
+            'scheduled' => $scheduled->format('Y-m-d H:i:s.u')
         ], [
             Type::STRING,
             Type::SMALLINT,
-            Type::DATETIME,
+            Type::STRING,
             Type::TEXT,
-            Type::DATETIME,
+            Type::STRING,
         ]);
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
@@ -114,14 +124,21 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'LIMIT 1 ' .
                 $platform->getWriteLockSQL();
 
+            $time      = microtime(true);
+            $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+            $this->now = new DateTime(
+                date('Y-m-d H:i:s.' . $micro, $time),
+                new DateTimeZone(date_default_timezone_get())
+            );
+
             $stmt = $conn->executeQuery(
                 $select,
                 [
                     static::STATUS_PENDING,
                     $this->getName(),
-                    new DateTime(null, new DateTimeZone(date_default_timezone_get()))
+                    $this->now->format('Y-m-d H:i:s.u')
                 ],
-                [Type::SMALLINT, Type::STRING, Type::DATETIME]
+                [Type::SMALLINT, Type::STRING, Type::STRING]
             );
 
             if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
@@ -133,11 +150,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     $update,
                     [
                         static::STATUS_RUNNING,
-                        new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+                        $this->now->format('Y-m-d H:i:s.u'),
                         $row['id'],
                         static::STATUS_PENDING
                     ],
-                    [Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT]
+                    [Type::SMALLINT, Type::STRING, Type::INTEGER, Type::SMALLINT]
                 );
 
                 if ($rows != 1) {
@@ -174,15 +191,22 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'SET status = ?, finished = ? ' .
                 'WHERE id = ? AND status = ?';
 
+            $time      = microtime(true);
+            $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+            $this->now = new DateTime(
+                date('Y-m-d H:i:s.' . $micro, $time),
+                new DateTimeZone(date_default_timezone_get())
+            );
+
             $rows = $this->connection->executeUpdate(
                 $update,
                 [
                     static::STATUS_DELETED,
-                    new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+                    $this->now->format('Y-m-d H:i:s.u'),
                     $job->getId(),
                     static::STATUS_RUNNING
                 ],
-                [Type::SMALLINT, Type::DATETIME, Type::INTEGER, Type::SMALLINT]
+                [Type::SMALLINT, Type::STRING, Type::INTEGER, Type::SMALLINT]
             );
 
             if ($rows != 1) {
@@ -208,17 +232,24 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'SET status = ?, finished = ?, message = ?, trace = ? ' .
                 'WHERE id = ? AND status = ?';
 
+            $time      = microtime(true);
+            $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+            $this->now = new DateTime(
+                date('Y-m-d H:i:s.' . $micro, $time),
+                new DateTimeZone(date_default_timezone_get())
+            );
+
             $rows = $this->connection->executeUpdate(
                 $update,
                 [
                     static::STATUS_BURIED,
-                    new DateTime(null, new DateTimeZone(date_default_timezone_get())),
+                    $this->now->format('Y-m-d H:i:s.u'),
                     $message,
                     $trace,
                     $job->getId(),
                     static::STATUS_RUNNING
                 ],
-                [Type::SMALLINT, Type::DATETIME, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT]
+                [Type::SMALLINT, Type::STRING, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT]
             );
 
             if ($rows != 1) {
@@ -240,8 +271,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         $rows = $this->connection->executeUpdate(
             $update,
-            [static::STATUS_PENDING, $executedLifetime, static::STATUS_RUNNING, $this->getName()],
-            [Type::SMALLINT, Type::DATETIME, Type::SMALLINT, Type::STRING]
+            [
+                static::STATUS_PENDING,
+                $executedLifetime->format('Y-m-d H:i:s.u'),
+                static::STATUS_RUNNING,
+                $this->getName()
+            ],
+            [Type::SMALLINT, Type::STRING, Type::SMALLINT, Type::STRING]
         );
 
         return $rows;
@@ -284,17 +320,20 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'SET status = ?, finished = ? , scheduled = ?, data = ? ' .
             'WHERE id = ? AND status = ?';
 
+        $time      = microtime(true);
+        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+
         $rows = $this->connection->executeUpdate(
             $update,
             [
                 static::STATUS_PENDING,
-                new DateTime(null, new DateTimeZone(date_default_timezone_get())),
-                $scheduled,
+                $this->now->format('Y-m-d H:i:s.u'),
+                $scheduled->format('Y-m-d H:i:s.u'),
                 $this->serializeJob($job),
                 $job->getId(),
                 static::STATUS_RUNNING
             ],
-            [Type::SMALLINT, Type::DATETIME, Type::DATETIME, Type::STRING, Type::INTEGER, Type::SMALLINT]
+            [Type::SMALLINT, Type::STRING, Type::STRING, Type::STRING, Type::INTEGER, Type::SMALLINT]
         );
 
         if ($rows != 1) {
@@ -325,8 +364,10 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected function parseOptionsToDateTime($options)
     {
-        $now       = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
-        $scheduled = clone ($now);
+        $time      = microtime(true);
+        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
+        $scheduled = clone ($this->now);
 
         if (isset($options['scheduled'])) {
             switch (true) {
@@ -389,8 +430,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $this->connection->executeUpdate(
                 $delete,
-                [$buriedLifetime, static::STATUS_BURIED, $this->getName()],
-                [Type::DATETIME, Type::INTEGER, Type::STRING]
+                [$buriedLifetime->format('Y-m-d H:i:s.u'), static::STATUS_BURIED, $this->getName()],
+                [Type::STRING, Type::INTEGER, Type::STRING]
             );
         }
 
@@ -403,8 +444,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $this->connection->executeUpdate(
                 $delete,
-                [$deletedLifetime, static::STATUS_DELETED, $this->getName()],
-                [Type::DATETIME, Type::INTEGER, Type::STRING]
+                [$deletedLifetime->format('Y-m-d H:i:s.u'), static::STATUS_DELETED, $this->getName()],
+                [Type::STRING, Type::INTEGER, Type::STRING]
             );
         }
     }
