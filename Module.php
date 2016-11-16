@@ -11,7 +11,6 @@ use Zend\ModuleManager\Feature;
  */
 class Module implements
     Feature\ConfigProviderInterface,
-    Feature\ConsoleBannerProviderInterface,
     Feature\ConsoleUsageProviderInterface,
     Feature\DependencyIndicatorInterface
 {
@@ -22,14 +21,6 @@ class Module implements
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getConsoleBanner(AdapterInterface $console)
-    {
-        return 'SlmQueueDoctrine';
     }
 
     /**
