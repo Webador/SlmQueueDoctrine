@@ -115,33 +115,33 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $conn = $this->connection;
         $conn->beginTransaction();
 
+        $time      = microtime(true);
+        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+        $this->now = new DateTime(
+            date('Y-m-d H:i:s.' . $micro, $time),
+            new DateTimeZone(date_default_timezone_get())
+        );
+
         try {
             $platform = $conn->getDatabasePlatform();
-            $select =  'SELECT * ' .
-                'FROM ' . $platform->appendLockHint($this->options->getTableName(), LockMode::PESSIMISTIC_WRITE) . ' ' .
-                'WHERE status = ? AND queue = ? AND scheduled <= ? ' .
-                'ORDER BY scheduled ASC '.
-                'LIMIT 1 ' .
-                $platform->getWriteLockSQL();
 
-            $time      = microtime(true);
-            $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-            $this->now = new DateTime(
-                date('Y-m-d H:i:s.' . $micro, $time),
-                new DateTimeZone(date_default_timezone_get())
-            );
+            $queryBuilder = $conn->createQueryBuilder();
 
-            $stmt = $conn->executeQuery(
-                $select,
-                [
-                    static::STATUS_PENDING,
-                    $this->getName(),
-                    $this->now->format('Y-m-d H:i:s.u')
-                ],
-                [Type::SMALLINT, Type::STRING, Type::STRING]
-            );
+            $queryBuilder
+                ->select('*')
+                ->from( $platform->appendLockHint($this->options->getTableName(), LockMode::PESSIMISTIC_WRITE) )
+                ->where('status = ?')
+                ->andWhere('queue = ?')
+                ->andWhere('scheduled <= ?')
+                ->orderBy('scheduled', 'ASC')
+                ->setParameter(0, static::STATUS_PENDING)
+                ->setParameter(1, $this->getName())
+                ->setParameter(2, $this->now->format('Y-m-d H:i:s.u') )
+                ->setMaxResults(1);
 
-            if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $query = $queryBuilder->execute();
+
+            if ($row = $query->fetch()) {
                 $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
                     'SET status = ?, executed = ? ' .
                     'WHERE id = ? AND status = ?';
