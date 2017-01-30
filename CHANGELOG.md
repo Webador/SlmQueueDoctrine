@@ -1,3 +1,7 @@
+# 0.7.0
+
+- [BC] Synchronize with SlmQueue release 0.7.0 which adds the ability to store binary data in job content
+
 # 0.6.1
 
 - Fixes an issue with timezones

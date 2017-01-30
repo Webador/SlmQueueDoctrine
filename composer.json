@@ -24,7 +24,7 @@
         "zendframework/zend-eventmanager": "^2.6 || ^3.0",
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
         "zendframework/zend-stdlib": "^2.2 || ^3.0",
-        "slm/queue": "^0.6",
+        "slm/queue": "^0.7",
         "doctrine/doctrine-orm-module":  "~0.7 || ^1.0"
     },
     "require-dev": {
@@ -40,7 +40,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.6.x-dev"
+            "dev-master": "0.7.x-dev"
         }
     },
     "autoload": {
