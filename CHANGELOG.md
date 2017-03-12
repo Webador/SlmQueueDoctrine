@@ -1,3 +1,8 @@
+# 0.7.1
+
+- We now use querybuilder for poping job from the queue to better support "Hardcoded LIMIT 1 doesn't work wih Oracle, as Oracle doesn't know LIMIT". This means we also require doctrine/dbal:^2.5 minimal, which could be an issue if you're using older packages.
+- Synchronized the indexes between the provided entity and the sql script. You may recreate the tables if you do don't have the correct indexes present.
+
 # 0.7.0
 
 - [BC] Synchronize with SlmQueue release 0.7.0 which adds the ability to store binary data in job content
