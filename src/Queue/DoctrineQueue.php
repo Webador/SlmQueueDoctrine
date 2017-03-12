@@ -129,14 +129,14 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
             $queryBuilder
                 ->select('*')
-                ->from( $platform->appendLockHint($this->options->getTableName(), LockMode::PESSIMISTIC_WRITE) )
+                ->from($platform->appendLockHint($this->options->getTableName(), LockMode::PESSIMISTIC_WRITE))
                 ->where('status = ?')
                 ->andWhere('queue = ?')
                 ->andWhere('scheduled <= ?')
                 ->orderBy('scheduled', 'ASC')
                 ->setParameter(0, static::STATUS_PENDING)
                 ->setParameter(1, $this->getName())
-                ->setParameter(2, $this->now->format('Y-m-d H:i:s.u') )
+                ->setParameter(2, $this->now->format('Y-m-d H:i:s.u'))
                 ->setMaxResults(1);
 
             $query = $queryBuilder->execute();
