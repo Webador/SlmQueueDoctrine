@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   PRIMARY KEY (`id`),
   KEY `pop` (`status`,`queue`,`scheduled`),
   KEY `prune` (`status`,`queue`,`finished`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

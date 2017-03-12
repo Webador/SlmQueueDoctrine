@@ -8,7 +8,7 @@ use DateTime;
 /**
  * DefaultQueue
  *
- * @ORM\Table(name="queue_default", indexes={@ORM\Index(name="pop", columns={"status","queue","scheduled"}),@ORM\Index(name="prune", columns={"status","queue","finished"})})
+ * @ORM\Table(name="queue_default", options={"collate"="utf8_bin"}, indexes={@ORM\Index(name="pop", columns={"status","queue","scheduled"}),@ORM\Index(name="prune", columns={"status","queue","finished"})})
  * @ORM\Entity()
  */
 class DefaultQueue
