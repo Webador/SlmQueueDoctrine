@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   `queue` varchar(64) NOT NULL,
   `data` text NOT NULL,
   `status` smallint(1) NOT NULL,
-  `created` datetime(6) NOT NULL DEFAULT '1000-01-01 00:00:00.000000',
-  `scheduled` datetime(6) NOT NULL DEFAULT '1000-01-01 00:00:00.000000',
+  `created` datetime(6) NOT NULL,
+  `scheduled` datetime(6) NOT NULL,
   `executed` datetime(6) DEFAULT NULL,
   `finished` datetime(6) DEFAULT NULL,
   `message` text,
@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   PRIMARY KEY (`id`),
   KEY `pop` (`status`,`queue`,`scheduled`),
   KEY `prune` (`status`,`queue`,`finished`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
