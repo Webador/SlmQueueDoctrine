@@ -1,3 +1,7 @@
+# 1.0.0
+
+- identical to 0.7.1
+
 # 0.7.1
 
 - We now use querybuilder for poping job from the queue to better support "Hardcoded LIMIT 1 doesn't work wih Oracle, as Oracle doesn't know LIMIT". This means we also require doctrine/dbal:^2.5 minimal, which could be an issue if you're using older packages.
