@@ -27,6 +27,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
     const DATABASE_PLATFORM_POSTGRES = 'postgresql';
 
+    const DEFAULT_PRIORITY = 1024;
+
     /**
      * Options for this queue
      *
@@ -70,6 +72,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     }
 
     /**
+     * Valid options are:
+     *      - priority: the lower the priority is, the sooner the job get popped from the queue (default to 1024)
+     *
      * {@inheritDoc}
      *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
@@ -86,13 +91,15 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'status'    => self::STATUS_PENDING,
             'created'   => $this->now->format('Y-m-d H:i:s.u'),
             'data'      => $this->serializeJob($job),
-            'scheduled' => $scheduled->format('Y-m-d H:i:s.u')
+            'scheduled' => $scheduled->format('Y-m-d H:i:s.u'),
+            'priority'  => isset($options['priority']) ? $options['priority'] : self::DEFAULT_PRIORITY,
         ], [
             Type::STRING,
             Type::SMALLINT,
             Type::STRING,
             Type::TEXT,
             Type::STRING,
+            Type::INTEGER,
         ]);
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
@@ -133,7 +140,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 ->where('status = ?')
                 ->andWhere('queue = ?')
                 ->andWhere('scheduled <= ?')
-                ->orderBy('scheduled', 'ASC')
+                ->addOrderBy('priority', 'ASC')
+                ->addOrderBy('scheduled', 'ASC')
                 ->setParameter(0, static::STATUS_PENDING)
                 ->setParameter(1, $this->getName())
                 ->setParameter(2, $this->now->format('Y-m-d H:i:s.u'))
@@ -331,7 +339,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 $scheduled->format('Y-m-d H:i:s.u'),
                 $this->serializeJob($job),
                 $job->getId(),
-                static::STATUS_RUNNING
+                static::STATUS_RUNNING,
             ],
             [Type::SMALLINT, Type::STRING, Type::STRING, Type::STRING, Type::INTEGER, Type::SMALLINT]
         );

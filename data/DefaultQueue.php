@@ -8,7 +8,14 @@ use DateTime;
 /**
  * DefaultQueue
  *
- * @ORM\Table(name="queue_default", options={"collate"="utf8_bin"}, indexes={@ORM\Index(name="pop", columns={"status","queue","scheduled"}),@ORM\Index(name="prune", columns={"status","queue","finished"})})
+ * @ORM\Table(
+ *     name="queue_default",
+ *     options={"collate"="utf8_bin"},
+ *     indexes={
+ *          @ORM\Index(name="pop", columns={"status", "queue", "scheduled", "priority}),
+ *          @ORM\Index(name="prune", columns={"status", "queue", "finished"})
+ *     }
+ * )
  * @ORM\Entity()
  */
 class DefaultQueue
@@ -72,6 +79,13 @@ class DefaultQueue
     private $finished;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="int", type="integer", nullable=true)
+     */
+    private $priority;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="message", type="text", nullable=true)
@@ -80,6 +94,7 @@ class DefaultQueue
 
     /**
      * @var string
+     *
      *
      * @ORM\Column(name="trace", type="text", nullable=true)
      */
@@ -317,5 +332,24 @@ class DefaultQueue
     public function getTrace()
     {
         return $this->trace;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /***
+     * @param int $priority
+     * @return $this
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+
+        return $this;
     }
 }

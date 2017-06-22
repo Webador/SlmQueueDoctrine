@@ -167,15 +167,21 @@ Valid options are:
 	* string parserable (ISO 8601 duration) by DateTimeInterval::__construct
 	* string parserable (relative parts) by DateTimeInterval::createFromDateString
 	* DateTimeInterval instance
+* priority: the lower the priority is, the sooner the job get popped from the queue (default to 1024)
 
 Examples:
 ```php
 	// scheduled for execution asap
     $queue->push($job);
+    
+    // will get executed before jobs that have higher priority
+    $queue->push($job, [
+        'priority' => 200,
+    ]);
 
 	// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
     $queue->push($job, array(
-        'scheduled' => 1420070400
+        'scheduled' => 1420070400,
     ));
 
     // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)

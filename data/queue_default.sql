@@ -7,9 +7,10 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   `scheduled` datetime(6) NOT NULL,
   `executed` datetime(6) DEFAULT NULL,
   `finished` datetime(6) DEFAULT NULL,
+  `priority` int DEFAULT NOT NULL,
   `message` text,
   `trace` text,
   PRIMARY KEY (`id`),
-  KEY `pop` (`status`,`queue`,`scheduled`),
+  KEY `pop` (`status`,`queue`,`scheduled`,`priority`),
   KEY `prune` (`status`,`queue`,`finished`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
