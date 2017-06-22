@@ -79,6 +79,28 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($job, $poppedJob);
     }
 
+    public function testPopHighestPriority()
+    {
+        $jobA = new SimpleJob();
+        $this->queue->push($jobA, [
+            'priority' => 10,
+        ]);
+
+        $jobB = new SimpleJob();
+        $this->queue->push($jobB, [
+            'priority' => 5,
+        ]);
+
+        $jobC = new SimpleJob();
+        $this->queue->push($jobC, [
+            'priority' => 20,
+        ]);
+
+        static::assertEquals($jobB, $this->queue->pop());
+        static::assertEquals($jobA, $this->queue->pop());
+        static::assertEquals($jobC, $this->queue->pop());
+    }
+
     public function testJobCanBePushedMoreThenOnce()
     {
         $job = new SimpleJob();
