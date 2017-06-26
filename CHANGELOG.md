@@ -1,3 +1,7 @@
+# 2.0.0
+
+- introduces concept job prioritization (you will need to update you schema)
+
 # 1.0.0
 
 - identical to 0.7.1
