@@ -12,7 +12,7 @@ use DateTime;
  *     name="queue_default",
  *     options={"collate"="utf8_bin"},
  *     indexes={
- *          @ORM\Index(name="pop", columns={"status", "queue", "scheduled", "priority}),
+ *          @ORM\Index(name="pop", columns={"status", "queue", "scheduled", "priority"}),
  *          @ORM\Index(name="prune", columns={"status", "queue", "finished"})
  *     }
  * )
@@ -79,9 +79,9 @@ class DefaultQueue
     private $finished;
 
     /**
-     * @var int
+     * @var priority
      *
-     * @ORM\Column(name="int", type="integer", nullable=true)
+     * @ORM\Column(name="priority", type="integer", nullable=true)
      */
     private $priority;
 

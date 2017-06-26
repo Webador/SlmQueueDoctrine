@@ -44,6 +44,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     private $now;
 
     /**
+     * @var Connection
+     */
+    private $connection;
+
+    /**
      * Constructor
      *
      * @param Connection       $connection
