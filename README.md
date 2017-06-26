@@ -21,7 +21,7 @@ add the following line into your `composer.json` file:
 
 ```json
 "require": {
-	"slm/queue-doctrine": "^1.0"
+	"slm/queue-doctrine": "^2.0"
 }
 ```
 
