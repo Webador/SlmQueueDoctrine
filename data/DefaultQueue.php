@@ -79,7 +79,7 @@ class DefaultQueue
     private $finished;
 
     /**
-     * @var priority
+     * @var int
      *
      * @ORM\Column(name="priority", type="integer", nullable=true)
      */
