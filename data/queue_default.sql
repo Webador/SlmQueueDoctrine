@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `queue_default` (
   `scheduled` datetime(6) NOT NULL,
   `executed` datetime(6) DEFAULT NULL,
   `finished` datetime(6) DEFAULT NULL,
-  `priority` int DEFAULT NOT NULL,
+  `priority` int DEFAULT 1 NOT NULL,
   `message` text,
   `trace` text,
   PRIMARY KEY (`id`),
