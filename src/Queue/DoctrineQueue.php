@@ -152,7 +152,15 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 ->setParameter(2, $this->now->format('Y-m-d H:i:s.u'))
                 ->setMaxResults(1);
 
-            $query = $queryBuilder->execute();
+            // Modify the query so it supports row locking (if applicable for database provider)
+            // @see https://github.com/doctrine/doctrine2/blob/5f3afa4c4ffb8cb49870d794cc7daf6a49406966/lib/Doctrine/ORM/Query/SqlWalker.php#L556-L558
+            $sql = $queryBuilder->getSQL() . ' ' . $platform->getWriteLockSQL();
+
+            $query = $this->connection->executeQuery(
+                $sql,
+                $queryBuilder->getParameters(),
+                $queryBuilder->getParameterTypes()
+            );
 
             if ($row = $query->fetch()) {
                 $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
@@ -463,3 +471,4 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
     }
 }
+
