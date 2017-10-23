@@ -471,4 +471,3 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
     }
 }
-
