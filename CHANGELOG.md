@@ -1,3 +1,8 @@
+# 2.0.1
+
+- fixed incorrect run priority for the ClearObjectManagerStrategy
+- correctly acquire lock for update to avoid race condition when using multiple workers
+
 # 2.0.0
 
 - introduces concept job prioritization (you will need to update you schema)
