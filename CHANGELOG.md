@@ -1,7 +1,11 @@
-# 2.0.1
+# 2.0.2
 
 - fixed incorrect run priority for the ClearObjectManagerStrategy
 - correctly acquire lock for update to avoid race condition when using multiple workers
+
+# 2.0.1
+
+- fixes incorrect entity for migration purposes
 
 # 2.0.0
 
