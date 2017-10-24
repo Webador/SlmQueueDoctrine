@@ -37,7 +37,7 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onClear'], -1000);
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onClear'], 1000);
 
         $this->listener->attach($evm, $priority);
     }
