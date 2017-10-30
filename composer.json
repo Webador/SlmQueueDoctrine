@@ -42,6 +42,9 @@
     "extra": {
         "branch-alias": {
             "dev-master": "2.1.x-dev"
+        },
+        "zf": {
+            "module": "SlmQueueDoctrine\\Module"
         }
     },
     "autoload": {
