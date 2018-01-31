@@ -81,7 +81,7 @@ class DefaultQueue
     /**
      * @var int
      *
-     * @ORM\Column(name="priority", type="integer", nullable=true)
+     * @ORM\Column(name="priority", type="integer", nullable=false, options={"default" : 1024})
      */
     private $priority;
 
