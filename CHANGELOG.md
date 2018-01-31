@@ -1,3 +1,7 @@
+# 2.0.3 And later
+
+Changelog for these releases can be found on the releases page, see https://github.com/juriansluiman/SlmQueueDoctrine/releases.
+
 # 2.0.2
 
 - fixed incorrect run priority for the ClearObjectManagerStrategy
