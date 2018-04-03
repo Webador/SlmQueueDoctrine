@@ -1,10 +1,11 @@
 {
     "name": "slm/queue-doctrine",
-    "description": "Zend Framework 2 module that integrates Doctrine as queuing system",
+    "description": "Zend Framework module that integrates Doctrine as queuing system",
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
         "zf2",
+        "zf3",
         "queue",
         "job",
         "doctrine",
