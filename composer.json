@@ -25,7 +25,7 @@
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
         "zendframework/zend-stdlib": "^2.2 || ^3.0",
         "slm/queue": "^1.0",
-        "doctrine/doctrine-orm-module":  "~0.7 || ^1.0",
+        "doctrine/doctrine-orm-module":  "~0.7 || ^1.0 || ^2.1",
         "doctrine/dbal": "^2.5"
     },
     "require-dev": {
