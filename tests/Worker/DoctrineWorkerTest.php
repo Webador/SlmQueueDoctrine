@@ -57,38 +57,6 @@ class DoctrineWorkerTest extends TestCase
         static::assertEquals('deleted', $job->getContent());
     }
 
-    public function testAssertJobIsReleasedIfReleasableExceptionIsThrown()
-    {
-        $job = new Asset\ReleasableJob();
-
-        $this->queue->expects($this->once())
-            ->method('release')
-            ->will($this->returnCallback(function () use ($job) {
-                    $job->setContent('released');
-                })
-            );
-
-        $this->worker->processJob($job, $this->queue);
-
-        static::assertEquals('released', $job->getContent());
-    }
-
-    public function testAssertJobIsBuriedIfBuryableExceptionIsThrown()
-    {
-        $job = new Asset\BuryableJob();
-
-        $this->queue->expects($this->once())
-            ->method('bury')
-            ->will($this->returnCallback(function () use ($job) {
-                    $job->setContent('buried');
-                })
-            );
-
-        $this->worker->processJob($job, $this->queue);
-
-        static::assertEquals('buried', $job->getContent());
-    }
-
     public function testAssertJobIsBuriedIfAnyExceptionIsThrown()
     {
         $job = new Asset\ExceptionJob();

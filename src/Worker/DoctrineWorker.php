@@ -29,14 +29,6 @@ class DoctrineWorker extends AbstractWorker
             $queue->delete($job);
 
             return ProcessJobEvent::JOB_STATUS_SUCCESS;
-        } catch (JobException\ReleasableException $exception) {
-            $queue->release($job, $exception->getOptions());
-
-            return ProcessJobEvent::JOB_STATUS_FAILURE_RECOVERABLE;
-        } catch (JobException\BuryableException $exception) {
-            $queue->bury($job, $exception->getOptions());
-
-            return ProcessJobEvent::JOB_STATUS_FAILURE;
         } catch (Exception $exception) {
             $queue->bury($job, [
                 'message' => $exception->getMessage(),
