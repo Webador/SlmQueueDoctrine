@@ -1,10 +1,11 @@
 {
     "name": "slm/queue-doctrine",
-    "description": "Zend Framework 2 module that integrates Doctrine as queuing system",
+    "description": "Zend Framework module that integrates Doctrine as queuing system",
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
         "zf2",
+        "zf3",
         "queue",
         "job",
         "doctrine",
@@ -25,7 +26,7 @@
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
         "zendframework/zend-stdlib": "^2.2 || ^3.0",
         "slm/queue": "^1.0",
-        "doctrine/doctrine-orm-module":  "~0.7 || ^1.0",
+        "doctrine/doctrine-orm-module":  "~0.7 || ^1.0 || ^2.1",
         "doctrine/dbal": "^2.5"
     },
     "require-dev": {

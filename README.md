@@ -8,7 +8,7 @@ Created by Stefan Kleff
 
 Requirements
 ------------
-* [Zend Framework 2](https://github.com/zendframework/zf2)
+* [Zend-MVC](https://github.com/zendframework/zend-mvc)
 * [SlmQueue](https://github.com/juriansluiman/SlmQueue)
 * [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule)
 
