@@ -21,7 +21,7 @@ add the following line into your `composer.json` file:
 
 ```json
 "require": {
-	"slm/queue-doctrine": "^2.0"
+    "slm/queue-doctrine": "^2.0"
 }
 ```
 
@@ -45,16 +45,16 @@ return array(
         'connection' => array(
             // default connection name
             'orm_default' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'driverClass' => \Doctrine\DBAL\Driver\PDOMySql\Driver::class,
                 'params' => array(
                     'host'     => 'localhost',
                     'port'     => '3306',
                     'user'     => 'username',
                     'password' => 'password',
                     'dbname'   => 'database',
-                )
-            )
-        )
+                ),
+            ),
+        ),
     ),
 );
 ```
@@ -73,11 +73,12 @@ There is an alternative way to create 'queue_default' table in your database by 
 ### Adding queues
 
 ```php
+<?php
 return array(
   'slm_queue' => array(
     'queue_manager' => array(
       'factories' => array(
-        'foo' => 'SlmQueueDoctrine\Factory\DoctrineQueueFactory'
+        'foo' => \SlmQueueDoctrine\Factory\DoctrineQueueFactory::class
       )
     )
   )
@@ -86,6 +87,7 @@ return array(
 ### Adding jobs
 
 ```php
+<?php
 return array(
   'slm_queue' => array(
     'job_manager' => array(
@@ -100,7 +102,7 @@ return array(
 ### Configuring queues
 
 The following options can be set per queue ;
-	
+
 - connection (defaults to 'doctrine.connection.orm_default') : Name of the registered doctrine connection service
 - table_name (defaults to 'queue_default') : Table name which should be used to store jobs
 - deleted_lifetime (defaults to 0) : How long to keep deleted (successful) jobs (in minutes)
@@ -108,6 +110,7 @@ The following options can be set per queue ;
 
 
 ```php
+<?php
 return array(
   'slm_queue' => array(
     'queues' => array(
@@ -117,7 +120,7 @@ return array(
     )
   )
 );
- ```
+```
  
 Provided Worker Strategies
 --------------------------
@@ -159,62 +162,63 @@ This strategy is enabled by default.
 Valid options are:
 
 * scheduled: the time when the job will be scheduled to run next
-	* numeric string or integer - interpreted as a timestamp
-	* string parserable by the DateTime object
-	* DateTime instance
+    * numeric string or integer - interpreted as a timestamp
+    * string parserable by the DateTime object
+    * DateTime instance
 * delay: the delay before a job become available to be popped (defaults to 0 - no delay -)
-	* numeric string or integer - interpreted as seconds
-	* string parserable (ISO 8601 duration) by DateTimeInterval::__construct
-	* string parserable (relative parts) by DateTimeInterval::createFromDateString
-	* DateTimeInterval instance
+    * numeric string or integer - interpreted as seconds
+    * string parserable (ISO 8601 duration) by DateTimeInterval::__construct
+    * string parserable (relative parts) by DateTimeInterval::createFromDateString
+    * DateTimeInterval instance
 * priority: the lower the priority is, the sooner the job get popped from the queue (default to 1024)
 
 Examples:
 ```php
-	// scheduled for execution asap
-    $queue->push($job);
-    
-    // will get executed before jobs that have higher priority
-    $queue->push($job, [
-        'priority' => 200,
-    ]);
+<?php
+// scheduled for execution asap
+$queue->push($job);
 
-	// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-    $queue->push($job, array(
-        'scheduled' => 1420070400,
-    ));
+// will get executed before jobs that have higher priority
+$queue->push($job, [
+    'priority' => 200,
+]);
 
-    // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-    $queue->push($job, array(
-        'scheduled' => '2015-01-01 00:00:00'
-    ));
+// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
+$queue->push($job, array(
+    'scheduled' => 1420070400,
+));
 
-    // scheduled for execution at 2015-01-01 01:00:00
-    $queue->push($job, array(
-        'scheduled' => '2015-01-01 00:00:00',
-        'delay' => 3600
-    ));  
+// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
+$queue->push($job, array(
+    'scheduled' => '2015-01-01 00:00:00'
+));
 
-    // scheduled for execution at now + 300 seconds
-    $queue->push($job, array(
-        'delay' => 'PT300S'
-    ));
+// scheduled for execution at 2015-01-01 01:00:00
+$queue->push($job, array(
+    'scheduled' => '2015-01-01 00:00:00',
+    'delay' => 3600
+));  
 
-    // scheduled for execution at now + 2 weeks (1209600 seconds)
-    $queue->push($job, array(
-        'delay' => '2 weeks'
-    ));
+// scheduled for execution at now + 300 seconds
+$queue->push($job, array(
+    'delay' => 'PT300S'
+));
 
-    // scheduled for execution at now + 300 seconds
-    $queue->push($job, array(
-        'delay' => new DateInterval("PT300S"))
-    ));
+// scheduled for execution at now + 2 weeks (1209600 seconds)
+$queue->push($job, array(
+    'delay' => '2 weeks'
+));
+
+// scheduled for execution at now + 300 seconds
+$queue->push($job, array(
+    'delay' => new DateInterval('PT300S')
+));
 ```
 
 
 ### Worker actions
 
-Interact with workers from the command line from within the public folder of your Zend Framework 2 application
+Interact with workers from the command line from within the public folder of your Zend Framework application
 
 #### Starting a worker
 Start a worker that will keep monitoring a specific queue for jobs scheduled to be processed. This worker will continue until it has reached certain criteria (exceeds a memory limit or has processed a specified number of jobs).
@@ -223,14 +227,13 @@ Start a worker that will keep monitoring a specific queue for jobs scheduled to 
 
 A worker will exit when you press cntr-C *after* it has finished the current job it is working on. (PHP doesn't support signal handling on Windows)
 
-*Warning : In previous versions of SlmQueueDoctrine the worker would quit if there where no jobs available for 
-processing. That meant you could savely create a cronjob that would start a worker every minute. If you do that now
-you will quickly run out of available resources.
+> Warning : In previous versions of SlmQueueDoctrine the worker would quit if there where no jobs available for 
+> processing. That meant you could savely create a cronjob that would start a worker every minute. If you do that now
+> you will quickly run out of available resources.
 
-Now, you can let your script run indefinitely. While this was not possible in PHP versions previous to 5.3, it is now
-not a big deal. This has the other benefit of not needing to bootstrap the application every time, which is good
-for performance.
-*
+> Now, you can let your script run indefinitely. While this was not possible in PHP versions previous to 5.3, it is now
+> not a big deal. This has the other benefit of not needing to bootstrap the application every time, which is good
+> for performance.
 
 #### Recovering jobs
 
@@ -240,3 +243,39 @@ To recover jobs which are in the 'running' state for prolonged period of time (s
 
 *Note : Workers that are processing a job that is being recovered are NOT stopped.*
 
+
+Burying / Releasing a job
+-------------------------
+
+If a job is "buried" it is marked as "failed" forever. It wont get retried.
+If a job is "released" it is marked as "currently failed" and will be rescheduled for execution at a later date.
+
+In previous version of SlmQueueDoctrine it was possible to throw a `SlmQueueDoctrine\Job\Exception\BuryableException` 
+or a `SlmQueueDoctrine\Job\Exception\ReleasableException` to communicate this from inside a job to the worker.
+
+These exception were removed from all SlmQueue adapters in order to make them more equal. Use this instead:
+
+```php
+<?php
+class MyJob extends \SlmQueue\Job\AbstractJob implements \SlmQueue\Queue\QueueAwareInterface
+{
+    use \SlmQueue\Queue\QueueAwareTrait;
+
+    public function execute()
+    {
+        $clonedJob = clone $this;
+        
+        // try this job again at a specific date:
+        $this->getQueue()->push(
+            $clonedJob,
+            ['scheduled' => new \DateTime('2020-12-31 00:00:00')]
+        );
+        
+        // OR try this job again in 5 minutes:
+        $this->getQueue()->push(
+            $clonedJob,
+            ['delay' => new \DateInterval('PT5M')]
+        );
+    }
+}
+```
