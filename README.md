@@ -63,8 +63,8 @@ return array(
 
 You must create the required table that will contain the queue's you may use the schema located in 'data/queue_default.sql'. If you change the table name look at [Configuring queues](./#configuring-queues)
 
-```
->mysql database < data/queue_default.sql
+```bash
+$ mysql database < data/queue_default.sql
 ```
 ### Creating the table from Doctrine Entity
 There is an alternative way to create 'queue_default' table in your database by copying Doctrine Entity 'date/DefaultQueue.php' to your entity folder ('Application\Entity' in our example) and executing Doctrine's 'orm:schema-tool:update' command which should create the table for you. Notice that DefaultQueue entity is only used for table creation and is not used by this module internally.
@@ -253,8 +253,10 @@ If a job is "released" it is marked as "currently failed" and will be reschedule
 In previous version of SlmQueueDoctrine it was possible to throw a `SlmQueueDoctrine\Job\Exception\BuryableException` 
 or a `SlmQueueDoctrine\Job\Exception\ReleasableException` to communicate this from inside a job to the worker.
 
-These exception were removed from all SlmQueue adapters in order to make them more equal. Use this instead:
+These exception were removed from all SlmQueue adapters in order to make them more equal. 
+You can bury a job but throwing *any* exception during `execute()`.
 
+In order to release a job now you have to use this snippet instead:
 ```php
 <?php
 class MyJob extends \SlmQueue\Job\AbstractJob implements \SlmQueue\Queue\QueueAwareInterface
