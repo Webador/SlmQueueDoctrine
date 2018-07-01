@@ -39,7 +39,7 @@ class DefaultQueue
     /**
      * @var string
      *
-     * @ORM\Column(name="data", type="text", nullable=false)
+     * @ORM\Column(name="data", type="text", nullable=false, length=16777215)
      */
     private $data;
 
