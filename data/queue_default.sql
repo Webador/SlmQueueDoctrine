@@ -1,7 +1,7 @@
-CREATE TABLE IF NOT EXISTS `queue_default` (
+CREATE TABLE IF NOT EXISTS `queue_defaults` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `queue` varchar(64) NOT NULL,
-  `data` text NOT NULL,
+  `data` mediumtext NOT NULL,
   `status` smallint(1) NOT NULL,
   `created` datetime(6) NOT NULL,
   `scheduled` datetime(6) NOT NULL,
