@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `queue_defaults` (
+CREATE TABLE IF NOT EXISTS `queue_default` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `queue` varchar(64) NOT NULL,
   `data` mediumtext NOT NULL,
