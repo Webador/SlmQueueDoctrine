@@ -6,6 +6,7 @@
     "keywords": [
         "zf2",
         "zf3",
+        "expressive",
         "queue",
         "job",
         "doctrine",
@@ -45,7 +46,8 @@
             "dev-master": "2.1.x-dev"
         },
         "zf": {
-            "module": "SlmQueueDoctrine\\Module"
+            "module": "SlmQueueDoctrine\\Module",
+            "config-provider": "SlmQueueDoctrine\\ConfigProvider"
         }
     },
     "autoload": {
