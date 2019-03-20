@@ -3,10 +3,9 @@
 namespace SlmQueueDoctrineTest\Asset;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use SlmQueue\Job\AbstractJob;
 
-class OMJob extends AbstractJob implements ObjectManagerAwareInterface
+class OMJob extends AbstractJob
 {
 
     /**

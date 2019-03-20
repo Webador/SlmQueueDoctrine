@@ -8,16 +8,15 @@ Created by Stefan Kleff
 
 Requirements
 ------------
-* [Zend-MVC](https://github.com/zendframework/zend-mvc)
 * [SlmQueue](https://github.com/juriansluiman/SlmQueue)
-* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule)
+* [dasprid/container-interop-doctrine](https://github.com/DASPRiD/container-interop-doctrine)
 
+Note: it's also compatible with [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule).
 
 Installation
 ------------
 
-First, install SlmQueue ([instructions here](https://github.com/juriansluiman/SlmQueue/blob/master/README.md)). Then,
-add the following line into your `composer.json` file:
+First, install SlmQueue. Then, add the following line into your `composer.json` file:
 
 ```json
 "require": {
@@ -34,7 +33,7 @@ Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentati
 
 ### Configuring the connection
 
-You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here is some more [information](https://github.com/doctrine/DoctrineORMModule#connection-settings).
+You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here is some [examples](https://github.com/DASPRiD/container-interop-doctrine/tree/master/example).
 
 Connection parameters can be defined in the application configuration:
 
