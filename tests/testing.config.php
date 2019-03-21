@@ -42,11 +42,16 @@ return [
     'doctrine'  => [
         'connection' => [
             'orm_default' => [
-                'driverClass' => Driver::class,
+                'driver_class' => Driver::class,
                 'params'      => [
                     'memory' => true,
                 ],
             ],
         ],
-    ]
+    ],
+    'service_manager' => [
+        'factories' => [
+            'doctrine.connection.orm_default' => \ContainerInteropDoctrine\ConnectionFactory::class,
+        ],
+    ],
 ];
