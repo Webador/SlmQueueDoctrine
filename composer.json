@@ -41,6 +41,9 @@
         "phpunit/phpunit": "^4.8",
         "squizlabs/php_codesniffer": "^2.7"
     },
+    "suggest": {
+        "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule as dasprid/container-interop-doctrine implementation"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.1.x-dev"
