@@ -33,7 +33,7 @@ Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentati
 
 ### Configuring the connection
 
-You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here is some [examples](https://github.com/DASPRiD/container-interop-doctrine/tree/master/example).
+You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here are some [examples](https://github.com/DASPRiD/container-interop-doctrine/tree/master/example).
 
 Connection parameters can be defined in the application configuration:
 
@@ -125,7 +125,7 @@ In addition to the provided strategies by [SlmQueue](https://github.com/juriansl
 
 #### ClearObjectManagerStrategy
 
-This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the ObjectManagerAwareInterface.
+This strategy will clear the ObjectManager before execution of individual jobs. [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) it's required and the job must implement the functions described in (ObjectManagerAwareInterface)[https://github.com/doctrine/DoctrineModule/blob/master/src/DoctrineModule/Persistence/ObjectManagerAwareInterface.php].
 
 listens to:
 
