@@ -42,16 +42,24 @@ return [
     'doctrine'  => [
         'connection' => [
             'orm_default' => [
-                'driver_class' => Driver::class,
+                'driverClass' => Driver::class,
                 'params'      => [
-                    'memory' => true,
+                    'url' => 'sqlite:///:memory:',
                 ],
             ],
+        ],
+        'driver' => [
+            'orm_default' => [
+                'class' => \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain::class,
+                'drivers' => [],
+            ],
+
         ],
     ],
     'service_manager' => [
         'factories' => [
             'doctrine.connection.orm_default' => \ContainerInteropDoctrine\ConnectionFactory::class,
+            'doctrine.entity_manager.orm_default' => \ContainerInteropDoctrine\EntityManagerFactory::class,
         ],
     ],
 ];
