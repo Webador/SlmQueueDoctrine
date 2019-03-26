@@ -75,7 +75,7 @@ class TestCase extends PHPUnit_Framework_TestCase
         }
 
         $serviceManager = ServiceManagerFactory::getServiceManager();
-        $this->entityManager = $serviceManager->get('doctrine.entity_manager.orm_default');
+        $this->entityManager = $serviceManager->get('doctrine.entitymanager.orm_default');
 
         return $this->entityManager;
     }

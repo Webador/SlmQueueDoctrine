@@ -27,7 +27,6 @@
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
         "zendframework/zend-stdlib": "^2.2 || ^3.0",
         "slm/queue": "^1.0",
-        "dasprid/container-interop-doctrine": "^1.1",
         "doctrine/dbal": "^2.5"
     },
     "require-dev": {
@@ -42,7 +41,8 @@
         "squizlabs/php_codesniffer": "^2.7"
     },
     "suggest": {
-        "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule as dasprid/container-interop-doctrine implementation"
+        "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule",
+        "dasprid/container-interop-doctrine": "^1.1 to use dasprid/container-interop-doctrine implementation"
     },
     "extra": {
         "branch-alias": {

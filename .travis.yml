@@ -24,6 +24,13 @@ before_script:
   - mkdir -p tests/build/logs
 
 script:
+  - composer require dasprid/container-interop-doctrine:^1.1 --prefer-source $PREFER_LOWEST
+  - cp tests/TestConfigurationContainerInteropDoctrine.php.dist tests/TestConfiguration.php.dist
+  - vendor/bin/phpunit -c ./phpunit.xml.dist
+  - composer remove dasprid/container-interop-doctrine
+  - rm tests/TestConfiguration.php.dist
+  - composer require doctrine/doctrine-orm-module:"~0.7||^1.0||^2.1" --prefer-source $PREFER_LOWEST
+  - cp tests/TestConfigurationDoctrineORMModule.php.dist tests/TestConfiguration.php.dist
   - vendor/bin/phpunit -c ./phpunit.xml.dist
   - vendor/bin/phpcs --standard=PSR2 src
 
