@@ -9,14 +9,14 @@ Created by Stefan Kleff
 Requirements
 ------------
 * [SlmQueue](https://github.com/juriansluiman/SlmQueue)
-* [dasprid/container-interop-doctrine](https://github.com/DASPRiD/container-interop-doctrine)
+* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [DASPRiD/container-interop-doctrine](https://github.com/DASPRiD/container-interop-doctrine)
 
-Note: it's also compatible with [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule).
+Note: it's necessary require the doctrine package in composer.json file.
 
 Installation
 ------------
 
-First, install SlmQueue. Then, add the following line into your `composer.json` file:
+Add the following line into your `composer.json` file:
 
 ```json
 "require": {
@@ -24,7 +24,11 @@ First, install SlmQueue. Then, add the following line into your `composer.json` 
 }
 ```
 
-Then, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
+If you have the [zendframework/zend-component-installer](https://github.com/zendframework/zend-component-installer) package installed, it will ask you to enable the module (and `SlmQueue`), both in ZF and Expressive. Otherwise, add the module to the list:
+* in Zend MVC,enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
+* in Zend Expressive,enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
+
+Note: Don't forget install [SlmQueue](https://github.com/juriansluiman/SlmQueue) in you config file, which is required.
 
 Documentation
 -------------
