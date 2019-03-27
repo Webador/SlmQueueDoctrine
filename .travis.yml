@@ -1,32 +1,108 @@
-sudo: false
-
 language: php
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.5
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 5.5
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 5.5
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 5.6
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 5.6
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 5.6
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.0
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.0
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.0
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.1
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.1
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+        - EXECUTE_CS_CHECK=true
+        - TEST_COVERAGE=true
+    - php: 7.1
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.1
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.2
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.2
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.2
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.2
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.3
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.3
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.3
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.3
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="container-interop-doctrine"
 
 cache:
   directories:
     - $HOME/.composer/cache
-    - vendor
-
-php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-
-env:
-  matrix:
-    - PREFER_LOWEST="--prefer-lowest"
-    - PREFER_LOWEST=""
 
 before_script:
   - composer self-update
-  - composer update --prefer-source $PREFER_LOWEST
   - mkdir -p tests/build/logs
 
 script:
-  - vendor/bin/phpunit -c ./phpunit.xml.dist
-  - vendor/bin/phpcs --standard=PSR2 src
+  - if [[ $DBAL_PROVIDER == 'container-interop-doctrine' ]]; then git checkout HEAD composer.json && rm -Rf vendor && rm -f composer.lock; composer require dasprid/container-interop-doctrine:^1.1 --prefer-source $DEPENDENCIES; cp tests/TestConfigurationContainerInteropDoctrine.php.dist tests/TestConfiguration.php.dist; fi
+  - if [[ $DBAL_PROVIDER == 'doctrine-orm-module' ]]; then git checkout HEAD composer.json && rm -Rf vendor && rm -f composer.lock; composer require doctrine/doctrine-orm-module:"~0.7||^1.0||^2.1" --prefer-source $DEPENDENCIES; cp tests/TestConfigurationDoctrineORMModule.php.dist tests/TestConfiguration.php.dist; fi
+  - if [[ $TEST_COVERAGE == 'true' ]]; then php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml --configuration ./phpunit.xml.dist; else ./vendor/bin/phpunit --configuration ./phpunit.xml.dist; fi
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --standard=PSR2 src; fi
 
-notifications:
-  irc: "irc.freenode.org#zftalk.modules"
-  email: false
+after_success:
+  - if [[ $TEST_COVERAGE == 'true' ]]; then php vendor/bin/php-coveralls -v; fi

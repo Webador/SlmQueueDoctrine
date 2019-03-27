@@ -18,14 +18,12 @@
  */
 return [
     'modules'                 => [
-        'DoctrineModule',
-        'DoctrineORMModule',
         'SlmQueue',
         'SlmQueueDoctrine'
     ],
     'module_listener_options' => [
         'config_glob_paths' => [
-            __DIR__ . '/testing.config.php',
+            __DIR__ . '/testing-containerinteropdoctrine.config.php',
         ],
         'module_paths'      => []
     ],

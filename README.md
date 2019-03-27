@@ -3,21 +3,21 @@ SlmQueueDoctrine
 
 [![Latest Stable Version](https://poser.pugx.org/slm/queue-doctrine/v/stable.png)](https://packagist.org/packages/slm/queue-doctrine)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue-doctrine/v/unstable.png)](https://packagist.org/packages/slm/queue-doctrine)
+[![Coverage Status](https://coveralls.io/repos/github/juriansluiman/SlmQueueDoctrine/badge.svg?branch=master)](https://coveralls.io/github/juriansluiman/SlmQueueDoctrine?branch=master)
 
 Created by Stefan Kleff
 
 Requirements
 ------------
-* [Zend-MVC](https://github.com/zendframework/zend-mvc)
 * [SlmQueue](https://github.com/juriansluiman/SlmQueue)
-* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule)
+* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [DASPRiD/container-interop-doctrine](https://github.com/DASPRiD/container-interop-doctrine)
 
+Note: it's necessary require the doctrine package in composer.json file.
 
 Installation
 ------------
 
-First, install SlmQueue ([instructions here](https://github.com/juriansluiman/SlmQueue/blob/master/README.md)). Then,
-add the following line into your `composer.json` file:
+Add the following line into your `composer.json` file:
 
 ```json
 "require": {
@@ -25,7 +25,11 @@ add the following line into your `composer.json` file:
 }
 ```
 
-Then, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
+If you have the [zendframework/zend-component-installer](https://github.com/zendframework/zend-component-installer) package installed, it will ask you to enable the module (and `SlmQueue`), both in ZF and Expressive. Otherwise, add the module to the list:
+* in Zend MVC,enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
+* in Zend Expressive,enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
+
+Note: Don't forget install [SlmQueue](https://github.com/juriansluiman/SlmQueue) in you config file, which is required.
 
 Documentation
 -------------
@@ -34,7 +38,7 @@ Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentati
 
 ### Configuring the connection
 
-You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here is some more [information](https://github.com/doctrine/DoctrineORMModule#connection-settings).
+You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here are some [examples](https://github.com/DASPRiD/container-interop-doctrine/tree/master/example).
 
 Connection parameters can be defined in the application configuration:
 
@@ -126,7 +130,7 @@ In addition to the provided strategies by [SlmQueue](https://github.com/juriansl
 
 #### ClearObjectManagerStrategy
 
-This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the ObjectManagerAwareInterface.
+This strategy will clear the ObjectManager before execution of individual jobs. [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) it's required and the job must implement the functions described in (ObjectManagerAwareInterface)[https://github.com/doctrine/DoctrineModule/blob/master/src/DoctrineModule/Persistence/ObjectManagerAwareInterface.php].
 
 listens to:
 
