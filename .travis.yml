@@ -20,7 +20,6 @@ env:
 
 before_script:
   - composer self-update
-  - composer update --prefer-source $PREFER_LOWEST
   - mkdir -p tests/build/logs
 
 script:
@@ -29,6 +28,7 @@ script:
   - vendor/bin/phpunit -c ./phpunit.xml.dist
   - composer remove dasprid/container-interop-doctrine
   - rm tests/TestConfiguration.php.dist
+  - git checkout HEAD composer.json && rm -Rf vendor && rm composer.lock
   - composer require doctrine/doctrine-orm-module:"~0.7||^1.0||^2.1" --prefer-source $PREFER_LOWEST
   - cp tests/TestConfigurationDoctrineORMModule.php.dist tests/TestConfiguration.php.dist
   - vendor/bin/phpunit -c ./phpunit.xml.dist
