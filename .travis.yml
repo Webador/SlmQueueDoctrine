@@ -1,39 +1,68 @@
-sudo: false
-
 language: php
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.5
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 5.5
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 5.5
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-source --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 5.6
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 5.6
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 5.6
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-source --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.0
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.0
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.0
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-source --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.1
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="container-interop-doctrine"
+        - EXECUTE_CS_CHECK=true
+    - php: 7.1
+      env:
+        - DEPENDENCIES="--prefer-source"
+        - DBAL_PROVIDER="doctrine-orm-module"
+    - php: 7.1
+      env:
+        - DEPENDENCIES="--prefer-lowest --prefer-source --prefer-stable"
+        - DBAL_PROVIDER="doctrine-orm-module"
 
 cache:
   directories:
     - $HOME/.composer/cache
-    - vendor
-
-php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-
-env:
-  matrix:
-    - PREFER_LOWEST="--prefer-lowest"
-    - PREFER_LOWEST=""
 
 before_script:
   - composer self-update
   - mkdir -p tests/build/logs
 
 script:
-  - composer require dasprid/container-interop-doctrine:^1.1 --prefer-source $PREFER_LOWEST
-  - cp tests/TestConfigurationContainerInteropDoctrine.php.dist tests/TestConfiguration.php.dist
-  - vendor/bin/phpunit -c ./phpunit.xml.dist
-  - composer remove dasprid/container-interop-doctrine
-  - rm tests/TestConfiguration.php.dist
-  - git checkout HEAD composer.json && rm -Rf vendor && rm composer.lock
-  - composer require doctrine/doctrine-orm-module:"~0.7||^1.0||^2.1" --prefer-source $PREFER_LOWEST
-  - cp tests/TestConfigurationDoctrineORMModule.php.dist tests/TestConfiguration.php.dist
-  - vendor/bin/phpunit -c ./phpunit.xml.dist
-  - vendor/bin/phpcs --standard=PSR2 src
-
-notifications:
-  irc: "irc.freenode.org#zftalk.modules"
-  email: false
+  - if [[ $DBAL_PROVIDER == 'container-interop-doctrine' ]]; then git checkout HEAD composer.json && rm -Rf vendor && rm composer.lock; composer require dasprid/container-interop-doctrine:^1.1 --prefer-source $DEPENDENCIES; cp tests/TestConfigurationContainerInteropDoctrine.php.dist tests/TestConfiguration.php.dist; fi
+  - if [[ $DBAL_PROVIDER == 'doctrine-orm-module' ]]; then git checkout HEAD composer.json && rm -Rf vendor && rm composer.lock; composer require doctrine/doctrine-orm-module:"~0.7||^1.0||^2.1" --prefer-source $DEPENDENCIES; cp tests/TestConfigurationDoctrineORMModule.php.dist tests/TestConfiguration.php.dist; fi
+  - php -dzend_extension=xdebug.so ./vendor/bin/phpunit -c ./phpunit.xml.dist
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --standard=PSR2 src; fi
