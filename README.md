@@ -26,8 +26,8 @@ Add the following line into your `composer.json` file:
 ```
 
 If you have the [zendframework/zend-component-installer](https://github.com/zendframework/zend-component-installer) package installed, it will ask you to enable the module (and `SlmQueue`), both in ZF and Expressive. Otherwise, add the module to the list:
-* in Zend MVC,enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
-* in Zend Expressive,enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
+* in Zend MVC, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
+* in Zend Expressive, enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
 
 Note: Don't forget install [SlmQueue](https://github.com/juriansluiman/SlmQueue) in you config file, which is required.
 
@@ -130,7 +130,7 @@ In addition to the provided strategies by [SlmQueue](https://github.com/juriansl
 
 #### ClearObjectManagerStrategy
 
-This strategy will clear the ObjectManager before execution of individual jobs. [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) it's required and the job must implement the functions described in (ObjectManagerAwareInterface)[https://github.com/doctrine/DoctrineModule/blob/master/src/DoctrineModule/Persistence/ObjectManagerAwareInterface.php].
+This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the [DoctrineModule\Persistence\ObjectManagerAwareInterface](https://github.com/doctrine/DoctrineModule/blob/master/src/DoctrineModule/Persistence/ObjectManagerAwareInterface.php) or [SlmQueueDoctrine\Persistence\ObjectManagerAwareInterface](https://github.com/juriansluiman/SlmQueueDoctrine/blob/master/src/Persistence/ObjectManagerAwareInterface.php).
 
 listens to:
 

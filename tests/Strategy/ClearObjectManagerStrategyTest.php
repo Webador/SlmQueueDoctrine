@@ -49,7 +49,7 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 
         $job->setObjectManager($om);
 
-        //$om->expects($this->once())->method('clear');
+        $om->expects($this->once())->method('clear');
 
         $this->listener->onClear(new ProcessJobEvent($job, $this->worker, $this->queue));
     }
