@@ -25,9 +25,9 @@ Add the following line into your `composer.json` file:
 }
 ```
 
-If you have the [laminas/laminas-component-installer](https://github.com/laminas/laminas-component-installer) package installed, it will ask you to enable the module (and `SlmQueue`), both in ZF and Expressive. Otherwise, add the module to the list:
-* in Laminas MVC,enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
-* in Laminas Expressive,enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
+If you have the [laminas/laminas-component-installer](https://github.com/laminas/laminas-component-installer) package installed, it will ask you to enable the module (and `SlmQueue`), both in Laminas and Mezzio. Otherwise, add the module to the list:
+* in Laminas MVC, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
+* in Mezzio, enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
 
 Note: Don't forget install [SlmQueue](https://github.com/juriansluiman/SlmQueue) in you config file, which is required.
 
