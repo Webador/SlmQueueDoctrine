@@ -50,7 +50,10 @@
         },
         "laminas": {
             "module": "SlmQueueDoctrine\\Module",
-            "config-provider": "SlmQueueDoctrine\\ConfigProvider"
+            "config-provider": "SlmQueueDoctrine\\ConfigProvider",
+            "component-whitelist": [
+                "slm/queue"
+            ]
         }
     },
     "autoload": {
