@@ -2,7 +2,8 @@
 
 namespace SlmQueueDoctrine\Strategy;
 
-use DoctrineModule\Persistence\ObjectManagerAwareInterface;
+use DoctrineModule\Persistence\ObjectManagerAwareInterface as DoctrineModuleObjectManagerAwareInterface;
+use SlmQueueDoctrine\Persistence\ObjectManagerAwareInterface;
 use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
@@ -30,7 +31,9 @@ class ClearObjectManagerStrategy extends AbstractStrategy
         /** @var ObjectManagerAwareInterface $job */
         $job = $event->getJob();
 
-        if ($job instanceof ObjectManagerAwareInterface && $job->getObjectManager()) {
+        if (($job instanceof ObjectManagerAwareInterface || $job instanceof DoctrineModuleObjectManagerAwareInterface)
+            && $job->getObjectManager()
+        ) {
             $job->getObjectManager()->clear();
         }
     }
