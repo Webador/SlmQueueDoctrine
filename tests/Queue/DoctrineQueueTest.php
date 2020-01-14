@@ -13,7 +13,7 @@ use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class DoctrineQueueTest extends TestCase
 {

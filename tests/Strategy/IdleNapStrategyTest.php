@@ -8,7 +8,7 @@ use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrine\Strategy\IdleNapStrategy;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 {

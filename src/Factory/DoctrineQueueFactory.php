@@ -5,8 +5,8 @@ namespace SlmQueueDoctrine\Factory;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Interop\Container\ContainerInterface;
 
 /**

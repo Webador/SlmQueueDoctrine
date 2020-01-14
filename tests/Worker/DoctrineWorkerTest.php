@@ -8,8 +8,8 @@ use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrineTest\Asset;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Zend\EventManager\EventManager;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\EventManager\EventManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class DoctrineWorkerTest extends TestCase
 {

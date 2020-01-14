@@ -22,7 +22,7 @@ namespace SlmQueueDoctrineTest\Framework;
 use PHPUnit_Framework_TestCase;
 use Doctrine\ORM\EntityManager;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class TestCase extends PHPUnit_Framework_TestCase
 {
