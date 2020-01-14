@@ -48,7 +48,7 @@
         "branch-alias": {
             "dev-master": "2.1.x-dev"
         },
-        "zf": {
+        "laminas": {
             "module": "SlmQueueDoctrine\\Module",
             "config-provider": "SlmQueueDoctrine\\ConfigProvider"
         }
