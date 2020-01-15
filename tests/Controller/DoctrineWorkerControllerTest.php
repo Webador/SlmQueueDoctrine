@@ -5,9 +5,9 @@ namespace SlmQueueDoctrineTest\Controller;
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueDoctrine\Controller\DoctrineWorkerController;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Zend\Mvc\Router\RouteMatch;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Mvc\Router\RouteMatch;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\ServiceManager;
 
 class DoctrineWorkerControllerTest extends TestCase
 {

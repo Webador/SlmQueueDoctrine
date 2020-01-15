@@ -61,8 +61,8 @@ return [
          */
         'strategy_manager'  => [
             'factories' => [
-                IdleNapStrategy::class            => \Zend\ServiceManager\Factory\InvokableFactory::class,
-                ClearObjectManagerStrategy::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+                IdleNapStrategy::class            => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+                ClearObjectManagerStrategy::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             ],
         ],
     ],

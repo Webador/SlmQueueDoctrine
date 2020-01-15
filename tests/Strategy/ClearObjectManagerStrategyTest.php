@@ -10,7 +10,7 @@ use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use SlmQueueDoctrineTest\Asset\OMJob;
 use SlmQueueTest\Asset\SimpleWorker;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 {

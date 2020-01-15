@@ -3,7 +3,7 @@
 namespace SlmQueueDoctrine\Options;
 
 use SlmQueueDoctrine\Queue\DoctrineQueue;
-use Zend\Stdlib\AbstractOptions;
+use Laminas\Stdlib\AbstractOptions;
 
 /**
  * DoctrineOptions
