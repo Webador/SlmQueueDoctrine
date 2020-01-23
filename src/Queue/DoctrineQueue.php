@@ -2,32 +2,35 @@
 
 namespace SlmQueueDoctrine\Queue;
 
+use SlmQueueDoctrine\Exception\LogicException;
+use SlmQueueDoctrine\Exception\RuntimeException;
+use SlmQueueDoctrine\Exception\JobNotFoundException;
+use Exception;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\AbstractQueue;
-use SlmQueueDoctrine\Exception;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 
 class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 {
-    const STATUS_PENDING = 1;
-    const STATUS_RUNNING = 2;
-    const STATUS_DELETED = 3;
-    const STATUS_BURIED  = 4;
+    public const STATUS_PENDING = 1;
+    public const STATUS_RUNNING = 2;
+    public const STATUS_DELETED = 3;
+    public const STATUS_BURIED  = 4;
 
-    const LIFETIME_DISABLED  = 0;
-    const LIFETIME_UNLIMITED = -1;
+    public const LIFETIME_DISABLED  = 0;
+    public const LIFETIME_UNLIMITED = -1;
 
-    const DATABASE_PLATFORM_POSTGRES = 'postgresql';
+    private const DATABASE_PLATFORM_POSTGRES = 'postgresql';
 
-    const DEFAULT_PRIORITY = 1024;
+    public const DEFAULT_PRIORITY = 1024;
 
     /**
      * Options for this queue
@@ -68,10 +71,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         parent::__construct($name, $jobPluginManager);
     }
 
-    /**
-     * @return \SlmQueueDoctrine\Options\DoctrineOptions
-     */
-    public function getOptions()
+    public function getOptions(): DoctrineOptions
     {
         return $this->options;
     }
@@ -84,7 +84,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
      */
-    public function push(JobInterface $job, array $options = [])
+    public function push(JobInterface $job, array $options = []): void
     {
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
@@ -99,12 +99,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'scheduled' => $scheduled->format('Y-m-d H:i:s.u'),
             'priority'  => isset($options['priority']) ? $options['priority'] : self::DEFAULT_PRIORITY,
         ], [
-            Type::STRING,
-            Type::SMALLINT,
-            Type::STRING,
-            Type::TEXT,
-            Type::STRING,
-            Type::INTEGER,
+            Types::STRING,
+            Types::SMALLINT,
+            Types::STRING,
+            Types::TEXT,
+            Types::STRING,
+            Types::INTEGER,
         ]);
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
@@ -119,7 +119,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * {@inheritDoc}
      */
-    public function pop(array $options = [])
+    public function pop(array $options = []): ?JobInterface
     {
         // First run garbage collection
         $this->purge();
@@ -175,11 +175,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                         $row['id'],
                         static::STATUS_PENDING
                     ],
-                    [Type::SMALLINT, Type::STRING, Type::INTEGER, Type::SMALLINT]
+                    [Types::SMALLINT, Types::STRING, Types::INTEGER, Types::SMALLINT]
                 );
 
-                if ($rows != 1) {
-                    throw new Exception\LogicException("Race-condition detected while updating item in queue.");
+                if ($rows !== 1) {
+                    throw new LogicException("Race-condition detected while updating item in queue.");
                 }
             }
 
@@ -187,7 +187,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         } catch (DBALException $e) {
             $conn->rollback();
             $conn->close();
-            throw new Exception\RuntimeException($e->getMessage(), $e->getCode(), $e);
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
         if ($row === false) {
@@ -203,7 +203,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note: When $deletedLifetime === 0 the job will be deleted immediately
      */
-    public function delete(JobInterface $job, array $options = [])
+    public function delete(JobInterface $job, array $options = []): void
     {
         if ($this->options->getDeletedLifetime() === static::LIFETIME_DISABLED) {
             $this->connection->delete($this->options->getTableName(), ['id' => $job->getId()]);
@@ -227,11 +227,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     $job->getId(),
                     static::STATUS_RUNNING
                 ],
-                [Type::SMALLINT, Type::STRING, Type::INTEGER, Type::SMALLINT]
+                [Types::SMALLINT, Types::STRING, Types::INTEGER, Types::SMALLINT]
             );
 
-            if ($rows != 1) {
-                throw new Exception\LogicException("Race-condition detected while updating item in queue.");
+            if ($rows !== 1) {
+                throw new LogicException("Race-condition detected while updating item in queue.");
             }
         }
     }
@@ -241,7 +241,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * Note: When $buriedLifetime === 0 the job will be deleted immediately
      */
-    public function bury(JobInterface $job, array $options = [])
+    public function bury(JobInterface $job, array $options = []): void
     {
         if ($this->options->getBuriedLifetime() === static::LIFETIME_DISABLED) {
             $this->connection->delete($this->options->getTableName(), ['id' => $job->getId()]);
@@ -270,11 +270,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     $job->getId(),
                     static::STATUS_RUNNING
                 ],
-                [Type::SMALLINT, Type::STRING, TYPE::STRING, TYPE::TEXT, TYPE::INTEGER, TYPE::SMALLINT]
+                [Types::SMALLINT, Types::STRING, Types::STRING, Types::TEXT, Types::INTEGER, Types::SMALLINT]
             );
 
-            if ($rows != 1) {
-                throw new Exception\LogicException("Race-condition detected while updating item in queue.");
+            if ($rows !== 1) {
+                throw new LogicException("Race-condition detected while updating item in queue.");
             }
         }
     }
@@ -282,7 +282,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * {@inheritDoc}
      */
-    public function recover($executionTime)
+    public function recover($executionTime): int
     {
         $executedLifetime = $this->parseOptionsToDateTime(['delay' => - ($executionTime * 60)]);
 
@@ -290,7 +290,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             'SET status = ? ' .
             'WHERE executed < ? AND status = ? AND queue = ? AND finished IS NULL';
 
-        $rows = $this->connection->executeUpdate(
+        return $this->connection->executeUpdate(
             $update,
             [
                 static::STATUS_PENDING,
@@ -298,26 +298,20 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 static::STATUS_RUNNING,
                 $this->getName()
             ],
-            [Type::SMALLINT, Type::STRING, Type::SMALLINT, Type::STRING]
+            [Types::SMALLINT, Types::STRING, Types::SMALLINT, Types::STRING]
         );
-
-        return $rows;
     }
 
     /**
      * Create a concrete instance of a job from the queue
-     *
-     * @param  int          $id
-     * @return JobInterface
-     * @throws Exception\JobNotFoundException
      */
-    public function peek($id)
+    public function peek(int $id): JobInterface
     {
-        $sql  = 'SELECT * FROM ' . $this->options->getTableName().' WHERE id = ?';
-        $row  = $this->connection->fetchAssoc($sql, [$id], [Type::SMALLINT]);
+        $sql  = 'SELECT * FROM ' . $this->options->getTableName() . ' WHERE id = ?';
+        $row  = $this->connection->fetchAssoc($sql, [$id], [Types::SMALLINT]);
 
         if (! $row) {
-            throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
+            throw new JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
         // Add job ID to meta data
@@ -328,12 +322,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * Reschedules a specific running job
      *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
-     *
-     * @param  JobInterface             $job
-     * @param  array                    $options
-     * @throws Exception\LogicException
      */
-    public function release(JobInterface $job, array $options = [])
+    public function release(JobInterface $job, array $options = []): void
     {
         $scheduled = $this->parseOptionsToDateTime($options);
 
@@ -354,11 +344,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 $job->getId(),
                 static::STATUS_RUNNING,
             ],
-            [Type::SMALLINT, Type::STRING, Type::STRING, Type::STRING, Type::INTEGER, Type::SMALLINT]
+            [Types::SMALLINT, Types::STRING, Types::STRING, Types::STRING, Types::INTEGER, Types::SMALLINT]
         );
 
-        if ($rows != 1) {
-            throw new Exception\LogicException("Race-condition detected while updating item in queue.");
+        if ($rows !== 1) {
+            throw new LogicException("Race-condition detected while updating item in queue.");
         }
     }
 
@@ -383,7 +373,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @param $options array
      * @return DateTime
      */
-    protected function parseOptionsToDateTime($options)
+    protected function parseOptionsToDateTime($options): DateTime
     {
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
@@ -417,7 +407,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     try {
                         // first try ISO 8601 duration specification
                         $delay = new DateInterval($options['delay']);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         // then try normal date parser
                         $delay = DateInterval::createFromDateString($options['delay']);
                     }
@@ -440,19 +430,19 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * Cleans old jobs in the table according to the configured lifetime of successful and failed jobs.
      */
-    protected function purge()
+    protected function purge(): void
     {
         if ($this->options->getBuriedLifetime() > static::LIFETIME_UNLIMITED) {
             $options = ['delay' => - ($this->options->getBuriedLifetime() * 60)];
             $buriedLifetime = $this->parseOptionsToDateTime($options);
 
-            $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
+            $delete = 'DELETE FROM ' . $this->options->getTableName() . ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
             $this->connection->executeUpdate(
                 $delete,
                 [$buriedLifetime->format('Y-m-d H:i:s.u'), static::STATUS_BURIED, $this->getName()],
-                [Type::STRING, Type::INTEGER, Type::STRING]
+                [Types::STRING, Types::INTEGER, Types::STRING]
             );
         }
 
@@ -460,13 +450,13 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $options = ['delay' => - ($this->options->getDeletedLifetime() * 60)];
             $deletedLifetime = $this->parseOptionsToDateTime($options);
 
-            $delete = 'DELETE FROM ' . $this->options->getTableName(). ' ' .
+            $delete = 'DELETE FROM ' . $this->options->getTableName() . ' ' .
                 'WHERE finished < ? AND status = ? AND queue = ? AND finished IS NOT NULL';
 
             $this->connection->executeUpdate(
                 $delete,
                 [$deletedLifetime->format('Y-m-d H:i:s.u'), static::STATUS_DELETED, $this->getName()],
-                [Type::STRING, Type::INTEGER, Type::STRING]
+                [Types::STRING, Types::INTEGER, Types::STRING]
             );
         }
     }

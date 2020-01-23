@@ -30,10 +30,8 @@ class ReleasableException extends RuntimeException implements ExceptionInterface
 
     /**
      * Get the options
-     *
-     * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }

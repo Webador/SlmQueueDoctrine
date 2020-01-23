@@ -17,8 +17,11 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ): DoctrineWorkerController {
         $worker             = $container->get(DoctrineWorker::class);
         $queuePluginManager = $container->get(QueuePluginManager::class);
 
@@ -28,7 +31,7 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator): DoctrineWorkerController
     {
         return $this($serviceLocator->getServiceLocator(), DoctrineWorkerController::class);
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,8 +21,8 @@
 namespace SlmQueueDoctrineTest\Util;
 
 use Laminas\Mvc\Service\ServiceListenerFactory;
-use Laminas\ServiceManager\ServiceManager;
 use Laminas\Mvc\Service\ServiceManagerConfig;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Utility used to retrieve a freshly bootstrapped application's service manager
@@ -40,7 +41,7 @@ class ServiceManagerFactory
     /**
      * @param array $config
      */
-    public static function setConfig(array $config)
+    public static function setConfig(array $config): void
     {
         static::$config = $config;
     }
@@ -48,7 +49,7 @@ class ServiceManagerFactory
     /**
      * Builds a new service manager
      */
-    public static function getServiceManager()
+    public static function getServiceManager(): ServiceManager
     {
         $serviceManagerConfig = new ServiceManagerConfig(
             isset(static::$config['service_manager']) ? static::$config['service_manager'] : []
@@ -69,6 +70,7 @@ class ServiceManagerFactory
         /** @var $moduleManager \Laminas\ModuleManager\ModuleManager */
         $moduleManager = $serviceManager->get('ModuleManager');
         $moduleManager->loadModules();
+
         //$serviceManager->setAllowOverride(true);
         return $serviceManager;
     }

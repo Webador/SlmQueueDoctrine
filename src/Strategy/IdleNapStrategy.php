@@ -17,18 +17,12 @@ class IdleNapStrategy extends AbstractStrategy
      */
     protected $napDuration = 1;
 
-    /**
-     * @param int $napDuration
-     */
-    public function setNapDuration($napDuration)
+    public function setNapDuration(int $napDuration)
     {
         $this->napDuration = (int) $napDuration;
     }
 
-    /**
-     * @return int
-     */
-    public function getNapDuration()
+    public function getNapDuration(): int
     {
         return $this->napDuration;
     }
@@ -36,7 +30,7 @@ class IdleNapStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, int $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             AbstractWorkerEvent::EVENT_PROCESS_IDLE,
@@ -45,10 +39,7 @@ class IdleNapStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param ProcessIdleEvent $event
-     */
-    public function onIdle(ProcessIdleEvent $event)
+    public function onIdle(ProcessIdleEvent $event): void
     {
         $queue = $event->getQueue();
 

@@ -24,7 +24,7 @@ class OMJob extends AbstractJob implements ObjectManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function setObjectManager(ObjectManager $objectManager)
+    public function setObjectManager(ObjectManager $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
@@ -32,7 +32,7 @@ class OMJob extends AbstractJob implements ObjectManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function getObjectManager()
+    public function getObjectManager(): ObjectManager
     {
         return $this->objectManager;
     }

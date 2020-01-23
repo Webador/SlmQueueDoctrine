@@ -17,7 +17,7 @@ class DoctrineQueueFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): DoctrineQueue
     {
         $config        = $container->get('config');
         $queuesOptions = $config['slm_queue']['queues'];
@@ -28,16 +28,17 @@ class DoctrineQueueFactory implements FactoryInterface
         $connection       = $container->get($queueOptions->getConnection());
         $jobPluginManager = $container->get(JobPluginManager::class);
 
-        $queue = new DoctrineQueue($connection, $queueOptions, $requestedName, $jobPluginManager);
-
-        return $queue;
+        return new DoctrineQueue($connection, $queueOptions, $requestedName, $jobPluginManager);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function createService(ServiceLocatorInterface $serviceLocator, $name = '', $requestedName = '')
-    {
+    public function createService(
+        ServiceLocatorInterface $serviceLocator,
+        $name = '',
+        $requestedName = ''
+    ): DoctrineQueue {
         return $this($serviceLocator->getServiceLocator(), $requestedName);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,10 +20,9 @@
 
 namespace SlmQueueDoctrineTest\Framework;
 
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Laminas\ServiceManager\ServiceManager;
 
 class TestCase extends PHPUnitTestCase
 {
@@ -36,10 +36,7 @@ class TestCase extends PHPUnitTestCase
      */
     private $entityManager;
 
-    /**
-     * Creates a database if not done already.
-     */
-    public function createDb()
+    public function createDb(): void
     {
         if ($this->hasDb) {
             return;
@@ -53,7 +50,7 @@ class TestCase extends PHPUnitTestCase
         $this->hasDb = true;
     }
 
-    public function dropDb()
+    public function dropDb(): void
     {
         $em = $this->getEntityManager();
         $conn = $em->getConnection();
@@ -63,12 +60,7 @@ class TestCase extends PHPUnitTestCase
         $this->hasDb = false;
     }
 
-    /**
-     * Get EntityManager.
-     *
-     * @return EntityManager
-     */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManager
     {
         if ($this->entityManager) {
             return $this->entityManager;

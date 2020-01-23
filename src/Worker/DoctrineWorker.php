@@ -2,6 +2,8 @@
 
 namespace SlmQueueDoctrine\Worker;
 
+use SlmQueueDoctrine\Job\Exception\ReleasableException;
+use SlmQueueDoctrine\Job\Exception\BuryableException;
 use Exception;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
@@ -18,7 +20,7 @@ class DoctrineWorker extends AbstractWorker
     /**
      * {@inheritDoc}
      */
-    public function processJob(JobInterface $job, QueueInterface $queue)
+    public function processJob(JobInterface $job, QueueInterface $queue): int
     {
         if (! $queue instanceof DoctrineQueueInterface) {
             return;
@@ -29,11 +31,11 @@ class DoctrineWorker extends AbstractWorker
             $queue->delete($job);
 
             return ProcessJobEvent::JOB_STATUS_SUCCESS;
-        } catch (JobException\ReleasableException $exception) {
+        } catch (ReleasableException $exception) {
             $queue->release($job, $exception->getOptions());
 
             return ProcessJobEvent::JOB_STATUS_FAILURE_RECOVERABLE;
-        } catch (JobException\BuryableException $exception) {
+        } catch (BuryableException $exception) {
             $queue->bury($job, $exception->getOptions());
 
             return ProcessJobEvent::JOB_STATUS_FAILURE;

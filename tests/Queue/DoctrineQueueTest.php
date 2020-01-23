@@ -2,9 +2,9 @@
 
 namespace SlmQueueDoctrineTest\Queue;
 
+use DateInterval;
 use DateTime;
 use DateTimeZone;
-use DateInterval;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Exception\JobNotFoundException;
 use SlmQueueDoctrine\Exception\LogicException;
@@ -13,12 +13,11 @@ use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Laminas\ServiceManager\ServiceManager;
 
 class DoctrineQueueTest extends TestCase
 {
     /**
-     * @var \SlmQueueDoctrine\Queue\DoctrineQueue
+     * @var DoctrineQueue
      */
     protected $queue;
 
@@ -28,7 +27,7 @@ class DoctrineQueueTest extends TestCase
 
         $this->createDb();
 
-        $options     = new DoctrineOptions();
+        $options = new DoctrineOptions();
 
         $this->queue = new DoctrineQueue(
             $this->getEntityManager()->getConnection(),
@@ -43,7 +42,7 @@ class DoctrineQueueTest extends TestCase
         $this->dropDb();
     }
 
-    public function testBuriedLifetimeOption()
+    public function testBuriedLifetimeOption(): void
     {
         // defaults disabled
         static::assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getBuriedLifetime());
@@ -52,7 +51,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(10, $this->queue->getOptions()->getBuriedLifetime());
     }
 
-    public function testDeletedLifetimeOption()
+    public function testDeletedLifetimeOption(): void
     {
         // defaults disabled
         static::assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getDeletedLifetime());
@@ -61,7 +60,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(10, $this->queue->getOptions()->getDeletedLifetime());
     }
 
-    public function testJobCanBePushed()
+    public function testJobCanBePushed(): void
     {
         $job = new SimpleJob();
 
@@ -73,7 +72,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(1, $result['count']);
     }
 
-    public function testPushPop()
+    public function testPushPop(): void
     {
         $job = new SimpleJob();
         $this->queue->push($job);
@@ -83,7 +82,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($job, $poppedJob);
     }
 
-    public function testPopHighestPriority()
+    public function testPopHighestPriority(): void
     {
         $jobA = new SimpleJob();
         $this->queue->push($jobA, [
@@ -105,7 +104,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($jobC, $this->queue->pop());
     }
 
-    public function testJobCanBePushedMoreThenOnce()
+    public function testJobCanBePushedMoreThenOnce(): void
     {
         $job = new SimpleJob();
 
@@ -118,7 +117,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(2, $result['count']);
     }
 
-    public function testPushDefaults()
+    public function testPushDefaults(): void
     {
         $job = new SimpleJob();
         static::assertNull($job->getId(), "Upon job instantiation its id should be null");
@@ -144,7 +143,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function dataProviderPushScheduledOptions()
+    public function dataProviderPushScheduledOptions(): array
     {
         $now = new DateTime('1970-01-01 00:01:40');
 
@@ -161,9 +160,9 @@ class DoctrineQueueTest extends TestCase
     /**
      * @dataProvider dataProviderPushScheduledOptions
      */
-    public function testPushOptionsScheduled($testOptions, $expectedResult)
+    public function testPushOptionsScheduled($testOptions, $expectedResult): void
     {
-        $this->queue->push(new SimpleJob, $testOptions);
+        $this->queue->push(new SimpleJob(), $testOptions);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
@@ -176,7 +175,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function dataProviderPushDelayOptions()
+    public function dataProviderPushDelayOptions(): array
     {
         return [
             [['delay' => 100], 100],
@@ -191,9 +190,9 @@ class DoctrineQueueTest extends TestCase
     /**
      * @dataProvider dataProviderPushDelayOptions
      */
-    public function testPushOptionsDelay($testOptions, $expectedResult)
+    public function testPushOptionsDelay($testOptions, $expectedResult): void
     {
-        $this->queue->push(new SimpleJob, $testOptions);
+        $this->queue->push(new SimpleJob(), $testOptions);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
@@ -209,7 +208,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testPopBecomesPending()
+    public function testPopBecomesPending(): void
     {
 
         $job = new SimpleJob();
@@ -235,7 +234,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testPopsCorrectlyScheduled()
+    public function testPopsCorrectlyScheduled(): void
     {
         $job = new SimpleJob();
         $returnedCount = 0;
@@ -272,7 +271,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($returnedCount, count($jobs), "The number of popped jobs is incorrect.");
     }
 
-    public function testDeleteWithZeroLifeTimeShouldBeInstant()
+    public function testDeleteWithZeroLifeTimeShouldBeInstant(): void
     {
         $job = new SimpleJob();
 
@@ -287,7 +286,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(0, $result['count']);
     }
 
-    public function testDeleteWithLifeTimeShouldMarked()
+    public function testDeleteWithLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -315,7 +314,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testDeleteWithUnlimitedLifeTimeShouldMarked()
+    public function testDeleteWithUnlimitedLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -343,7 +342,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testDeleteRaceCondition()
+    public function testDeleteRaceCondition(): void
     {
         $job = new SimpleJob();
 
@@ -360,7 +359,7 @@ class DoctrineQueueTest extends TestCase
         $this->queue->delete($job);
     }
 
-    public function testBuryWithZeroLifeTimeShouldBeInstant()
+    public function testBuryWithZeroLifeTimeShouldBeInstant(): void
     {
         $job = new SimpleJob();
 
@@ -375,7 +374,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(0, $result['count']);
     }
 
-    public function testBuryOptions()
+    public function testBuryOptions(): void
     {
         $job = new SimpleJob();
 
@@ -404,7 +403,7 @@ class DoctrineQueueTest extends TestCase
         static::assertNotNull('because', $result['trace']);
     }
 
-    public function testBuryWithLifeTimeShouldMarked()
+    public function testBuryWithLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -436,7 +435,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testBuryWithUnlimitedLifeTimeShouldMarked()
+    public function testBuryWithUnlimitedLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -468,7 +467,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testBuryRaceCondition()
+    public function testBuryRaceCondition(): void
     {
         $job = new SimpleJob();
 
@@ -485,7 +484,7 @@ class DoctrineQueueTest extends TestCase
         $this->queue->bury($job);
     }
 
-    public function testPeek()
+    public function testPeek(): void
     {
         $job = new SimpleJob();
         $this->queue->push($job);
@@ -495,14 +494,14 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($job, $peekedJob);
     }
 
-    public function testPeekNonExistent()
+    public function testPeekNonExistent(): void
     {
         $this->expectException(JobNotFoundException::class);
 
         $this->queue->peek(1);
     }
 
-    public function testRelease()
+    public function testRelease(): void
     {
         $job = new SimpleJob();
         $this->queue->push($job);
@@ -527,7 +526,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function testReleaseRaceCondition()
+    public function testReleaseRaceCondition(): void
     {
         $job = new SimpleJob();
 

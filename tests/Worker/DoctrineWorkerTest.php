@@ -19,7 +19,7 @@ class DoctrineWorkerTest extends TestCase
     protected $serviceManager;
 
     /**
-     * @var \SlmQueueDoctrine\Queue\DoctrineQueueInterface
+     * @var DoctrineQueueInterface
      */
     protected $queue;
 
@@ -41,7 +41,7 @@ class DoctrineWorkerTest extends TestCase
         $this->maxRuns->attach($this->worker->getEventManager());
     }
 
-    public function testAssertJobIsDeletedIfNoExceptionIsThrown()
+    public function testAssertJobIsDeletedIfNoExceptionIsThrown(): void
     {
         $job = new Asset\SimpleJob();
 
@@ -56,7 +56,7 @@ class DoctrineWorkerTest extends TestCase
         static::assertEquals('deleted', $job->getContent());
     }
 
-    public function testAssertJobIsReleasedIfReleasableExceptionIsThrown()
+    public function testAssertJobIsReleasedIfReleasableExceptionIsThrown(): void
     {
         $job = new Asset\ReleasableJob();
 
@@ -71,7 +71,7 @@ class DoctrineWorkerTest extends TestCase
         static::assertEquals('released', $job->getContent());
     }
 
-    public function testAssertJobIsBuriedIfBuryableExceptionIsThrown()
+    public function testAssertJobIsBuriedIfBuryableExceptionIsThrown(): void
     {
         $job = new Asset\BuryableJob();
 
@@ -86,7 +86,7 @@ class DoctrineWorkerTest extends TestCase
         static::assertEquals('buried', $job->getContent());
     }
 
-    public function testAssertJobIsBuriedIfAnyExceptionIsThrown()
+    public function testAssertJobIsBuriedIfAnyExceptionIsThrown(): void
     {
         $job = new Asset\ExceptionJob();
 
