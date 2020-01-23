@@ -316,7 +316,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $sql  = 'SELECT * FROM ' . $this->options->getTableName().' WHERE id = ?';
         $row  = $this->connection->fetchAssoc($sql, [$id], [Type::SMALLINT]);
 
-        if (!$row) {
+        if (! $row) {
             throw new Exception\JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 

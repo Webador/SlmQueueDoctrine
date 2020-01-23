@@ -20,7 +20,7 @@ class DoctrineWorker extends AbstractWorker
      */
     public function processJob(JobInterface $job, QueueInterface $queue)
     {
-        if (!$queue instanceof DoctrineQueueInterface) {
+        if (! $queue instanceof DoctrineQueueInterface) {
             return;
         }
 

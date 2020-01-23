@@ -49,8 +49,7 @@ class DoctrineWorkerTest extends TestCase
             ->method('delete')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('deleted');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
@@ -65,8 +64,7 @@ class DoctrineWorkerTest extends TestCase
             ->method('release')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('released');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
@@ -81,8 +79,7 @@ class DoctrineWorkerTest extends TestCase
             ->method('bury')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('buried');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
@@ -97,8 +94,7 @@ class DoctrineWorkerTest extends TestCase
             ->method('bury')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('buried');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
