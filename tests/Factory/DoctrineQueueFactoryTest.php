@@ -2,13 +2,13 @@
 
 namespace SlmQueueDoctrineTest\Factory;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueDoctrine\Factory\DoctrineQueueFactory;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 
-class DoctrineQueueFactoryTest extends PHPUnit_Framework_TestCase
+class DoctrineQueueFactoryTest extends TestCase
 {
     public function testCreateServiceGetsInstance()
     {

@@ -2,7 +2,7 @@
 
 namespace SlmQueueDoctrineTest\Listener\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
@@ -10,17 +10,17 @@ use SlmQueueDoctrine\Strategy\IdleNapStrategy;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Laminas\EventManager\EventManagerInterface;
 
-class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
+class IdleNapStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var IdleNapStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new DoctrineWorker($this->getMock(EventManagerInterface::class));
+        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new DoctrineWorker($this->createMock(EventManagerInterface::class));
         $this->listener = new IdleNapStrategy();
     }
 
@@ -31,7 +31,7 @@ class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(EventManagerInterface::class);
+        $evm      = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -54,7 +54,7 @@ class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testOnIdleHandler()
     {
-        $this->queue = $this->getMock(DoctrineQueueInterface::class);
+        $this->queue = $this->createMock(DoctrineQueueInterface::class);
 
         $start_time = microtime(true);
         $this->listener->onIdle(new ProcessIdleEvent($this->worker, $this->queue));
@@ -62,7 +62,7 @@ class IdleNapStrategyTest extends PHPUnit_Framework_TestCase
         static::assertGreaterThan(1, $elapsed_time);
 
 
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
 
         $start_time = microtime(true);
         $this->listener->onIdle(new ProcessIdleEvent($this->worker, $this->queue));

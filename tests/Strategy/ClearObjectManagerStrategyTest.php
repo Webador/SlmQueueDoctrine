@@ -3,7 +3,7 @@
 namespace SlmQueueDoctrineTest\Listener\Strategy;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
@@ -12,17 +12,17 @@ use SlmQueueDoctrineTest\Asset\OMJob;
 use SlmQueueTest\Asset\SimpleWorker;
 use Laminas\EventManager\EventManagerInterface;
 
-class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
+class ClearObjectManagerStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var ClearObjectManagerStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new DoctrineWorker($this->getMock(EventManagerInterface::class));
+        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new DoctrineWorker($this->createMock(EventManagerInterface::class));
         $this->listener = new ClearObjectManagerStrategy();
     }
 
@@ -33,7 +33,7 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(EventManagerInterface::class);
+        $evm      = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -45,7 +45,7 @@ class ClearObjectManagerStrategyTest extends PHPUnit_Framework_TestCase
     public function testOnClearHandler()
     {
         $job = new OMJob();
-        $om  = $this->getMock(ObjectManager::class);
+        $om  = $this->createMock(ObjectManager::class);
 
         $job->setObjectManager($om);
 

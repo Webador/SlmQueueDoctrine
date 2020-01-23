@@ -22,7 +22,7 @@ class DoctrineQueueTest extends TestCase
      */
     protected $queue;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -38,7 +38,7 @@ class DoctrineQueueTest extends TestCase
         );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->dropDb();
     }
@@ -189,7 +189,7 @@ class DoctrineQueueTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_PushDelayOptions
+     * @dataProvider dataProviderPushDelayOptions
      */
     public function testPushOptionsDelay($testOptions, $expectedResult)
     {
@@ -354,7 +354,9 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->delete($job);
 
-        $this->setExpectedException(LogicException::class, 'Race-condition detected');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Race-condition detected');
+
         $this->queue->delete($job);
     }
 
@@ -398,7 +400,7 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertContains('hi', $result['message']);
+        static::assertStringContainsString('hi', $result['message']);
         static::assertNotNull('because', $result['trace']);
     }
 
@@ -477,7 +479,9 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->bury($job);
 
-        $this->setExpectedException(LogicException::class, 'Race-condition detected');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Race-condition detected');
+
         $this->queue->bury($job);
     }
 
@@ -493,7 +497,7 @@ class DoctrineQueueTest extends TestCase
 
     public function testPeekNonExistent()
     {
-        $this->setExpectedException(JobNotFoundException::class);
+        $this->expectException(JobNotFoundException::class);
 
         $this->queue->peek(1);
     }
@@ -527,7 +531,9 @@ class DoctrineQueueTest extends TestCase
     {
         $job = new SimpleJob();
 
-        $this->setExpectedException(LogicException::class, 'Race-condition detected');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Race-condition detected');
+
         $this->queue->release($job);
     }
 }

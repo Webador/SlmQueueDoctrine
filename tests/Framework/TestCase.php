@@ -19,12 +19,12 @@
 
 namespace SlmQueueDoctrineTest\Framework;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Doctrine\ORM\EntityManager;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 use Laminas\ServiceManager\ServiceManager;
 
-class TestCase extends PHPUnit_Framework_TestCase
+class TestCase extends PHPUnitTestCase
 {
     /**
      * @var boolean
