@@ -3,88 +3,48 @@ language: php
 matrix:
   fast_finish: true
   include:
-    - php: 5.6
+    - php: 7.2
       env:
         - DEPENDENCIES=""
         - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 5.6
+    - php: 7.2
       env:
         - DEPENDENCIES=""
         - DBAL_PROVIDER="doctrine-orm-module"
-    - php: 5.6
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-        - DBAL_PROVIDER="doctrine-orm-module"
-    - php: 7.0
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.0
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="doctrine-orm-module"
-    - php: 7.0
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-        - DBAL_PROVIDER="doctrine-orm-module"
-    - php: 7.1
+#    - php: 7.2
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.2
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.3
       env:
         - DEPENDENCIES=""
         - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.1
+    - php: 7.3
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.3
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="doctrine-orm-module"
+#    - php: 7.3
+#      env:
+#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
+#        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.4
+      env:
+        - DEPENDENCIES=""
+        - DBAL_PROVIDER="container-interop-doctrine"
+    - php: 7.4
       env:
         - DEPENDENCIES=""
         - DBAL_PROVIDER="doctrine-orm-module"
         - EXECUTE_CS_CHECK=true
         - TEST_COVERAGE=true
-    - php: 7.1
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-        - DBAL_PROVIDER="doctrine-orm-module"
-#    - php: 7.1
-#      env:
-#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-#        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.2
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.2
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="doctrine-orm-module"
-#    - php: 7.2
-#      env:
-#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-#        - DBAL_PROVIDER="doctrine-orm-module"
-#    - php: 7.2
-#      env:
-#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-#        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.3
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.3
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="doctrine-orm-module"
-#    - php: 7.3
-#      env:
-#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-#        - DBAL_PROVIDER="doctrine-orm-module"
-#    - php: 7.3
-#      env:
-#        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-#        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.4
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="container-interop-doctrine"
-    - php: 7.4
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="doctrine-orm-module"
 
 cache:
   directories:
