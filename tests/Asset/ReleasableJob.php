@@ -27,7 +27,7 @@ class ReleasableJob extends AbstractJob
     /**
      * {@inheritDoc}
      */
-    public function execute()
+    public function execute(): ?int
     {
         throw new ReleasableException();
     }

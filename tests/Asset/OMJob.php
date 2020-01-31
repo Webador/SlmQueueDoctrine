@@ -17,8 +17,9 @@ class OMJob extends AbstractJob implements ObjectManagerAwareInterface
     /**
      * {@inheritDoc}
      */
-    public function execute()
+    public function execute(): ?int
     {
+        return null;
     }
 
     /**

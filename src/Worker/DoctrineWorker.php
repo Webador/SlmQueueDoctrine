@@ -23,7 +23,7 @@ class DoctrineWorker extends AbstractWorker
     public function processJob(JobInterface $job, QueueInterface $queue): int
     {
         if (! $queue instanceof DoctrineQueueInterface) {
-            return;
+            return ProcessJobEvent::JOB_STATUS_FAILURE;
         }
 
         try {
