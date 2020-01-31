@@ -17,9 +17,9 @@ class IdleNapStrategy extends AbstractStrategy
      */
     protected $napDuration = 1;
 
-    public function setNapDuration(int $napDuration)
+    public function setNapDuration(int $napDuration): void
     {
-        $this->napDuration = (int) $napDuration;
+        $this->napDuration = $napDuration;
     }
 
     public function getNapDuration(): int

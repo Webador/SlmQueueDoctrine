@@ -5,7 +5,6 @@ namespace SlmQueueDoctrine\Queue;
 use SlmQueueDoctrine\Exception\LogicException;
 use SlmQueueDoctrine\Exception\RuntimeException;
 use SlmQueueDoctrine\Exception\JobNotFoundException;
-use Exception;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
@@ -310,7 +309,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $sql  = 'SELECT * FROM ' . $this->options->getTableName() . ' WHERE id = ?';
         $row  = $this->connection->fetchAssoc($sql, [$id], [Types::SMALLINT]);
 
-        if (! $row) {
+        if (!$row) {
             throw new JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
@@ -369,11 +368,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * @see http://en.wikipedia.org/wiki/Iso8601#Durations
      * @see http://www.php.net/manual/en/datetime.formats.relative.php
-     *
-     * @param $options array
-     * @return DateTime
      */
-    protected function parseOptionsToDateTime($options): DateTime
+    protected function parseOptionsToDateTime(array $options): DateTime
     {
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
@@ -407,7 +403,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     try {
                         // first try ISO 8601 duration specification
                         $delay = new DateInterval($options['delay']);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         // then try normal date parser
                         $delay = DateInterval::createFromDateString($options['delay']);
                     }
