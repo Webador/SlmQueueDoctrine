@@ -5,7 +5,7 @@ namespace SlmQueueDoctrine\Factory;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueDoctrine\Controller\DoctrineWorkerController;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
-use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Interop\Container\ContainerInterface;
 
@@ -26,13 +26,5 @@ class DoctrineWorkerControllerFactory implements FactoryInterface
         $queuePluginManager = $container->get(QueuePluginManager::class);
 
         return new DoctrineWorkerController($worker, $queuePluginManager);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator): DoctrineWorkerController
-    {
-        return $this($serviceLocator->getServiceLocator(), DoctrineWorkerController::class);
     }
 }
