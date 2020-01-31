@@ -31,8 +31,7 @@
         "laminas/laminas-servicemanager": "^3.3.1",
         "laminas/laminas-stdlib": "^3.2",
         "slm/queue": "^2.0",
-        "doctrine/dbal": "^2.10",
-        "dasprid/container-interop-doctrine": "^1.1"
+        "doctrine/dbal": "^2.10"
     },
     "require-dev": {
         "laminas/laminas-config": "^2.6",
