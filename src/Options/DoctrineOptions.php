@@ -44,68 +44,45 @@ class DoctrineOptions extends AbstractOptions
      * @param  string $connection
      * @return void
      */
-    public function setConnection($connection)
+    public function setConnection(string $connection): void
     {
         $this->connection = $connection;
     }
 
     /**
      * Get the connection service name
-     *
-     * @return string
      */
-    public function getConnection()
+    public function getConnection(): string
     {
         return $this->connection;
     }
 
-    /**
-     * @param  int  $buriedLifetime
-     * @return void
-     */
-    public function setBuriedLifetime($buriedLifetime)
+    public function setBuriedLifetime(int $buriedLifetime): void
     {
         $this->buriedLifetime = (int) $buriedLifetime;
     }
 
-    /**
-     * @return int
-     */
-    public function getBuriedLifetime()
+    public function getBuriedLifetime(): int
     {
         return $this->buriedLifetime;
     }
 
-    /**
-     * @param  int  $deletedLifetime
-     * @return void
-     */
-    public function setDeletedLifetime($deletedLifetime)
+    public function setDeletedLifetime(int $deletedLifetime): void
     {
         $this->deletedLifetime = (int) $deletedLifetime;
     }
 
-    /**
-     * @return int
-     */
-    public function getDeletedLifetime()
+    public function getDeletedLifetime(): int
     {
         return $this->deletedLifetime;
     }
 
-    /**
-     * @param  string $tableName
-     * @return void
-     */
-    public function setTableName($tableName)
+    public function setTableName(string $tableName): void
     {
         $this->tableName = $tableName;
     }
 
-    /**
-     * @return string
-     */
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->tableName;
     }

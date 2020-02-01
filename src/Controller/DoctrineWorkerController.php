@@ -15,16 +15,14 @@ class DoctrineWorkerController extends AbstractWorkerController
 {
     /**
      * Recover long running jobs
-     *
-     * @return string
      */
-    public function recoverAction()
+    public function recoverAction(): string
     {
         $queueName     = $this->params('queue');
         $executionTime = $this->params('executionTime', 0);
         $queue         = $this->queuePluginManager->get($queueName);
 
-        if (!$queue instanceof DoctrineQueueInterface) {
+        if (! $queue instanceof DoctrineQueueInterface) {
             return sprintf("\nQueue % does not support the recovering of job\n\n", $queueName);
         }
 

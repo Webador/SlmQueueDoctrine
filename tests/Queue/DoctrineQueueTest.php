@@ -2,9 +2,9 @@
 
 namespace SlmQueueDoctrineTest\Queue;
 
+use DateInterval;
 use DateTime;
 use DateTimeZone;
-use DateInterval;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Exception\JobNotFoundException;
 use SlmQueueDoctrine\Exception\LogicException;
@@ -13,33 +13,36 @@ use SlmQueueDoctrine\Queue\DoctrineQueue;
 use SlmQueueDoctrineTest\Asset\SimpleJob;
 use SlmQueueDoctrineTest\Framework\TestCase;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Laminas\ServiceManager\ServiceManager;
 
 class DoctrineQueueTest extends TestCase
 {
     /**
-     * @var \SlmQueueDoctrine\Queue\DoctrineQueue
+     * @var DoctrineQueue
      */
     protected $queue;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->createDb();
 
-        $options     = new DoctrineOptions();
+        $options = new DoctrineOptions();
 
-        $this->queue = new DoctrineQueue($this->getEntityManager()->getConnection(), $options, 'some-queue-name',
-            ServiceManagerFactory::getServiceManager()->get(JobPluginManager::class));
+        $this->queue = new DoctrineQueue(
+            $this->getEntityManager()->getConnection(),
+            $options,
+            'some-queue-name',
+            ServiceManagerFactory::getServiceManager()->get(JobPluginManager::class)
+        );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->dropDb();
     }
 
-    public function testBuriedLifetimeOption()
+    public function testBuriedLifetimeOption(): void
     {
         // defaults disabled
         static::assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getBuriedLifetime());
@@ -48,7 +51,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(10, $this->queue->getOptions()->getBuriedLifetime());
     }
 
-    public function testDeletedLifetimeOption()
+    public function testDeletedLifetimeOption(): void
     {
         // defaults disabled
         static::assertEquals(DoctrineQueue::LIFETIME_DISABLED, $this->queue->getOptions()->getDeletedLifetime());
@@ -57,7 +60,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(10, $this->queue->getOptions()->getDeletedLifetime());
     }
 
-    public function testJobCanBePushed()
+    public function testJobCanBePushed(): void
     {
         $job = new SimpleJob();
 
@@ -69,7 +72,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(1, $result['count']);
     }
 
-    public function testPushPop()
+    public function testPushPop(): void
     {
         $job = new SimpleJob();
         $this->queue->push($job);
@@ -79,7 +82,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($job, $poppedJob);
     }
 
-    public function testPopHighestPriority()
+    public function testPopHighestPriority(): void
     {
         $jobA = new SimpleJob();
         $this->queue->push($jobA, [
@@ -101,7 +104,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($jobC, $this->queue->pop());
     }
 
-    public function testJobCanBePushedMoreThenOnce()
+    public function testJobCanBePushedMoreThenOnce(): void
     {
         $job = new SimpleJob();
 
@@ -114,7 +117,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(2, $result['count']);
     }
 
-    public function testPushDefaults()
+    public function testPushDefaults(): void
     {
         $job = new SimpleJob();
         static::assertNull($job->getId(), "Upon job instantiation its id should be null");
@@ -127,59 +130,69 @@ class DoctrineQueueTest extends TestCase
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
         static::assertEquals('some-queue-name', $result['queue'], "The queue-name is expected to be stored.");
-        static::assertEquals(DoctrineQueue::STATUS_PENDING, $result['status'], "The status of a new job should be pending.");
+        static::assertEquals(
+            DoctrineQueue::STATUS_PENDING,
+            $result['status'],
+            "The status of a new job should be pending."
+        );
 
-        static::assertEquals($result['created'], $result['scheduled'],
-            "By default a job should be scheduled the same time it was created");
-    }
-
-    public function dataProvider_PushScheduledOptions()
-    {
-        $now = new DateTime('1970-01-01 00:01:40');
-
-        return array(
-            array(array('scheduled'=>100), '1970-01-01 00:01:40.000000'),
-            array(array('scheduled'=>100, 'delay'=>10), '1970-01-01 00:01:50.000000'), // delay is added to scheduled
-            array(array('scheduled'=>'100'), '1970-01-01 00:01:40.000000'),
-            array(array('scheduled'=>'1970-01-01 00:01:40'), '1970-01-01 00:01:40.000000'),
-            array(array('scheduled'=>'1970-01-01 00:01:40+03:00'), '1970-01-01 00:01:40.000000'),
-            array(array('scheduled'=>$now), $now->format('Y-m-d H:i:s.u')),
+        static::assertEquals(
+            $result['created'],
+            $result['scheduled'],
+            "By default a job should be scheduled the same time it was created"
         );
     }
 
-    /**
-     * @dataProvider dataProvider_PushScheduledOptions
-     */
-    public function testPushOptions_Scheduled($testOptions, $expectedResult)
+    public function dataProviderPushScheduledOptions(): array
     {
-        $this->queue->push(new SimpleJob, $testOptions);
+        $now = new DateTime('1970-01-01 00:01:40');
+
+        return [
+            [['scheduled' => 100], '1970-01-01 00:01:40.000000'],
+            [['scheduled' => 100, 'delay' => 10], '1970-01-01 00:01:50.000000'], // delay is added to scheduled
+            [['scheduled' => '100'], '1970-01-01 00:01:40.000000'],
+            [['scheduled' => '1970-01-01 00:01:40'], '1970-01-01 00:01:40.000000'],
+            [['scheduled' => '1970-01-01 00:01:40+03:00'], '1970-01-01 00:01:40.000000'],
+            [['scheduled' => $now], $now->format('Y-m-d H:i:s.u')],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderPushScheduledOptions
+     */
+    public function testPushOptionsScheduled($testOptions, $expectedResult): void
+    {
+        $this->queue->push(new SimpleJob(), $testOptions);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals($expectedResult, $result['scheduled'],
-            "The job has not been scheduled correctly");
-    }
-
-    public function dataProvider_PushDelayOptions()
-    {
-        return array(
-            array(array('delay'=>100), 100),
-            array(array('delay'=>"100"), 100),
-            array(array('delay'=>"PT100S"), 100),
-            array(array('delay'=>"PT2H"), 7200),
-            array(array('delay'=>"2 weeks"), 1209600),
-            array(array('delay'=>new DateInterval("PT100S")), 100),
+        static::assertEquals(
+            $expectedResult,
+            $result['scheduled'],
+            "The job has not been scheduled correctly"
         );
     }
 
-    /**
-     * @dataProvider dataProvider_PushDelayOptions
-     */
-    public function testPushOptions_Delay($testOptions, $expectedResult)
+    public function dataProviderPushDelayOptions(): array
     {
-        $this->queue->push(new SimpleJob, $testOptions);
+        return [
+            [['delay' => 100], 100],
+            [['delay' => "100"], 100],
+            [['delay' => "PT100S"], 100],
+            [['delay' => "PT2H"], 7200],
+            [['delay' => "2 weeks"], 1209600],
+            [['delay' => new DateInterval("PT100S")], 100],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderPushDelayOptions
+     */
+    public function testPushOptionsDelay($testOptions, $expectedResult): void
+    {
+        $this->queue->push(new SimpleJob(), $testOptions);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
@@ -188,11 +201,14 @@ class DoctrineQueueTest extends TestCase
         $created = new DateTime($result['created']);
         $scheduled = new DateTime($result['scheduled']);
 
-        static::assertEquals($expectedResult, $scheduled->getTimestamp() - $created->getTimestamp(),
-            "The job has not been scheduled correctly");
+        static::assertEquals(
+            $expectedResult,
+            $scheduled->getTimestamp() - $created->getTimestamp(),
+            "The job has not been scheduled correctly"
+        );
     }
 
-    public function testPopBecomesPending()
+    public function testPopBecomesPending(): void
     {
 
         $job = new SimpleJob();
@@ -207,40 +223,55 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals(DoctrineQueue::STATUS_RUNNING, $result['status'], "The status of a popped should be running.");
-        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['executed']),
-            "The executed field of a popped job should be set to a datetime");
+        static::assertEquals(
+            DoctrineQueue::STATUS_RUNNING,
+            $result['status'],
+            "The status of a popped should be running."
+        );
+        static::assertTrue(
+            (bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['executed']),
+            "The executed field of a popped job should be set to a datetime"
+        );
     }
 
-    public function testPopsCorrectlyScheduled()
+    public function testPopsCorrectlyScheduled(): void
     {
         $job = new SimpleJob();
         $returnedCount = 0;
 
         $now = new DateTime(null, new DateTimeZone(date_default_timezone_get()));
-        $this->queue->push($job, array('scheduled' =>  time() + $now->getOffset() + 10));
+        $this->queue->push($job, ['scheduled' => time() + $now->getOffset() + 10]);
         static::assertNull($this->queue->pop(), "Job is not due yet.");
 
-        $this->queue->push($job, array('scheduled' => time() + $now->getOffset() + 10)); // must not be returned
-        $this->queue->push($job, array('scheduled' => time() + $now->getOffset() - 10));$returnedCount++;
-        $this->queue->push($job, array('scheduled' => time() + $now->getOffset() - 100));$returnedCount++;
+        $this->queue->push($job, ['scheduled' => time() + $now->getOffset() + 10]); // must not be returned
+        $this->queue->push($job, ['scheduled' => time() + $now->getOffset() - 10]);
+        $returnedCount++;
+        $this->queue->push($job, ['scheduled' => time() + $now->getOffset() - 100]);
+        $returnedCount++;
 
         $firstJobId = $job->getId();
-        $this->queue->push($job, array('scheduled' => time() + $now->getOffset()  - 50));$returnedCount++;
-        $this->queue->push($job, array('scheduled' => time() + $now->getOffset()  - 30));$returnedCount++;
-        $this->queue->push($job, array('delay' => 100)); // must not be returned
-        $this->queue->push($job, array('delay' => -90)); $returnedCount++;
+        $this->queue->push($job, ['scheduled' => time() + $now->getOffset() - 50]);
+        $returnedCount++;
+        $this->queue->push($job, ['scheduled' => time() + $now->getOffset() - 30]);
+        $returnedCount++;
+        $this->queue->push($job, ['delay' => 100]); // must not be returned
+        $this->queue->push($job, ['delay' => -90]);
+        $returnedCount++;
 
-        $jobs = array();
+        $jobs = [];
         while ($job = $this->queue->pop()) {
             $jobs[] = $job;
         }
 
-        static::assertEquals($firstJobId, $jobs[0]->getId(), "Job with the oldest scheduled date is expected to be popped first.");
+        static::assertEquals(
+            $firstJobId,
+            $jobs[0]->getId(),
+            "Job with the oldest scheduled date is expected to be popped first."
+        );
         static::assertEquals($returnedCount, count($jobs), "The number of popped jobs is incorrect.");
     }
 
-    public function testDelete_WithZeroLifeTimeShouldBeInstant()
+    public function testDeleteWithZeroLifeTimeShouldBeInstant(): void
     {
         $job = new SimpleJob();
 
@@ -255,7 +286,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(0, $result['count']);
     }
 
-    public function testDelete_WithLifeTimeShouldMarked()
+    public function testDeleteWithLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -276,10 +307,14 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
+        static::assertEquals(
+            DoctrineQueue::STATUS_DELETED,
+            $result['status'],
+            "The status of this job should be 'deleted'."
+        );
     }
 
-    public function testDelete_WithUnlimitedLifeTimeShouldMarked()
+    public function testDeleteWithUnlimitedLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -300,10 +335,14 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals(DoctrineQueue::STATUS_DELETED, $result['status'], "The status of this job should be 'deleted'.");
+        static::assertEquals(
+            DoctrineQueue::STATUS_DELETED,
+            $result['status'],
+            "The status of this job should be 'deleted'."
+        );
     }
 
-    public function testDelete_RaceCondition()
+    public function testDeleteRaceCondition(): void
     {
         $job = new SimpleJob();
 
@@ -314,11 +353,13 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->delete($job);
 
-        $this->setExpectedException(LogicException::class, 'Race-condition detected');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Race-condition detected');
+
         $this->queue->delete($job);
     }
 
-    public function testBury_WithZeroLifeTimeShouldBeInstant()
+    public function testBuryWithZeroLifeTimeShouldBeInstant(): void
     {
         $job = new SimpleJob();
 
@@ -333,7 +374,7 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals(0, $result['count']);
     }
 
-    public function testBury_Options()
+    public function testBuryOptions(): void
     {
         $job = new SimpleJob();
 
@@ -352,18 +393,17 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->push($job);
         $this->queue->pop(); // why must the job be running?
-        $this->queue->bury($job, array('message'=>'hi', 'trace'=>'because'));
+        $this->queue->bury($job, ['message' => 'hi', 'trace' => 'because']);
 
         // fetch last added job
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertContains('hi', $result['message']);
+        static::assertStringContainsString('hi', $result['message']);
         static::assertNotNull('because', $result['trace']);
-
     }
 
-    public function testBury_WithLifeTimeShouldMarked()
+    public function testBuryWithLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -384,13 +424,18 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
-        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
-            "The finished field of a buried job should be set to a datetime");
-
+        static::assertEquals(
+            DoctrineQueue::STATUS_BURIED,
+            $result['status'],
+            "The status of this job should be 'buried'."
+        );
+        static::assertTrue(
+            (bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+            "The finished field of a buried job should be set to a datetime"
+        );
     }
 
-    public function testBury_WithUnlimitedLifeTimeShouldMarked()
+    public function testBuryWithUnlimitedLifeTimeShouldMarked(): void
     {
         $job = new SimpleJob();
 
@@ -411,12 +456,18 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals(DoctrineQueue::STATUS_BURIED, $result['status'], "The status of this job should be 'buried'.");
-        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
-            "The finished field of a buried job should be set to a datetime");
+        static::assertEquals(
+            DoctrineQueue::STATUS_BURIED,
+            $result['status'],
+            "The status of this job should be 'buried'."
+        );
+        static::assertTrue(
+            (bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+            "The finished field of a buried job should be set to a datetime"
+        );
     }
 
-    public function testBury_RaceCondition()
+    public function testBuryRaceCondition(): void
     {
         $job = new SimpleJob();
 
@@ -427,11 +478,13 @@ class DoctrineQueueTest extends TestCase
 
         $this->queue->bury($job);
 
-        $this->setExpectedException(LogicException::class, 'Race-condition detected');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Race-condition detected');
+
         $this->queue->bury($job);
     }
 
-    public function testPeek()
+    public function testPeek(): void
     {
         $job = new SimpleJob();
         $this->queue->push($job);
@@ -441,14 +494,14 @@ class DoctrineQueueTest extends TestCase
         static::assertEquals($job, $peekedJob);
     }
 
-    public function testPeek_NonExistent()
+    public function testPeekNonExistent(): void
     {
-        $this->setExpectedException(JobNotFoundException::class);
+        $this->expectException(JobNotFoundException::class);
 
         $this->queue->peek(1);
     }
 
-    public function testRelease()
+    public function testRelease(): void
     {
         $job = new SimpleJob();
         $this->queue->push($job);
@@ -461,17 +514,25 @@ class DoctrineQueueTest extends TestCase
         $result = $this->getEntityManager()->getConnection()
             ->query('SELECT * FROM queue_default ORDER BY id DESC LIMIT 1')->fetch();
 
-        static::assertEquals(DoctrineQueue::STATUS_PENDING, $result['status'], "The status of a released job should be 'pending'.");
+        static::assertEquals(
+            DoctrineQueue::STATUS_PENDING,
+            $result['status'],
+            "The status of a released job should be 'pending'."
+        );
 
-        static::assertTrue((bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
-            "The finished field of a released job should be set to a datetime");
+        static::assertTrue(
+            (bool) preg_match('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $result['finished']),
+            "The finished field of a released job should be set to a datetime"
+        );
     }
 
-    public function testRelease_RaceCondition()
+    public function testReleaseRaceCondition(): void
     {
         $job = new SimpleJob();
 
-        $this->setExpectedException(LogicException::class, 'Race-condition detected');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Race-condition detected');
+
         $this->queue->release($job);
     }
 }

@@ -5,8 +5,7 @@ namespace SlmQueueDoctrine\Factory;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 
 /**
@@ -17,7 +16,7 @@ class DoctrineQueueFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): DoctrineQueue
     {
         $config        = $container->get('config');
         $queuesOptions = $config['slm_queue']['queues'];
@@ -28,16 +27,6 @@ class DoctrineQueueFactory implements FactoryInterface
         $connection       = $container->get($queueOptions->getConnection());
         $jobPluginManager = $container->get(JobPluginManager::class);
 
-        $queue = new DoctrineQueue($connection, $queueOptions, $requestedName, $jobPluginManager);
-
-        return $queue;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator, $name = '', $requestedName = '')
-    {
-        return $this($serviceLocator->getServiceLocator(), $requestedName);
+        return new DoctrineQueue($connection, $queueOptions, $requestedName, $jobPluginManager);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SlmQueueDoctrineTest\Worker;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrineTest\Asset;
@@ -19,7 +19,7 @@ class DoctrineWorkerTest extends TestCase
     protected $serviceManager;
 
     /**
-     * @var \SlmQueueDoctrine\Queue\DoctrineQueueInterface
+     * @var DoctrineQueueInterface
      */
     protected $queue;
 
@@ -28,10 +28,10 @@ class DoctrineWorkerTest extends TestCase
      */
     protected $worker;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->worker  = new DoctrineWorker(new EventManager());
-        $this->queue   = $this->getMock(DoctrineQueueInterface::class);
+        $this->queue   = $this->createMock(DoctrineQueueInterface::class);
         $this->job     = new Asset\SimpleJob();
 
         // set max runs so our tests won't run forever
@@ -41,7 +41,7 @@ class DoctrineWorkerTest extends TestCase
         $this->maxRuns->attach($this->worker->getEventManager());
     }
 
-    public function testAssertJobIsDeletedIfNoExceptionIsThrown()
+    public function testAssertJobIsDeletedIfNoExceptionIsThrown(): void
     {
         $job = new Asset\SimpleJob();
 
@@ -49,15 +49,14 @@ class DoctrineWorkerTest extends TestCase
             ->method('delete')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('deleted');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
         static::assertEquals('deleted', $job->getContent());
     }
 
-    public function testAssertJobIsReleasedIfReleasableExceptionIsThrown()
+    public function testAssertJobIsReleasedIfReleasableExceptionIsThrown(): void
     {
         $job = new Asset\ReleasableJob();
 
@@ -65,15 +64,14 @@ class DoctrineWorkerTest extends TestCase
             ->method('release')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('released');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
         static::assertEquals('released', $job->getContent());
     }
 
-    public function testAssertJobIsBuriedIfBuryableExceptionIsThrown()
+    public function testAssertJobIsBuriedIfBuryableExceptionIsThrown(): void
     {
         $job = new Asset\BuryableJob();
 
@@ -81,15 +79,14 @@ class DoctrineWorkerTest extends TestCase
             ->method('bury')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('buried');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 
         static::assertEquals('buried', $job->getContent());
     }
 
-    public function testAssertJobIsBuriedIfAnyExceptionIsThrown()
+    public function testAssertJobIsBuriedIfAnyExceptionIsThrown(): void
     {
         $job = new Asset\ExceptionJob();
 
@@ -97,8 +94,7 @@ class DoctrineWorkerTest extends TestCase
             ->method('bury')
             ->will($this->returnCallback(function () use ($job) {
                     $job->setContent('buried');
-                })
-            );
+            }));
 
         $this->worker->processJob($job, $this->queue);
 

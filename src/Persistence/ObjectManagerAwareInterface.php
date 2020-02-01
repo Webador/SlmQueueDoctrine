@@ -8,15 +8,11 @@ interface ObjectManagerAwareInterface
 {
     /**
      * Set the object manager
-     *
-     * @param ObjectManager $objectManager
      */
-    public function setObjectManager(ObjectManager $objectManager);
+    public function setObjectManager(ObjectManager $objectManager): void;
 
     /**
      * Get the object manager
-     *
-     * @return ObjectManager
      */
-    public function getObjectManager();
+    public function getObjectManager(): ObjectManager;
 }
