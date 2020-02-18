@@ -34,7 +34,7 @@
         "doctrine/dbal": "^2.10"
     },
     "require-dev": {
-        "laminas/laminas-config": "^2.6",
+        "laminas/laminas-config": "^2.6 || ^3.0",
         "laminas/laminas-modulemanager": "^2.8",
         "laminas/laminas-view": "^2.10",
         "laminas/laminas-log": "^2.9",
