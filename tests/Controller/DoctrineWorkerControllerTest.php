@@ -24,7 +24,7 @@ class DoctrineWorkerControllerTest extends TestCase
 
     public function testThrowExceptionIfQueueIsUnknown(): void
     {
-        $controller = $this->serviceManager->get('ControllerLoader')->get(DoctrineWorkerController::class);
+        $controller = $this->serviceManager->get('ControllerManager')->get(DoctrineWorkerController::class);
         $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $controller->getEvent()->setRouteMatch($routeMatch);
 
