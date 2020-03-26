@@ -6,7 +6,7 @@ use SlmQueue\Job\JobPluginManager;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * DoctrineQueueFactory

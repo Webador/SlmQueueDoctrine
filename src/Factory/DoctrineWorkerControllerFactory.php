@@ -7,7 +7,7 @@ use SlmQueueDoctrine\Controller\DoctrineWorkerController;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * WorkerFactory

@@ -17,9 +17,12 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\DBAL\Driver\PDOSqlite\Driver;
 use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueueDoctrine\Factory\DoctrineQueueFactory;
+use Roave\PsrContainerDoctrine\ConnectionFactory;
+use Roave\PsrContainerDoctrine\EntityManagerFactory;
 
 return [
     'slm_queue' => [
@@ -51,15 +54,15 @@ return [
         ],
         'driver' => [
             'orm_default' => [
-                'class' => \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain::class,
+                'class' => MappingDriverChain::class,
                 'drivers' => [],
             ],
         ],
     ],
     'service_manager' => [
         'factories' => [
-            'doctrine.connection.orm_default' => \ContainerInteropDoctrine\ConnectionFactory::class,
-            'doctrine.entitymanager.orm_default' => \ContainerInteropDoctrine\EntityManagerFactory::class,
+            'doctrine.connection.orm_default' => ConnectionFactory::class,
+            'doctrine.entitymanager.orm_default' => EntityManagerFactory::class,
         ],
     ],
 ];

@@ -10,7 +10,7 @@ Created by Stefan Kleff
 Requirements
 ------------
 * [SlmQueue](https://github.com/juriansluiman/SlmQueue)
-* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [DASPRiD/container-interop-doctrine](https://github.com/DASPRiD/container-interop-doctrine)
+* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [psr-container-doctrine](https://github.com/Roave/psr-container-doctrine)
 
 Note: it's necessary require the doctrine package in composer.json file.
 
@@ -38,7 +38,7 @@ Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentati
 
 ### Configuring the connection
 
-You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here are some [examples](https://github.com/DASPRiD/container-interop-doctrine/tree/master/example).
+You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here are some [examples](https://github.com/Roave/psr-container-doctrine/tree/master/example).
 
 Connection parameters can be defined in the application configuration:
 
