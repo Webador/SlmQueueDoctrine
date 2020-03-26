@@ -3,22 +3,6 @@ language: php
 matrix:
   fast_finish: true
   include:
-    - php: 7.2
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="psr-container-doctrine"
-    - php: 7.2
-      env:
-        - DEPENDENCIES=""
-        - DBAL_PROVIDER="doctrine-orm-module"
-    - php: 7.2
-      env:
-        - DEPENDENCIES="--prefer-lowest"
-        - DBAL_PROVIDER="doctrine-orm-module"
-    - php: 7.2
-      env:
-        - DEPENDENCIES="--prefer-lowest"
-        - DBAL_PROVIDER="psr-container-doctrine"
     - php: 7.3
       env:
         - DEPENDENCIES=""
