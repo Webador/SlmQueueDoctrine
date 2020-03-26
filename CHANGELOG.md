@@ -1,6 +1,6 @@
 # 2.0.3 And later
 
-Changelog for these releases can be found on the releases page, see https://github.com/juriansluiman/SlmQueueDoctrine/releases.
+Changelog for these releases can be found on the releases page, see https://github.com/JouwWeb/SlmQueueDoctrine/releases.
 
 # 2.0.2
 
@@ -48,7 +48,7 @@ Changelog for these releases can be found on the releases page, see https://gith
 
 # 0.4.0-beta3
 
-* [BC] Due to changes in SlmQueue ([changelog](https://github.com/juriansluiman/SlmQueue/blob/master/CHANGELOG.md)) existing jobs won't be able to be executed correctly.
+* [BC] Due to changes in SlmQueue ([changelog](https://github.com/JouwWeb/SlmQueue/blob/master/CHANGELOG.md)) existing jobs won't be able to be executed correctly.
 
 # 0.4.0-beta1
 
