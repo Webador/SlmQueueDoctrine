@@ -48,7 +48,7 @@
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule",
-        "roave/psr-container-doctrine": "^1.0 to use psr-container-doctrine implementation"
+        "roave/psr-container-doctrine": "^2.1 to use psr-container-doctrine implementation"
     },
     "extra": {
         "branch-alias": {
