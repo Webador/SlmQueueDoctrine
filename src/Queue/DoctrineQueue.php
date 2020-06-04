@@ -281,7 +281,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * {@inheritDoc}
      */
-    public function recover($executionTime): int
+    public function recover(int $executionTime): int
     {
         $executedLifetime = $this->parseOptionsToDateTime(['delay' => - ($executionTime * 60)]);
 
