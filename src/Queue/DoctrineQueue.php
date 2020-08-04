@@ -2,6 +2,8 @@
 
 namespace SlmQueueDoctrine\Queue;
 
+use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
+use Ellerhold\Webshop\Database\Entity\Job\BackgroundJobStatus;
 use SlmQueueDoctrine\Exception\LogicException;
 use SlmQueueDoctrine\Exception\RuntimeException;
 use SlmQueueDoctrine\Exception\JobNotFoundException;
@@ -19,10 +21,11 @@ use SlmQueueDoctrine\Options\DoctrineOptions;
 
 class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 {
-    public const STATUS_PENDING = 1;
-    public const STATUS_RUNNING = 2;
-    public const STATUS_DELETED = 3;
-    public const STATUS_BURIED  = 4;
+    public const STATUS_PENDING   = 1;
+    public const STATUS_RUNNING   = 2;
+    public const STATUS_DELETED   = 3;
+    public const STATUS_BURIED     = 4;
+    public const STATUS_ALLOCATING = 5;
 
     public const LIFETIME_DISABLED  = 0;
     public const LIFETIME_UNLIMITED = -1;
@@ -49,6 +52,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @var Connection
      */
     private $connection;
+
+    /**
+     * @var string|null
+     */
+    protected $workerId;
 
     /**
      * Constructor
@@ -90,25 +98,30 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
         $scheduled = $this->parseOptionsToDateTime($options);
 
-        $this->connection->insert($this->options->getTableName(), [
-            'queue'     => $this->getName(),
-            'status'    => self::STATUS_PENDING,
-            'created'   => $this->now->format('Y-m-d H:i:s.u'),
-            'data'      => $this->serializeJob($job),
-            'scheduled' => $scheduled->format('Y-m-d H:i:s.u'),
-            'priority'  => isset($options['priority']) ? $options['priority'] : self::DEFAULT_PRIORITY,
-        ], [
-            Types::STRING,
-            Types::SMALLINT,
-            Types::STRING,
-            Types::TEXT,
-            Types::STRING,
-            Types::INTEGER,
-        ]);
+        $this->connection->insert(
+            $this->options->getTableName(),
+            [
+                'queue'     => $this->getName(),
+                'status'    => self::STATUS_PENDING,
+                'created'   => $this->now->format('Y-m-d H:i:s.u'),
+                'data'      => $this->serializeJob($job),
+                'scheduled' => $scheduled->format('Y-m-d H:i:s.u'),
+                'priority'  => isset($options['priority']) ? $options['priority'] : self::DEFAULT_PRIORITY,
+            ],
+            [
+                Types::STRING,
+                Types::SMALLINT,
+                Types::STRING,
+                Types::TEXT,
+                Types::STRING,
+                Types::INTEGER,
+            ]
+        );
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
             $id = $this->connection->lastInsertId($this->options->getTableName() . '_id_seq');
-        } else {
+        }
+        else {
             $id = $this->connection->lastInsertId();
         }
 
@@ -120,11 +133,34 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function pop(array $options = []): ?JobInterface
     {
+        if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
+            return $this->popPostgres($options);
+        }
+
+        return $this->popMysql($options);
+    }
+
+    /**
+     * This special variant of pop() is optimized for PostgreSQL and uses only 2 queries and a transaction.
+     *
+     * - SELECT ... FOR UPDATE
+     * - If no row is returned -> return null.
+     * - If a row is returned, then the database has it locked and we UPDATE it to the "RUNNING" state.
+     *
+     * Using this variant with MariaDB would lock the whole table (!) instead of just the row, so we need to use another
+     * implementation.
+     *
+     * @param array $options
+     *
+     * @return JobInterface|null
+     * @throws \Exception
+     */
+    protected function popPostgres(array $options = []): ?JobInterface
+    {
         // First run garbage collection
         $this->purge();
 
-        $conn = $this->connection;
-        $conn->beginTransaction();
+        $this->connection->beginTransaction();
 
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
@@ -134,9 +170,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         );
 
         try {
-            $platform = $conn->getDatabasePlatform();
+            $platform = $this->connection->getDatabasePlatform();
 
-            $queryBuilder = $conn->createQueryBuilder();
+            $queryBuilder = $this->connection->createQueryBuilder();
 
             $queryBuilder
                 ->select('*')
@@ -166,7 +202,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                     'SET status = ?, executed = ? ' .
                     'WHERE id = ? AND status = ?';
 
-                $rows = $conn->executeUpdate(
+                $rows = $this->connection->executeUpdate(
                     $update,
                     [
                         static::STATUS_RUNNING,
@@ -182,15 +218,162 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 }
             }
 
-            $conn->commit();
+            $this->connection->commit();
         } catch (DBALException $e) {
-            $conn->rollback();
-            $conn->close();
+            $this->connection->rollback();
+            $this->connection->close();
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
         if ($row === false) {
             return null;
+        }
+
+        // Add job ID to meta data
+        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
+    }
+
+    /**
+     * This generic variant of pop() works like this:
+     * - UPDATE query (limit 1) that sets the job into a new status (STATUS_ALLOCATING) with a unique (!) worker ID
+     * - If the row count of the UPDATE is zero -> no Jobs are ready for execution -> return null.
+     * - If the row count of the UPDATE is greater 1 -> too many Jobs were reserved -> rollback and throw an exception. This should not happen!
+     * - If the row count of the UPDATE is 1 -> we've marked a job for us
+     * - SELECT the job via the unique identifier
+     * - UPDATE it to STATUS_RUNNING
+     * - Return its data.
+     *
+     * It uses 3 queries (UPDATE, SELECT, UPDATE) to pop a job from the queue table without any locking or transaction.
+     *
+     * @param array $options
+     *
+     * @return JobInterface|null
+     * @throws \Exception
+     */
+    protected function popMysql(array $options = []): ?JobInterface
+    {
+        // First run garbage collection
+        $this->purge();
+
+        $time      = microtime(true);
+        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+        $this->now = new DateTime(
+            date('Y-m-d H:i:s.' . $micro, $time),
+            new DateTimeZone(date_default_timezone_get())
+        );
+
+        if ($this->workerId === null) {
+            $this->workerId = getmypid() . '-' . random_int(0, PHP_INT_MAX);
+        }
+
+        try {
+            $queryBuilder = $this->connection->createQueryBuilder();
+            $queryBuilder
+                ->update($this->options->getTableName(), 'job')
+
+                ->set('job.status = :newStatus')
+                ->setParameter('newStatus', static::STATUS_ALLOCATING)
+
+                ->set('job.workerId = :workerId')
+                ->setParameter('workerId', $this->workerId)
+
+                ->where('job.status = :oldStatus')
+                ->setParameter('oldStatus', static::STATUS_PENDING)
+
+                ->andWhere('job.queue = :queue')
+                ->setParameter('queue', $this->getName())
+
+                ->andWhere('scheduled <= :scheduled')
+                ->setParameter('scheduled', $this->now->format('Y-m-d H:i:s.u'))
+
+                ->addOrderBy('priority', 'ASC')
+                ->addOrderBy('scheduled', 'ASC')
+
+                ->setMaxResults(1);
+
+            $result = $this->connection->executeQuery(
+                $queryBuilder->getSQL(),
+                $queryBuilder->getParameters(),
+                $queryBuilder->getParameterTypes()
+            );
+
+            $rowCount = $result->rowCount();
+
+            if ($rowCount === 0) {
+                // No row was updated -> no job ready for us!
+                return null;
+            }
+
+            if ($rowCount > 1) {
+                // That should not be possible, but what if ...? Reset them...
+                $queryBuilder = $this->connection->createQueryBuilder();
+                $queryBuilder
+                    ->update($this->options->getTableName(), 'job')
+
+                    ->set('job.status = :newStatus')
+                    ->setParameter('newStatus', static::STATUS_PENDING)
+
+                    ->set('job.workerId = NULL')
+
+                    ->where('job.status = :oldStatus')
+                    ->setParameter('oldStatus', static::STATUS_ALLOCATING)
+
+                    ->andWhere('job.workerId = :workerId')
+                    ->setParameter('workerId', $this->workerId)
+
+                    ->andWhere('job.queue = :queue')
+                    ->setParameter('queue', $this->getName());
+
+                $this->connection->executeQuery(
+                    $queryBuilder->getSQL(),
+                    $queryBuilder->getParameters(),
+                    $queryBuilder->getParameterTypes()
+                );
+
+                throw new LogicException(
+                    'More than 1 job was assigned to our worker despite having UPDATE ... LIMIT 1!'
+                );
+            }
+
+            $queryBuilder = $this->connection->createQueryBuilder();
+            $queryBuilder
+                ->select('*')
+                ->from($this->options->getTableName())
+
+                ->where('status = :oldStatus')
+                ->setParameter('oldStatus', static::STATUS_ALLOCATING)
+
+                ->andWhere('workerId = :workerId')
+                ->setParameter('workerId', $this->workerId);
+
+            $result = $this->connection->executeQuery(
+                $queryBuilder->getSQL(),
+                $queryBuilder->getParameters(),
+                $queryBuilder->getParameterTypes()
+            );
+
+            if ($row = $result->fetch()) {
+                $queryBuilder = $this->connection->createQueryBuilder();
+                $queryBuilder
+                    ->update($this->options->getTableName(), 'job')
+
+                    ->set('job.status = :newStatus')
+                    ->setParameter('newStatus', static::STATUS_RUNNING)
+
+                    ->set('job.executed = :executed')
+                    ->setParameter('executed', $this->now->format('Y-m-d H:i:s.u'))
+
+                    ->where('job.id = :id')
+                    ->setParameter('id', $row['id']);
+
+                $this->connection->executeQuery(
+                    $queryBuilder->getSQL(),
+                    $queryBuilder->getParameters(),
+                    $queryBuilder->getParameterTypes()
+                );
+            }
+        } catch (DBALException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
         // Add job ID to meta data
