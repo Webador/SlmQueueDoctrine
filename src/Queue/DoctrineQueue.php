@@ -132,11 +132,21 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function pop(array $options = []): ?JobInterface
     {
+        // First run garbage collection
+        $this->purge();
+
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
-            return $this->popPostgres($options);
+            $row = $this->popPostgres($options);
+        } else {
+            $row = $this->popMysql($options);
         }
 
-        return $this->popMysql($options);
+        if ($row === null) {
+            return null;
+        }
+
+        // Add job ID to meta data
+        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
     }
 
     /**
@@ -144,21 +154,19 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * - SELECT ... FOR UPDATE
      * - If no row is returned -> return null.
-     * - If a row is returned, then the database has it locked and we UPDATE it to the "RUNNING" state.
+     * - If a row is returned, the database locked it and we can UPDATE it to the "RUNNING" state.
      *
      * Using this variant with MariaDB would lock the whole table (!) instead of just the row, so we need to use another
      * implementation.
      *
      * @param array $options
      *
-     * @return JobInterface|null
+     * @return array|null
+     *
      * @throws \Exception
      */
-    protected function popPostgres(array $options = []): ?JobInterface
+    protected function popPostgres(array $options = []): ?array
     {
-        // First run garbage collection
-        $this->purge();
-
         $this->connection->beginTransaction();
 
         $time      = microtime(true);
@@ -228,8 +236,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             return null;
         }
 
-        // Add job ID to meta data
-        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
+        return $row;
     }
 
     /**
@@ -246,14 +253,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      *
      * @param array $options
      *
-     * @return JobInterface|null
+     * @return array|null
+     *
      * @throws \Exception
      */
-    protected function popMysql(array $options = []): ?JobInterface
+    protected function popMysql(array $options = []): ?array
     {
-        // First run garbage collection
-        $this->purge();
-
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
         $this->now = new DateTime(
@@ -330,7 +335,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 );
 
                 throw new LogicException(
-                    'More than 1 job was assigned to our worker despite having UPDATE ... LIMIT 1!'
+                    'More than 1 job was assigned to our worker despite using UPDATE with LIMIT 1!'
                 );
             }
 
@@ -375,8 +380,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
 
-        // Add job ID to meta data
-        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
+        return $row;
     }
 
     /**
