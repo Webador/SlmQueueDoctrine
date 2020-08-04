@@ -120,8 +120,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
             $id = $this->connection->lastInsertId($this->options->getTableName() . '_id_seq');
-        }
-        else {
+        } else {
             $id = $this->connection->lastInsertId();
         }
 
