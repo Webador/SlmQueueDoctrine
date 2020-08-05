@@ -62,7 +62,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * Constructor
      *
      * @param Connection       $connection
-     * @param string           $tableName
+     * @param DoctrineOptions  $options
      * @param string           $name
      * @param JobPluginManager $jobPluginManager
      */
@@ -93,9 +93,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     public function push(JobInterface $job, array $options = []): void
     {
-        $time      = microtime(true);
-        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
+        $this->now = new DateTime();
         $scheduled = $this->parseOptionsToDateTime($options);
 
         $this->connection->insert(
@@ -106,7 +104,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'created'   => $this->now->format('Y-m-d H:i:s.u'),
                 'data'      => $this->serializeJob($job),
                 'scheduled' => $scheduled->format('Y-m-d H:i:s.u'),
-                'priority'  => isset($options['priority']) ? $options['priority'] : self::DEFAULT_PRIORITY,
+                'priority'  => $options['priority'] ?? self::DEFAULT_PRIORITY,
             ],
             [
                 Types::STRING,
@@ -134,6 +132,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         // First run garbage collection
         $this->purge();
+
+        $this->now = new DateTime();
 
         if (self::DATABASE_PLATFORM_POSTGRES == $this->connection->getDatabasePlatform()->getName()) {
             $row = $this->popPostgres($options);
@@ -168,13 +168,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     protected function popPostgres(array $options = []): ?array
     {
         $this->connection->beginTransaction();
-
-        $time      = microtime(true);
-        $micro     = sprintf('%06d', ($time - floor($time)) * 1000000);
-        $this->now = new DateTime(
-            date('Y-m-d H:i:s.' . $micro, $time),
-            new DateTimeZone(date_default_timezone_get())
-        );
 
         try {
             $platform = $this->connection->getDatabasePlatform();
@@ -258,13 +251,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected function popMysql(array $options = []): ?array
     {
-        $time      = microtime(true);
-        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-        $this->now = new DateTime(
-            date('Y-m-d H:i:s.' . $micro, $time),
-            new DateTimeZone(date_default_timezone_get())
-        );
-
         if ($this->workerId === null) {
             $this->workerId = getmypid() . '-' . random_int(0, PHP_INT_MAX);
         }
@@ -379,12 +365,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'SET status = ?, finished = ? ' .
                 'WHERE id = ? AND status = ?';
 
-            $time      = microtime(true);
-            $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-            $this->now = new DateTime(
-                date('Y-m-d H:i:s.' . $micro, $time),
-                new DateTimeZone(date_default_timezone_get())
-            );
+            $this->now = new DateTime();
 
             $rows = $this->connection->executeUpdate(
                 $update,
@@ -420,12 +401,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 'SET status = ?, finished = ?, message = ?, trace = ? ' .
                 'WHERE id = ? AND status = ?';
 
-            $time      = microtime(true);
-            $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-            $this->now = new DateTime(
-                date('Y-m-d H:i:s.' . $micro, $time),
-                new DateTimeZone(date_default_timezone_get())
-            );
+            $this->now = new DateTime();
 
             $rows = $this->connection->executeUpdate(
                 $update,
@@ -539,10 +515,8 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      */
     protected function parseOptionsToDateTime(array $options): DateTime
     {
-        $time      = microtime(true);
-        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
-        $scheduled = clone ($this->now);
+        $this->now = new DateTime();
+        $scheduled = new DateTime();
 
         if (isset($options['scheduled'])) {
             switch (true) {
