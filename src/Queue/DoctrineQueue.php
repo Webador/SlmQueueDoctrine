@@ -262,9 +262,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
         $this->rescheduleTimedoutJobsInAllocating();
 
-        // If this jobs is in STATUS_ALLOCATING for more than 5 minutes - reschedule it!
-        $allocationTimeout = new DateTime('+ 5 minutes');
-
         try {
             $queryBuilder = $this->connection->createQueryBuilder();
             $queryBuilder
@@ -276,8 +273,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 ->set('job.workerId = :workerId')
                 ->setParameter('workerId', $this->workerId)
 
+                // If this job is in STATUS_ALLOCATING for more than 5 minutes - reschedule it!
                 ->set('job.allocationTimeout = :allocationTimeout')
-                ->setParameter('allocationTimeout', $allocationTimeout)
+                ->setParameter('allocationTimeout', new DateTime('+ 5 minutes'))
 
                 ->where('job.status = :oldStatus')
                 ->setParameter('oldStatus', static::STATUS_PENDING)
@@ -302,7 +300,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $rowCount = $result->rowCount();
 
             if ($rowCount === 0) {
-                // No row was updated -> no job ready for us!
+                // No row was updated -> no job is ready for us!
                 return null;
             }
 
@@ -370,7 +368,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * Thats why there is a timeout for this state. After that it is rescheduled.
      *
      * This is only done every 5 minutes to reduce DB load.
-     * BUT: it is done for EVERY worker out that was started, because we cant know which worker has already done it.
+     * BUT: it is done for EVERY running worker every 5 minutes, because we cant know which worker has already done it.
      *
      * @return int|null the number of rescheduled jobs or null if no UPDATE was issued.
      */
