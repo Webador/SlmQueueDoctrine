@@ -2,21 +2,20 @@
 
 namespace SlmQueueDoctrine\Queue;
 
-use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
-use Ellerhold\Webshop\Database\Entity\Job\BackgroundJobStatus;
-use SlmQueueDoctrine\Exception\LogicException;
-use SlmQueueDoctrine\Exception\RuntimeException;
-use SlmQueueDoctrine\Exception\JobNotFoundException;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Types;
+use Ellerhold\Webshop\Database\Entity\Job\BackgroundJobStatus;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\AbstractQueue;
+use SlmQueueDoctrine\Exception\JobNotFoundException;
+use SlmQueueDoctrine\Exception\LogicException;
+use SlmQueueDoctrine\Exception\RuntimeException;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 
 class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
@@ -44,7 +43,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * Used to synchronize time calculations
      *
-     * @var DateTime
+     * @var DateTime|null
      */
     private $now;
 
@@ -57,6 +56,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * @var string|null
      */
     protected $workerId;
+
+    /**
+     * @var float
+     */
+    protected $nextAllocationTimeoutCheck;
 
     /**
      * Constructor
@@ -72,8 +76,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $name,
         JobPluginManager $jobPluginManager
     ) {
-        $this->connection = $connection;
-        $this->options    = clone $options;
+        $this->connection                 = $connection;
+        $this->options                    = clone $options;
+        $this->nextAllocationTimeoutCheck = microtime(true);
 
         parent::__construct($name, $jobPluginManager);
     }
@@ -255,6 +260,11 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $this->workerId = getmypid() . '-' . random_int(0, PHP_INT_MAX);
         }
 
+        $this->rescheduleTimedoutJobsInAllocating();
+
+        // If this jobs is in STATUS_ALLOCATING for more than 5 minutes - reschedule it!
+        $allocationTimeout = new DateTime('+ 5 minutes');
+
         try {
             $queryBuilder = $this->connection->createQueryBuilder();
             $queryBuilder
@@ -265,6 +275,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
                 ->set('job.workerId = :workerId')
                 ->setParameter('workerId', $this->workerId)
+
+                ->set('job.allocationTimeout = :allocationTimeout')
+                ->setParameter('allocationTimeout', $allocationTimeout)
 
                 ->where('job.status = :oldStatus')
                 ->setParameter('oldStatus', static::STATUS_PENDING)
@@ -349,6 +362,47 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         }
 
         return $row;
+    }
+
+    /**
+     * Only if using popMysql():
+     * If the workers dies between STATUS_ALLOCATING and STATUS_RUNNING then this job will be lost forever.
+     * Thats why there is a timeout for this state. After that it is rescheduled.
+     *
+     * This is only done every 5 minutes to reduce DB load.
+     * BUT: it is done for EVERY worker out that was started, because we cant know which worker has already done it.
+     *
+     * @return int|null the number of rescheduled jobs or null if no UPDATE was issued.
+     */
+    protected function rescheduleTimedoutJobsInAllocating(): ?int
+    {
+        if ($this->nextAllocationTimeoutCheck > microtime(true)) {
+            return null;
+        }
+
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder
+            ->update($this->options->getTableName(), 'job')
+
+            ->set('job.status = :newStatus')
+            ->setParameter('newStatus', static::STATUS_PENDING)
+
+            ->where('job.status = :oldStatus')
+            ->setParameter('oldStatus', static::STATUS_ALLOCATING)
+
+            ->andWhere('job.allocationTimeout <= :now')
+            ->setParameter('now', new DateTime());
+
+        $result = $this->connection->executeQuery(
+            $queryBuilder->getSQL(),
+            $queryBuilder->getParameters(),
+            $queryBuilder->getParameterTypes()
+        );
+
+        // Next check in 5 minutes
+        $this->nextAllocationTimeoutCheck = microtime(true) + 5 * 3600;
+
+        return $result->rowCount();
     }
 
     /**
