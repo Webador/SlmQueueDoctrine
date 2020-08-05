@@ -156,7 +156,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * - If no row is returned -> return null.
      * - If a row is returned, the database locked it and we can UPDATE it to the "RUNNING" state.
      *
-     * Using this variant with MariaDB would lock the whole table (!) instead of just the row, so we need to use another
+     * Using this variant with MySQL/MariaDB would lock the whole table (!) instead of just the row, so we need to use another
      * implementation.
      *
      * @param array $options
@@ -170,7 +170,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $this->connection->beginTransaction();
 
         $time      = microtime(true);
-        $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
+        $micro     = sprintf('%06d', ($time - floor($time)) * 1000000);
         $this->now = new DateTime(
             date('Y-m-d H:i:s.' . $micro, $time),
             new DateTimeZone(date_default_timezone_get())
@@ -204,25 +204,28 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 $queryBuilder->getParameterTypes()
             );
 
-            if ($row = $query->fetch()) {
-                $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
-                    'SET status = ?, executed = ? ' .
-                    'WHERE id = ? AND status = ?';
+            $row = $query->fetch();
+            if (!$row) {
+                return null;
+            }
 
-                $rows = $this->connection->executeUpdate(
-                    $update,
-                    [
-                        static::STATUS_RUNNING,
-                        $this->now->format('Y-m-d H:i:s.u'),
-                        $row['id'],
-                        static::STATUS_PENDING
-                    ],
-                    [Types::SMALLINT, Types::STRING, Types::INTEGER, Types::SMALLINT]
-                );
+            $update = 'UPDATE ' . $this->options->getTableName() . ' ' .
+                'SET status = ?, executed = ? ' .
+                'WHERE id = ? AND status = ?';
 
-                if ($rows !== 1) {
-                    throw new LogicException("Race-condition detected while updating item in queue.");
-                }
+            $rows = $this->connection->executeUpdate(
+                $update,
+                [
+                    static::STATUS_RUNNING,
+                    $this->now->format('Y-m-d H:i:s.u'),
+                    $row['id'],
+                    static::STATUS_PENDING
+                ],
+                [Types::SMALLINT, Types::STRING, Types::INTEGER, Types::SMALLINT]
+            );
+
+            if ($rows !== 1) {
+                throw new LogicException('Race-condition detected while updating item in queue.');
             }
 
             $this->connection->commit();
@@ -230,10 +233,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $this->connection->rollback();
             $this->connection->close();
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        if ($row === false) {
-            return null;
         }
 
         return $row;
@@ -309,33 +308,9 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             }
 
             if ($rowCount > 1) {
-                // That should not be possible, but what if ...? Reset them...
-                $queryBuilder = $this->connection->createQueryBuilder();
-                $queryBuilder
-                    ->update($this->options->getTableName(), 'job')
-
-                    ->set('job.status = :newStatus')
-                    ->setParameter('newStatus', static::STATUS_PENDING)
-
-                    ->set('job.workerId = NULL')
-
-                    ->where('job.status = :oldStatus')
-                    ->setParameter('oldStatus', static::STATUS_ALLOCATING)
-
-                    ->andWhere('job.workerId = :workerId')
-                    ->setParameter('workerId', $this->workerId)
-
-                    ->andWhere('job.queue = :queue')
-                    ->setParameter('queue', $this->getName());
-
-                $this->connection->executeQuery(
-                    $queryBuilder->getSQL(),
-                    $queryBuilder->getParameters(),
-                    $queryBuilder->getParameterTypes()
-                );
-
                 throw new LogicException(
-                    'More than 1 job was assigned to our worker despite using UPDATE with LIMIT 1!'
+                    'More than 1 job was assigned to worker "' . $this->workerId
+                    . '" despite using UPDATE with LIMIT 1!'
                 );
             }
 
@@ -356,26 +331,33 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 $queryBuilder->getParameterTypes()
             );
 
-            if ($row = $result->fetch()) {
-                $queryBuilder = $this->connection->createQueryBuilder();
-                $queryBuilder
-                    ->update($this->options->getTableName(), 'job')
-
-                    ->set('job.status = :newStatus')
-                    ->setParameter('newStatus', static::STATUS_RUNNING)
-
-                    ->set('job.executed = :executed')
-                    ->setParameter('executed', $this->now->format('Y-m-d H:i:s.u'))
-
-                    ->where('job.id = :id')
-                    ->setParameter('id', $row['id']);
-
-                $this->connection->executeQuery(
-                    $queryBuilder->getSQL(),
-                    $queryBuilder->getParameters(),
-                    $queryBuilder->getParameterTypes()
-                );
+            $row = $result->fetch();
+            if (!$row) {
+                return null;
             }
+
+            if ($result->rowCount() > 1) {
+                throw new LogicException('Race-condition detected while updating item in queue.');
+            }
+
+            $queryBuilder = $this->connection->createQueryBuilder();
+            $queryBuilder
+                ->update($this->options->getTableName(), 'job')
+
+                ->set('job.status = :newStatus')
+                ->setParameter('newStatus', static::STATUS_RUNNING)
+
+                ->set('job.executed = :executed')
+                ->setParameter('executed', $this->now->format('Y-m-d H:i:s.u'))
+
+                ->where('job.id = :id')
+                ->setParameter('id', $row['id']);
+
+            $this->connection->executeQuery(
+                $queryBuilder->getSQL(),
+                $queryBuilder->getParameters(),
+                $queryBuilder->getParameterTypes()
+            );
         } catch (DBALException $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
