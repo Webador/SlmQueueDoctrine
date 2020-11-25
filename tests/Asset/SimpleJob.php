@@ -9,7 +9,7 @@ class SimpleJob extends AbstractJob
     /**
      * {@inheritDoc}
      */
-    public function execute(): ?int
+    public function execute()
     {
         return null;
     }

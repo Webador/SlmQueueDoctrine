@@ -27,7 +27,7 @@ class ExceptionJob extends AbstractJob
     /**
      * {@inheritDoc}
      */
-    public function execute(): ?int
+    public function execute()
     {
         throw new Exception();
     }
