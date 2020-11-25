@@ -100,4 +100,19 @@ class DoctrineWorkerTest extends TestCase
 
         static::assertEquals('buried', $job->getContent());
     }
+
+    public function testAssertJobIsBuriedIfAnythingIsThrown(): void
+    {
+        $job = new Asset\ThrowableJob();
+
+        $this->queue->expects($this->once())
+            ->method('bury')
+            ->will($this->returnCallback(function () use ($job) {
+                $job->setContent('buried');
+            }));
+
+        $this->worker->processJob($job, $this->queue);
+
+        static::assertEquals('buried', $job->getContent());
+    }
 }

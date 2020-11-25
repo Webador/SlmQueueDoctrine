@@ -4,7 +4,7 @@ namespace SlmQueueDoctrine\Worker;
 
 use SlmQueueDoctrine\Job\Exception\ReleasableException;
 use SlmQueueDoctrine\Job\Exception\BuryableException;
-use Exception;
+use Throwable;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\AbstractWorker;
@@ -39,7 +39,7 @@ class DoctrineWorker extends AbstractWorker
             $queue->bury($job, $exception->getOptions());
 
             return ProcessJobEvent::JOB_STATUS_FAILURE;
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $queue->bury($job, [
                 'message' => $exception->getMessage(),
                 'trace'   => $exception->getTraceAsString()
