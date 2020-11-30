@@ -122,6 +122,17 @@ return array(
   )
 );
  ```
+
+### Getting slm/queue-doctrine specific data
+
+The `DoctrineQueue` will populate all jobs with some additional metadata about the job. This metadata is stored under
+a specific key name. 
+
+```php
+$job->getMetadata(DoctrineQueue::METADATA_SCHEDULED_KEY); // Returns `\DateTimeImmutable` date for which job is scheduled.
+$job->getMetadata(DoctrineQueue::METADATA_PRIORITY_KEY); // Returns integer priority of the job.
+$job->getMetadata(DoctrineQueue::METADATA_ID_KEY); // Returns integer ID of the job in the database.
+```  
  
 Provided Worker Strategies
 --------------------------

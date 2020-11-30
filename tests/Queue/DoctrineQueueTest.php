@@ -79,7 +79,12 @@ class DoctrineQueueTest extends TestCase
 
         $poppedJob = $this->queue->pop();
 
-        static::assertEquals($job, $poppedJob);
+        $this->assertCount(4, $poppedJob->getMetadata());
+        $this->assertEquals('SlmQueueDoctrineTest\Asset\SimpleJob', $poppedJob->getMetadata('__name__'));
+        $this->assertEquals('1', $poppedJob->getMetadata('__id__'));
+        $this->assertTrue(new \DateTime('-10 seconds') < $poppedJob->getMetadata('__scheduled__'));
+        $this->assertTrue($poppedJob->getMetadata('__scheduled__') < new \DateTime('+10 seconds'));
+        $this->assertEquals('1024', $poppedJob->getMetadata('__priority__'));
     }
 
     public function testPopHighestPriority(): void
@@ -99,9 +104,29 @@ class DoctrineQueueTest extends TestCase
             'priority' => 20,
         ]);
 
-        static::assertEquals($jobB, $this->queue->pop());
-        static::assertEquals($jobA, $this->queue->pop());
-        static::assertEquals($jobC, $this->queue->pop());
+        // Job B
+        $this->assertCount(4, $jobB->getMetadata());
+        $this->assertEquals('SlmQueueDoctrineTest\Asset\SimpleJob', $jobB->getMetadata('__name__'));
+        $this->assertEquals('2', $jobB->getMetadata('__id__'));
+        $this->assertTrue(new \DateTime('-10 seconds') < $jobB->getMetadata('__scheduled__'));
+        $this->assertTrue($jobB->getMetadata('__scheduled__') < new \DateTime('+10 seconds'));
+        $this->assertEquals('5', $jobB->getMetadata('__priority__'));
+
+        // Job A
+        $this->assertCount(4, $jobA->getMetadata());
+        $this->assertEquals('SlmQueueDoctrineTest\Asset\SimpleJob', $jobA->getMetadata('__name__'));
+        $this->assertEquals('1', $jobA->getMetadata('__id__'));
+        $this->assertTrue(new \DateTime('-10 seconds') < $jobA->getMetadata('__scheduled__'));
+        $this->assertTrue($jobA->getMetadata('__scheduled__') < new \DateTime('+10 seconds'));
+        $this->assertEquals('10', $jobA->getMetadata('__priority__'));
+
+        // Job C
+        $this->assertCount(4, $jobC->getMetadata());
+        $this->assertEquals('SlmQueueDoctrineTest\Asset\SimpleJob', $jobC->getMetadata('__name__'));
+        $this->assertEquals('3', $jobC->getMetadata('__id__'));
+        $this->assertTrue(new \DateTime('-10 seconds') < $jobC->getMetadata('__scheduled__'));
+        $this->assertTrue($jobC->getMetadata('__scheduled__') < new \DateTime('+10 seconds'));
+        $this->assertEquals('20', $jobC->getMetadata('__priority__'));
     }
 
     public function testJobCanBePushedMoreThenOnce(): void
@@ -491,7 +516,12 @@ class DoctrineQueueTest extends TestCase
 
         $peekedJob = $this->queue->peek($job->getId());
 
-        static::assertEquals($job, $peekedJob);
+        $this->assertCount(4, $peekedJob->getMetadata());
+        $this->assertEquals('SlmQueueDoctrineTest\Asset\SimpleJob', $peekedJob->getMetadata('__name__'));
+        $this->assertEquals('1', $peekedJob->getMetadata('__id__'));
+        $this->assertTrue(new \DateTime('-10 seconds') < $peekedJob->getMetadata('__scheduled__'));
+        $this->assertTrue($peekedJob->getMetadata('__scheduled__') < new \DateTime('+10 seconds'));
+        $this->assertEquals('1024', $peekedJob->getMetadata('__priority__'));
     }
 
     public function testPeekNonExistent(): void

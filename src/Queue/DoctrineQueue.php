@@ -31,6 +31,15 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
     public const DEFAULT_PRIORITY = 1024;
 
+    // A metadata field is populated with a date (`\DateTimeImmutable`) under this key.
+    public const METADATA_SCHEDULED_KEY = '__scheduled__';
+
+    // A metadata field is populated with the priority (`int`) under this key.
+    public const METADATA_PRIORITY_KEY = '__priority__';
+
+    // A metadata field is populated with the ID of this job in the database (`int`) under this key.
+    public const METADATA_ID_KEY = '__id__';
+
     /**
      * Options for this queue
      *
@@ -193,8 +202,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             return null;
         }
 
-        // Add job ID to meta data
-        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
+        return $this->unserializeJobFromRow($row);
     }
 
     /**
@@ -313,8 +321,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             throw new JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));
         }
 
-        // Add job ID to meta data
-        return $this->unserializeJob($row['data'], ['__id__' => $row['id']]);
+        return $this->unserializeJobFromRow($row);
     }
 
     /**
@@ -455,5 +462,17 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
                 [Types::STRING, Types::INTEGER, Types::STRING]
             );
         }
+    }
+
+    private function unserializeJobFromRow(array $row): JobInterface
+    {
+        return $this->unserializeJob(
+            $row['data'],
+            [
+                self::METADATA_ID_KEY => $row['id'],
+                self::METADATA_SCHEDULED_KEY => new \DateTimeImmutable($row['scheduled']),
+                self::METADATA_PRIORITY_KEY => $row['priority'],
+            ]
+        );
     }
 }
