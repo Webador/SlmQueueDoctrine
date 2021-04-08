@@ -2,7 +2,7 @@
 
 namespace SlmQueueDoctrine\Persistence;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 interface ObjectManagerAwareInterface
 {
