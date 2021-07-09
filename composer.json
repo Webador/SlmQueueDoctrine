@@ -46,7 +46,8 @@
         "doctrine/doctrine-orm-module": "~0.7||^1.0||^2.1"
     },
     "suggest": {
-        "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule"
+        "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
+        "roave/psr-container-doctrine": "Configures Doctrine services automatically."
     },
     "extra": {
         "branch-alias": {
