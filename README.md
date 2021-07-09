@@ -9,7 +9,7 @@ Created by Stefan Kleff
 Requirements
 ------------
 * [SlmQueue](https://github.com/juriansluiman/SlmQueue)
-* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [DASPRiD/container-interop-doctrine](https://github.com/DASPRiD/container-interop-doctrine)
+* [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [roave/psr-container-doctrine](https://github.com/roave/psr-container-doctrine)
 
 Note: it's necessary require the doctrine package in composer.json file.
 
