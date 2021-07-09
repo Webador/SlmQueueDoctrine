@@ -174,44 +174,44 @@ Valid options are:
 
 Examples:
 ```php
-	// scheduled for execution asap
-    $queue->push($job);
-    
-    // will get executed before jobs that have higher priority
-    $queue->push($job, [
-        'priority' => 200,
-    ]);
+// scheduled for execution asap
+$queue->push($job);
 
-	// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-    $queue->push($job, array(
-        'scheduled' => 1420070400,
-    ));
+// will get executed before jobs that have higher priority
+$queue->push($job, [
+    'priority' => 200,
+]);
 
-    // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-    $queue->push($job, array(
-        'scheduled' => '2015-01-01 00:00:00'
-    ));
+// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
+$queue->push($job, array(
+    'scheduled' => 1420070400,
+));
 
-    // scheduled for execution at 2015-01-01 01:00:00
-    $queue->push($job, array(
-        'scheduled' => '2015-01-01 00:00:00',
-        'delay' => 3600
-    ));  
+// scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
+$queue->push($job, array(
+    'scheduled' => '2015-01-01 00:00:00'
+));
 
-    // scheduled for execution at now + 300 seconds
-    $queue->push($job, array(
-        'delay' => 'PT300S'
-    ));
+// scheduled for execution at 2015-01-01 01:00:00
+$queue->push($job, array(
+    'scheduled' => '2015-01-01 00:00:00',
+    'delay' => 3600
+));
 
-    // scheduled for execution at now + 2 weeks (1209600 seconds)
-    $queue->push($job, array(
-        'delay' => '2 weeks'
-    ));
+// scheduled for execution at now + 300 seconds
+$queue->push($job, array(
+    'delay' => 'PT300S'
+));
 
-    // scheduled for execution at now + 300 seconds
-    $queue->push($job, array(
-        'delay' => new DateInterval("PT300S"))
-    ));
+// scheduled for execution at now + 2 weeks (1209600 seconds)
+$queue->push($job, array(
+    'delay' => '2 weeks'
+));
+
+// scheduled for execution at now + 300 seconds
+$queue->push($job, array(
+    'delay' => new DateInterval("PT300S"))
+));
 ```
 
 
