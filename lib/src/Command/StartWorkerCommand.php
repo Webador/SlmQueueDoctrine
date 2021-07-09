@@ -16,9 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Worker controller
  */
-class DoctrineWorkerCommand extends Command
+class StartWorkerCommand extends Command
 {
-    protected static $defaultName = 'slm-queue-doctrine:process';
+    protected static $defaultName = 'slm-queue-doctrine:start';
 
     /**
      * @var WorkerInterface
@@ -30,10 +30,6 @@ class DoctrineWorkerCommand extends Command
      */
     protected $queuePluginManager;
 
-    /**
-     * @param WorkerInterface    $worker
-     * @param QueuePluginManager $queuePluginManager
-     */
     public function __construct(WorkerInterface $worker, QueuePluginManager $queuePluginManager)
     {
         parent::__construct();
@@ -51,10 +47,6 @@ class DoctrineWorkerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$input->getOption('start')) {
-            die('START is required');
-        }
-
         $name = $input->getArgument('queue');
         $queue = $this->queuePluginManager->get($name);
 
@@ -79,46 +71,5 @@ class DoctrineWorkerCommand extends Command
         ));
 
         return 0;
-    }
-
-    /**
-     * TODO Replace
-     *
-     * Recover long running jobs
-     */
-    public function recoverAction(): string
-    {
-        $queueName     = $this->params('queue');
-        $executionTime = $this->params('executionTime', 0);
-        $queue         = $this->queuePluginManager->get($queueName);
-
-        if (! $queue instanceof DoctrineQueueInterface) {
-            return sprintf("\nQueue % does not support the recovering of job\n\n", $queueName);
-        }
-
-        try {
-            $count = $queue->recover($executionTime);
-        } catch (ExceptionInterface $exception) {
-            throw new WorkerProcessException("An error occurred", $exception->getCode(), $exception);
-        }
-
-        return sprintf(
-            "\nWork for queue %s is done, %s jobs were recovered\n\n",
-            $queueName,
-            $count
-        );
-    }
-
-    protected function formatOutput(string $queueName, array $messages = []): string
-    {
-        $messages = implode("\n", array_map(function (string $message): string {
-            return sprintf(' - %s', $message);
-        }, $messages));
-
-        return sprintf(
-            "Finished worker for queue '%s':\n%s\n",
-            $queueName,
-            $messages
-        );
     }
 }

@@ -2,8 +2,8 @@
 
 namespace SlmQueueDoctrine;
 
-use SlmQueueDoctrine\Command\DoctrineWorkerCommand;
-use SlmQueueDoctrine\Factory\DoctrineWorkerCommandFactory;
+use SlmQueueDoctrine\Command\StartWorkerCommand;
+use SlmQueueDoctrine\Factory\StartWorkerCommandFactory;
 
 class ConfigProvider
 {

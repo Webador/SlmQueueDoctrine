@@ -15,8 +15,8 @@ $connection->executeQuery(file_get_contents(__DIR__ . '/../lib/tests/Asset/queue
 // Populate with a job
 $application->getServiceManager()->get(\SlmQueue\Queue\QueuePluginManager::class)->get('default')->push(new \TestModule\TestJob());
 
-// And now?
-exec('vendor/bin/laminas slm-queue-doctrine:process default --start');
+// Run the queue for a single job
+exec('vendor/bin/laminas slm-queue-doctrine:start default', $output, $result);
 
 // Assert that file was generated?
 if (@file_get_contents('temp/succesfull') !== 'YES') {

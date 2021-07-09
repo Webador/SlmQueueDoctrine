@@ -3,7 +3,7 @@
 namespace SlmQueueDoctrine\Factory;
 
 use SlmQueue\Queue\QueuePluginManager;
-use SlmQueueDoctrine\Command\DoctrineWorkerCommand;
+use SlmQueueDoctrine\Command\StartWorkerCommand;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -12,7 +12,7 @@ use Interop\Container\ContainerInterface;
 /**
  * WorkerFactory
  */
-class DoctrineWorkerCommandFactory implements FactoryInterface
+class StartWorkerCommandFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
@@ -21,10 +21,10 @@ class DoctrineWorkerCommandFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): DoctrineWorkerCommand {
+    ): StartWorkerCommand {
         $worker             = $container->get(DoctrineWorker::class);
         $queuePluginManager = $container->get(QueuePluginManager::class);
 
-        return new DoctrineWorkerCommand($worker, $queuePluginManager);
+        return new StartWorkerCommand($worker, $queuePluginManager);
     }
 }

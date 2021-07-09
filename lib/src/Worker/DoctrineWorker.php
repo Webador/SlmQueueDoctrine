@@ -27,6 +27,7 @@ class DoctrineWorker extends AbstractWorker
         }
 
         try {
+
             $job->execute($queue);
             $queue->delete($job);
 

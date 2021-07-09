@@ -32,6 +32,6 @@ jobs:
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
                   composer-options: "--working-dir=test-laminas"
-            - name: "Run PHPUnit"
+            - name: "Assert that a job can run"
               working-directory: "./test-laminas"
               run: "php test.php"

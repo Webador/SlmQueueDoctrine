@@ -1,8 +1,8 @@
 <?php
 
-use SlmQueue\Factory\WorkerFactory;
-use SlmQueueDoctrine\Command\DoctrineWorkerCommand;
-use SlmQueueDoctrine\Factory\DoctrineWorkerCommandFactory;
+use SlmQueueDoctrine\Command\RecoverJobsCommand;
+use SlmQueueDoctrine\Command\StartWorkerCommand;
+use SlmQueueDoctrine\Factory\StartWorkerCommandFactory;
 use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
 use SlmQueueDoctrine\Strategy\IdleNapStrategy;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
@@ -10,42 +10,18 @@ use SlmQueueDoctrine\Worker\DoctrineWorker;
 return [
     'service_manager' => [
         'factories' => [
-            DoctrineWorker::class => WorkerFactory::class,
-            DoctrineWorkerCommand::class => DoctrineWorkerCommandFactory::class,
+            DoctrineWorker::class => \SlmQueue\Factory\WorkerFactory::class,
+            StartWorkerCommand::class => StartWorkerCommandFactory::class,
+            RecoverJobsCommand::class => \Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory::class,
         ]
     ],
     'laminas-cli' => [
         'commands' => [
-            'slm-queue-doctrine:process' => DoctrineWorkerCommand::class,
+            'slm-queue-doctrine:start' => StartWorkerCommand::class,
+            'slm-queue-doctrine:recover' => RecoverJobsCommand::class,
         ],
     ],
-//    'console'         => [
-//        'router' => [
-//            'routes' => [
-//                'slm-queue-doctrine-worker'  => [
-//                    'type'    => 'Simple',
-//                    'options' => [
-//                        'route'    => 'queue doctrine <queue> [--timeout=] --start',
-//                        'defaults' => [
-//                            'controller' => DoctrineWorkerCommand::class,
-//                            'action'     => 'process'
-//                        ],
-//                    ],
-//                ],
-//                'slm-queue-doctrine-recover' => [
-//                    'type'    => 'Simple',
-//                    'options' => [
-//                        'route'    => 'queue doctrine <queue> --recover [--executionTime=]',
-//                        'defaults' => [
-//                            'controller' => DoctrineWorkerCommand::class,
-//                            'action'     => 'recover'
-//                        ],
-//                    ],
-//                ],
-//            ],
-//        ],
-//    ],
-    'slm_queue'       => [
+    'slm_queue' => [
         /**
          * Worker Strategies
          */

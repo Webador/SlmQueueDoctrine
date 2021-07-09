@@ -222,24 +222,15 @@ Interact with workers from the command line from within the public folder of you
 #### Starting a worker
 Start a worker that will keep monitoring a specific queue for jobs scheduled to be processed. This worker will continue until it has reached certain criteria (exceeds a memory limit or has processed a specified number of jobs).
 
-`php index.php queue doctrine <queueName> --start`
+`vendor/bin/laminas slm-queue-doctrine:start <queueName>`
 
 A worker will exit when you press cntr-C *after* it has finished the current job it is working on. (PHP doesn't support signal handling on Windows)
-
-*Warning : In previous versions of SlmQueueDoctrine the worker would quit if there where no jobs available for 
-processing. That meant you could savely create a cronjob that would start a worker every minute. If you do that now
-you will quickly run out of available resources.
-
-Now, you can let your script run indefinitely. While this was not possible in PHP versions previous to 5.3, it is now
-not a big deal. This has the other benefit of not needing to bootstrap the application every time, which is good
-for performance.
-*
 
 #### Recovering jobs
 
 To recover jobs which are in the 'running' state for prolonged period of time (specified in minutes) use the following command.
 
-`php index.php queue doctrine <queueName> --recover [--executionTime=]`
+`vendor/bin/laminas slm-queue-doctrine:recover <queueName> [--executionTime=]`
 
 *Note : Workers that are processing a job that is being recovered are NOT stopped.*
 
