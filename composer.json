@@ -30,7 +30,7 @@
         "laminas/laminas-eventmanager": "^3.3",
         "laminas/laminas-servicemanager": "^3.6",
         "laminas/laminas-stdlib": "^3.3",
-        "slm/queue": "3.0-beta.2",
+        "slm/queue": "3.0-beta.3",
         "doctrine/dbal": "^2.12"
     },
     "require-dev": {
