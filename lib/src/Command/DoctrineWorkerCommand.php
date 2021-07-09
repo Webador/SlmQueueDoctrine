@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueueDoctrine\Controller;
+namespace SlmQueueDoctrine\Command;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use SlmQueue\Controller\Exception\WorkerProcessException;
@@ -8,12 +8,18 @@ use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Worker\WorkerInterface;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Worker controller
  */
-class DoctrineWorkerController extends AbstractActionController
+class DoctrineWorkerCommand extends Command
 {
+    protected static $defaultName = 'slm-queue-doctrine:process';
 
     /**
      * @var WorkerInterface
@@ -31,18 +37,30 @@ class DoctrineWorkerController extends AbstractActionController
      */
     public function __construct(WorkerInterface $worker, QueuePluginManager $queuePluginManager)
     {
+        parent::__construct();
+
         $this->worker = $worker;
         $this->queuePluginManager = $queuePluginManager;
     }
 
-    public function processAction(): string
+    protected function configure(): void
     {
-        $options = $this->params()->fromRoute();
-        $name = $options['queue'];
+        $this
+            ->addArgument('queue', InputArgument::REQUIRED)
+            ->addOption('start', null, InputOption::VALUE_NONE);
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        if (!$input->getOption('start')) {
+            die('START is required');
+        }
+
+        $name = $input->getArgument('queue');
         $queue = $this->queuePluginManager->get($name);
 
         try {
-            $messages = $this->worker->processQueue($queue, $options);
+            $messages = $this->worker->processQueue($queue, $input->getArguments());
         } catch (ExceptionInterface $e) {
             throw new WorkerProcessException(
                 'Caught exception while processing queue',
@@ -51,10 +69,22 @@ class DoctrineWorkerController extends AbstractActionController
             );
         }
 
-        return $this->formatOutput($name, $messages);
+        $messages = implode("\n", array_map(function (string $message): string {
+            return sprintf(' - %s', $message);
+        }, $messages));
+
+        $output->writeln(sprintf(
+            "Finished worker for queue '%s':\n%s\n",
+            $name,
+            $messages
+        ));
+
+        return 0;
     }
 
     /**
+     * TODO Replace
+     *
      * Recover long running jobs
      */
     public function recoverAction(): string

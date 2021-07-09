@@ -1,4 +1,4 @@
-name: "Unit tests"
+name: "Test sample Laminas MVC project"
 
 on:
     pull_request:
@@ -25,15 +25,15 @@ jobs:
             - name: "Checkout"
               uses: "actions/checkout@v2"
             - name: "Install PHP"
-              working-directory: ./lib
+              working-directory: ./laminas-test
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
             - name: "Install dependencies with Composer"
-              working-directory: ./lib
+              working-directory: ./laminas-test
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
             - name: "Run PHPUnit"
-              working-directory: ./lib
-              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
+              working-directory: ./laminas-test
+              run: "php test.php"

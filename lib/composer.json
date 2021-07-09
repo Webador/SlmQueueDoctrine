@@ -28,10 +28,12 @@
     "require": {
         "php": "^7.3 || ^8.0",
         "laminas/laminas-eventmanager": "^3.3",
+        "laminas/laminas-router": "^3.4",
         "laminas/laminas-servicemanager": "^3.6",
         "laminas/laminas-stdlib": "^3.3",
         "slm/queue": "3.0-beta.3",
-        "doctrine/dbal": "^2.12"
+        "doctrine/dbal": "^2.12",
+        "doctrine/annotations": "^1.8"
     },
     "require-dev": {
         "laminas/laminas-config": "^3.4",
@@ -40,14 +42,13 @@
         "laminas/laminas-log": "^2.13",
         "laminas/laminas-i18n": "^2.11",
         "laminas/laminas-serializer": "^2.10",
-        "laminas/laminas-mvc": "^3.2",
         "phpunit/phpunit": "^9",
-        "doctrine/orm": "^2.6.3",
-        "doctrine/doctrine-orm-module": "^4.0"
+        "doctrine/orm": "^2.6.3"
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
-        "roave/psr-container-doctrine": "Configures Doctrine services automatically."
+        "roave/psr-container-doctrine": "Configures Doctrine services automatically.",
+        "laminas/laminas-cli": "TODO Why?"
     },
     "extra": {
         "branch-alias": {

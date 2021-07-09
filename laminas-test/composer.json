@@ -1,0 +1,19 @@
+{
+    "require": {
+        "slm/queue-doctrine": "dev-master",
+        "doctrine/doctrine-orm-module": "^4.0",
+        "laminas/laminas-cli": "^1.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../lib"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "TestModule\\": "module/TestModule/src"
+        }
+    }
+}

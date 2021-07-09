@@ -6,7 +6,7 @@ use Laminas\Router\RouteMatch;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
-use SlmQueueDoctrine\Controller\DoctrineWorkerController;
+use SlmQueueDoctrine\Command\DoctrineWorkerCommand;
 use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
 
 class DoctrineWorkerControllerTest extends TestCase
@@ -24,7 +24,7 @@ class DoctrineWorkerControllerTest extends TestCase
 
     public function testThrowExceptionIfQueueIsUnknown(): void
     {
-        $controller = $this->serviceManager->get('ControllerManager')->get(DoctrineWorkerController::class);
+        $controller = $this->serviceManager->get('ControllerManager')->get(DoctrineWorkerCommand::class);
         $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $controller->getEvent()->setRouteMatch($routeMatch);
 
