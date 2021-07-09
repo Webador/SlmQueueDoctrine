@@ -34,5 +34,3 @@ jobs:
                   dependency-versions: "${{ matrix.dependencies }}"
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
-
-    - if [[ $DBAL_PROVIDER == 'doctrine-orm-module' ]]; then git checkout HEAD composer.json && rm -Rf vendor && rm -f composer.lock; composer require doctrine/doctrine-orm-module:"~0.7||^1.0||^2.1" --prefer-source $DEPENDENCIES; cp tests/TestConfigurationDoctrineORMModule.php.dist tests/TestConfiguration.php.dist; fi
