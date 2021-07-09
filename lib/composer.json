@@ -34,7 +34,8 @@
         "slm/queue": "3.0-beta.3",
         "doctrine/dbal": "^2.12",
         "doctrine/annotations": "^1.8",
-        "laminas/laminas-config": "^3.4"
+        "laminas/laminas-config": "^3.4",
+        "laminas/laminas-cli": "^1.1.1"
     },
     "require-dev": {
         "laminas/laminas-modulemanager": "^2.10",
@@ -48,8 +49,7 @@
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
-        "roave/psr-container-doctrine": "Configures Doctrine services automatically.",
-        "laminas/laminas-cli": "TODO Why?"
+        "roave/psr-container-doctrine": "Configures Doctrine services automatically."
     },
     "extra": {
         "branch-alias": {

@@ -2,7 +2,6 @@
 
 namespace SlmQueueDoctrine\Command;
 
-use Laminas\Mvc\Controller\AbstractActionController;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\QueuePluginManager;
