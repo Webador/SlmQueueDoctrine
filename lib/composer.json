@@ -43,7 +43,8 @@
         "laminas/laminas-i18n": "^2.11",
         "laminas/laminas-serializer": "^2.10",
         "phpunit/phpunit": "^9",
-        "doctrine/orm": "^2.6.3"
+        "doctrine/orm": "^2.6.3",
+        "doctrine/doctrine-orm-module": "^4.0"
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",

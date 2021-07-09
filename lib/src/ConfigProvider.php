@@ -16,11 +16,6 @@ class ConfigProvider
             'dependencies'  => $config['service_manager'],
             'slm_queue'     => $config['slm_queue'],
             'laminas-cli'   => $config['laminas-cli'],
-
-            // TODO Duplicated code
-            'dependencies'  => [
-                DoctrineWorkerCommand::class => DoctrineWorkerCommandFactory::class,
-            ],
         ];
     }
 }

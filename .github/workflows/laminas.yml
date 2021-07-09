@@ -32,7 +32,7 @@ jobs:
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
-                  composer-options: "--ignore-platform-reqs --working-dir=laminas-test"
+                  composer-options: "--working-dir=laminas-test"
             - name: "Run PHPUnit"
               working-directory: "./laminas-test"
               run: "php test.php"
