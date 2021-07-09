@@ -3,7 +3,6 @@ SlmQueueDoctrine
 
 [![Latest Stable Version](https://poser.pugx.org/slm/queue-doctrine/v/stable.png)](https://packagist.org/packages/slm/queue-doctrine)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue-doctrine/v/unstable.png)](https://packagist.org/packages/slm/queue-doctrine)
-[![Coverage Status](https://coveralls.io/repos/github/juriansluiman/SlmQueueDoctrine/badge.svg?branch=master)](https://coveralls.io/github/juriansluiman/SlmQueueDoctrine?branch=master)
 
 Created by Stefan Kleff
 

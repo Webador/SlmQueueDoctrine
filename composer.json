@@ -30,7 +30,7 @@
         "laminas/laminas-eventmanager": "^3.2.1",
         "laminas/laminas-servicemanager": "^3.3.1",
         "laminas/laminas-stdlib": "^3.2",
-        "slm/queue": "^2.1",
+        "slm/queue": "^3.0-beta",
         "doctrine/dbal": "^2.10"
     },
     "require-dev": {
@@ -43,12 +43,10 @@
         "laminas/laminas-mvc": "^2.7.13",
         "phpunit/phpunit": "^8.5",
         "doctrine/orm": "^2.6.3",
-        "squizlabs/php_codesniffer": "^3.5",
-        "php-coveralls/php-coveralls": "^2.0"
+        "doctrine/doctrine-orm-module": "~0.7||^1.0||^2.1"
     },
     "suggest": {
-        "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule",
-        "dasprid/container-interop-doctrine": "^1.1 to use dasprid/container-interop-doctrine implementation"
+        "doctrine/doctrine-orm-module": "^2.0 to use DoctrineORMModule"
     },
     "extra": {
         "branch-alias": {
