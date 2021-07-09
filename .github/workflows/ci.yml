@@ -25,15 +25,15 @@ jobs:
             - name: "Checkout"
               uses: "actions/checkout@v2"
             - name: "Install PHP"
-              working-directory: ./lib
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
             - name: "Install dependencies with Composer"
-              working-directory: ./lib
+              working-directory:
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
+                  composer-options: "--ignore-platform-reqs --working-dir=lib"
             - name: "Run PHPUnit"
               working-directory: ./lib
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"

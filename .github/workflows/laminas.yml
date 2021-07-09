@@ -25,15 +25,14 @@ jobs:
             - name: "Checkout"
               uses: "actions/checkout@v2"
             - name: "Install PHP"
-              working-directory: ./laminas-test
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
             - name: "Install dependencies with Composer"
-              working-directory: ./laminas-test
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
+                  composer-options: "--ignore-platform-reqs --working-dir=laminas-test"
             - name: "Run PHPUnit"
-              working-directory: ./laminas-test
+              working-directory: "./laminas-test"
               run: "php test.php"
