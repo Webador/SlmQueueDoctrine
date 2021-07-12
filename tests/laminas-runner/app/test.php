@@ -10,7 +10,7 @@ $application = Laminas\Mvc\Application::init(include 'config/application.config.
 $serviceManager = $application->getServiceManager();
 $entityManager = $serviceManager->get('doctrine.entitymanager.orm_default');
 $connection = $entityManager->getConnection();
-$connection->executeQuery(file_get_contents(__DIR__ . '/../lib/tests/Asset/queue_default.sqlite'));
+$connection->executeQuery(file_get_contents(__DIR__ . '/../../queue_default.sqlite'));
 
 // Populate with a job
 $application->getServiceManager()->get(\SlmQueue\Queue\QueuePluginManager::class)->get('default')->push(new \TestModule\TestJob());

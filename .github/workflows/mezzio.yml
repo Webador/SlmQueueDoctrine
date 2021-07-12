@@ -27,11 +27,14 @@ jobs:
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
+            - name: "Install copy of this library"
+              working-directory: "./tests/mezzio-runner"
+              run: "./install.sh"
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
-                  composer-options: "--working-dir=test-mezzio"
+                  composer-options: "--working-dir=tests/mezzio-runner/app"
             - name: "Assert that a job can run"
-              working-directory: "./test-mezzio"
+              working-directory: "./tests/mezzio-runner"
               run: "php test.php"

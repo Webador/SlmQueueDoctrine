@@ -45,7 +45,7 @@ class TestCase extends PHPUnitTestCase
         $em = $this->getEntityManager();
         $conn = $em->getConnection();
 
-        $conn->executeQuery(file_get_contents(__DIR__ . '/../Asset/queue_default.sqlite'));
+        $conn->executeQuery(file_get_contents(__DIR__ . '/../../queue_default.sqlite'));
 
         $this->hasDb = true;
     }
