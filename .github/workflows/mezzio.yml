@@ -36,5 +36,5 @@ jobs:
                   dependency-versions: "${{ matrix.dependencies }}"
                   composer-options: "--working-dir=tests/mezzio-runner/app"
             - name: "Assert that a job can run"
-              working-directory: "./tests/mezzio-runner"
+              working-directory: "./tests/mezzio-runner/app"
               run: "php test.php"
