@@ -1,4 +1,4 @@
-name: "Test sample Laminas MVC project"
+name: "Unit tests"
 
 on:
     pull_request:
@@ -28,14 +28,27 @@ jobs:
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
-            - name: "Install copy of this library"
-              working-directory: "./tests/laminas-runner"
-              run: "./install.sh"
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
+            - name: "Run PHPUnit"
+              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"i
+
+            - name: "Install Laminas test app dependencies"
+              uses: "ramsey/composer-install@v1"
+              with:
+                  dependency-versions: "${{ matrix.dependencies }}"
                   composer-options: "--working-dir=tests/laminas-runner/app"
-            - name: "Assert that a job can run"
+            - name: "Run Laminas integration test"
               working-directory: "./tests/laminas-runner/app"
+              run: "php test.php"
+
+            - name: "Install Mezzio test app dependencies"
+              uses: "ramsey/composer-install@v1"
+              with:
+                  dependency-versions: "${{ matrix.dependencies }}"
+                  composer-options: "--working-dir=tests/mezzio-runner/app"
+            - name: "Run Mezzio integration test"
+              working-directory: "./tests/mezzio-runner/app"
               run: "php test.php"
