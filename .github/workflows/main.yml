@@ -36,6 +36,9 @@ jobs:
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
 
+            - name: "Init Laminas test app"
+              working-directory: "./tests/laminas-runner"
+              run: "./install.sh"
             - name: "Install Laminas test app dependencies"
               uses: "ramsey/composer-install@v1"
               with:
@@ -45,6 +48,9 @@ jobs:
               working-directory: "./tests/laminas-runner/app"
               run: "php test.php"
 
+            - name: "Init Mezzio test app"
+              working-directory: "./tests/mezzio-runner"
+              run: "./install.sh"
             - name: "Install Mezzio test app dependencies"
               uses: "ramsey/composer-install@v1"
               with:
