@@ -32,7 +32,7 @@ jobs:
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
-                  composer-options: "--with-all-dependencies --ignore-plaform-reqs"
+                  composer-options: "--with-all-dependencies --ignore-platform-req"
 
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
