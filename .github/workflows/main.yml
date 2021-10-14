@@ -28,11 +28,17 @@ jobs:
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
-            - name: "Install dependencies with Composer"
+
+            - name: "Install non-dev dependencies with Composer"
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
-                  composer-options: "--with-all-dependencies --ignore-platform-reqs"
+                  composer-options: "--with-all-dependencies --ignore-platform-reqs --no-dev"
+            - name: "Install dev dependencies with Composer (always uses latest versions)"
+              uses: "ramsey/composer-install@v1"
+              with:
+                  dependency-versions: "highest"
+                  composer-options: "--with-all-dependencies --ignore-platform-reqs --dev"
 
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
