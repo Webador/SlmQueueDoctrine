@@ -37,7 +37,7 @@ jobs:
             - name: "Install dev dependencies with Composer (uses `composer install`)"
               uses: "ramsey/composer-install@v1"
               with:
-                  composer-options: "--with-all-dependencies --ignore-platform-reqs"
+                  composer-options: "--ignore-platform-reqs"
 
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
