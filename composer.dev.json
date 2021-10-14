@@ -1,7 +1,4 @@
 {
-    "require-dev": {
-        "doctrine/doctrine-orm-module": "^4.0"
-    },
     "replace": {
         "laminas/laminas-cache-storage-adapter-apc": "*",
         "laminas/laminas-cache-storage-adapter-dba": "*",

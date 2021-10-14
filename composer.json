@@ -41,6 +41,7 @@
     "require-dev": {
         "ext-sqlite3": "*",
         "doctrine/cache": "^1.7",
+        "doctrine/doctrine-orm-module": "^4.0",
         "psr/cache": "^1.0.1",
         "laminas/laminas-modulemanager": "^2.10",
         "laminas/laminas-view": "^2.12",
