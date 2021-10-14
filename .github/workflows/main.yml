@@ -34,11 +34,10 @@ jobs:
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
                   composer-options: "--with-all-dependencies --ignore-platform-reqs --no-dev"
-            - name: "Install dev dependencies with Composer (always uses latest versions)"
+            - name: "Install dev dependencies with Composer (uses `composer install`)"
               uses: "ramsey/composer-install@v1"
               with:
-                  dependency-versions: "highest"
-                  composer-options: "--with-all-dependencies --ignore-platform-reqs --dev"
+                  composer-options: "--with-all-dependencies --ignore-platform-reqs"
 
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
