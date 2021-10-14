@@ -34,7 +34,7 @@ jobs:
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v1"
               with:
-                  composer-options: "${{ composer-options }}"
+                  composer-options: "${{ matrix.composer-options }}"
 
             - name: "Run PHPUnit"
               run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
