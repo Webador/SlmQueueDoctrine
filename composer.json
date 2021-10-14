@@ -38,12 +38,16 @@
         "laminas/laminas-cli": "^1.1.1"
     },
     "require-dev": {
+        "ext-sqlite3": "*",
         "laminas/laminas-modulemanager": "^2.10",
         "laminas/laminas-view": "^2.12",
         "laminas/laminas-log": "^2.13",
         "laminas/laminas-i18n": "^2.11",
         "laminas/laminas-serializer": "^2.10",
-        "phpunit/phpunit": "^9"
+        "phpunit/phpunit": "^9",
+        "laminas/laminas-mvc": "^3.3",
+        "doctrine/orm": "^2.10",
+        "doctrine/doctrine-orm-module": "^4.0"
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
@@ -70,5 +74,15 @@
         "psr-4": {
             "SlmQueueDoctrineTest\\": "tests/src"
         }
+    },
+    "replace": {
+        "laminas/laminas-cache-storage-adapter-apc": "*",
+        "laminas/laminas-cache-storage-adapter-dba": "*",
+        "laminas/laminas-cache-storage-adapter-memcache": "*",
+        "laminas/laminas-cache-storage-adapter-memcached": "*",
+        "laminas/laminas-cache-storage-adapter-mongodb": "*",
+        "laminas/laminas-cache-storage-adapter-wincache": "*",
+        "laminas/laminas-cache-storage-adapter-xcache": "*",
+        "laminas/laminas-cache-storage-adapter-zend-server": "*"
     }
 }
