@@ -32,8 +32,9 @@ jobs:
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
+
             - name: "Run PHPUnit"
-              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"i
+              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
 
             - name: "Install Laminas test app dependencies"
               uses: "ramsey/composer-install@v1"
