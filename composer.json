@@ -35,7 +35,8 @@
         "doctrine/dbal": "^2.12",
         "doctrine/annotations": "^1.8",
         "laminas/laminas-config": "^3.4",
-        "laminas/laminas-cli": "^1.1.1"
+        "laminas/laminas-cli": "^1.1.1",
+        "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
         "ext-sqlite3": "*",
@@ -63,6 +64,12 @@
             "component-whitelist": [
                 "slm/queue"
             ]
+        },
+        "merge-plugin": {
+            "include": [
+                "composer.dev.json"
+            ],
+            "replace": true
         }
     },
     "autoload": {
@@ -74,15 +81,5 @@
         "psr-4": {
             "SlmQueueDoctrineTest\\": "tests/src"
         }
-    },
-    "replace": {
-        "laminas/laminas-cache-storage-adapter-apc": "*",
-        "laminas/laminas-cache-storage-adapter-dba": "*",
-        "laminas/laminas-cache-storage-adapter-memcache": "*",
-        "laminas/laminas-cache-storage-adapter-memcached": "*",
-        "laminas/laminas-cache-storage-adapter-mongodb": "*",
-        "laminas/laminas-cache-storage-adapter-wincache": "*",
-        "laminas/laminas-cache-storage-adapter-xcache": "*",
-        "laminas/laminas-cache-storage-adapter-zend-server": "*"
     }
 }
