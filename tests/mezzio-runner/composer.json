@@ -32,7 +32,7 @@
     "scripts": {
         "test": [
             "echo Running Mezzio integration tests...",
-            "@composer install",
+            "@composer update",
             "@php test.php"
         ]
     }

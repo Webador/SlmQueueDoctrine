@@ -29,7 +29,7 @@
     "scripts": {
         "test": [
            "echo Running Laminas integration tests...",
-           "@composer install",
+           "@composer update",
            "@php test.php"
         ]
     }

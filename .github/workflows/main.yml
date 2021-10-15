@@ -18,11 +18,6 @@ jobs:
                     - "7.3"
                     - "7.4"
                     - "8.0"
-                include:
-                    # ignore platform reqs on PHP8, because of trouble with doctrine-orm-module
-                    - php-version: "8.0"
-                      composer-options: "--ignore-platform-reqs"
-
         steps:
             - name: "Checkout"
               uses: "actions/checkout@v2"
@@ -33,22 +28,6 @@ jobs:
 
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v1"
-              with:
-                  composer-options: "${{ matrix.composer-options }}"
 
-            - name: "Run PHPUnit"
-              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
-
-            - name: "Init Laminas test app"
-              working-directory: "./tests/laminas-runner"
-              run: "./install.sh"
-            - name: "Run Laminas integration test"
-              working-directory: "./tests/laminas-runner/app"
-              run: "php test.php"
-
-            - name: "Init Mezzio test app"
-              working-directory: "./tests/mezzio-runner"
-              run: "./install.sh"
-            - name: "Run Mezzio integration test"
-              working-directory: "./tests/mezzio-runner/app"
-              run: "php test.php"
+            - name: "Run tests"
+              run: "composer test"
