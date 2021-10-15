@@ -20,7 +20,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../lib"
+            "url": "../.."
         }
     ],
     "minimum-stability": "dev",
@@ -28,5 +28,10 @@
         "psr-4": {
             "App\\": "src/App/"
         }
+    },
+    "scripts": {
+        "test": [
+            "@php test.php"
+        ]
     }
 }
