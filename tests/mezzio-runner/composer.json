@@ -31,6 +31,8 @@
     },
     "scripts": {
         "test": [
+            "echo Running Mezzio integration tests...",
+            "@composer install",
             "@php test.php"
         ]
     }

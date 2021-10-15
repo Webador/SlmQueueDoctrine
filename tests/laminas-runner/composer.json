@@ -28,6 +28,8 @@
     },
     "scripts": {
         "test": [
+           "echo Running Laminas integration tests...",
+           "@composer install",
            "@php test.php"
         ]
     }

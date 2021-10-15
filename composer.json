@@ -74,7 +74,9 @@
     },
     "scripts": {
         "test": [
-            "phpunit"
+            "phpunit",
+            "@composer test --working-dir=tests/laminas-runner",
+            "@composer test --working-dir=tests/mezzio-runner"
         ]
     }
 }
