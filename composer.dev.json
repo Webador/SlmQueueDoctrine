@@ -1,4 +1,18 @@
 {
+    "require-dev": {
+        "ext-sqlite3": "*",
+        "doctrine/cache": "^1.7",
+        "doctrine/doctrine-orm-module": "^4.0",
+        "psr/cache": "^1.0.1",
+        "laminas/laminas-modulemanager": "^2.10",
+        "laminas/laminas-view": "^2.12",
+        "laminas/laminas-log": "^2.13",
+        "laminas/laminas-i18n": "^2.11",
+        "laminas/laminas-serializer": "^2.10",
+        "phpunit/phpunit": "^9",
+        "laminas/laminas-mvc": "^3.3",
+        "doctrine/orm": "^2.10"
+    },
     "replace": {
         "laminas/laminas-cache-storage-adapter-apc": "*",
         "laminas/laminas-cache-storage-adapter-dba": "*",
