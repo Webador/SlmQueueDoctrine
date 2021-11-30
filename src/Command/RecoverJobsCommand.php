@@ -5,7 +5,6 @@ namespace SlmQueueDoctrine\Command;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Worker\WorkerInterface;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,8 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RecoverJobsCommand extends Command
 {
-    protected static $defaultName = 'slm-queue-doctrine:recover';
-
     /**
      * @var QueuePluginManager
      */

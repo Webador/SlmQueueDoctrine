@@ -6,6 +6,7 @@ use DateInterval;
 use DateTime;
 use DateTimeZone;
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueDoctrine\Exception\JobNotFoundException;
 use SlmQueueDoctrine\Exception\LogicException;
 use SlmQueueDoctrine\Options\DoctrineOptions;
@@ -29,11 +30,13 @@ class DoctrineQueueTest extends TestCase
 
         $options = new DoctrineOptions();
 
+        $container = ServiceManagerFactory::getServiceManager();
         $this->queue = new DoctrineQueue(
             $this->getEntityManager()->getConnection(),
             $options,
             'some-queue-name',
-            ServiceManagerFactory::getServiceManager()->get(JobPluginManager::class)
+            $container->get(JobPluginManager::class),
+            $container->get(WorkerPluginManager::class)
         );
     }
 

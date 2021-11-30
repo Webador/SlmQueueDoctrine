@@ -1,8 +1,7 @@
 {
     "require": {
         "slm/queue-doctrine": "*",
-        "doctrine/doctrine-orm-module": "^4.0",
-        "laminas/laminas-cli": "^1.1.1"
+        "doctrine/doctrine-orm-module": "^4.0"
     },
     "replace": {
         "laminas/laminas-cache-storage-adapter-apc": "*",
@@ -18,6 +17,10 @@
         {
             "type": "path",
             "url": "../.."
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:koenkivits/SlmQueue.git"
         }
     ],
     "minimum-stability": "dev",

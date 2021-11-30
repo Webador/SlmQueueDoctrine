@@ -7,6 +7,7 @@ use SlmQueueDoctrine\Exception\RuntimeException;
 use SlmQueueDoctrine\Exception\JobNotFoundException;
 use DateInterval;
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\DBALException;
@@ -15,10 +16,14 @@ use Doctrine\DBAL\Types\Types;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\AbstractQueue;
+use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueDoctrine\Options\DoctrineOptions;
+use SlmQueueDoctrine\Worker\DoctrineWorker;
 
 class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 {
+    static $defaultWorkerName = DoctrineWorker::class;
+
     public const STATUS_PENDING = 1;
     public const STATUS_RUNNING = 2;
     public const STATUS_DELETED = 3;
@@ -33,41 +38,27 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 
     /**
      * Options for this queue
-     *
-     * @var DoctrineOptions $options
      */
-    protected $options;
+    protected DoctrineOptions $options;
 
     /**
      * Used to synchronize time calculations
-     *
-     * @var DateTime
      */
-    private $now;
+    private DateTimeInterface $now;
 
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * Constructor
-     *
-     * @param Connection       $connection
-     * @param string           $tableName
-     * @param string           $name
-     * @param JobPluginManager $jobPluginManager
-     */
     public function __construct(
         Connection $connection,
         DoctrineOptions $options,
-        $name,
-        JobPluginManager $jobPluginManager
+        string $name,
+        JobPluginManager $jobPluginManager,
+        WorkerPluginManager $workerPluginManager
     ) {
         $this->connection = $connection;
         $this->options    = clone $options;
 
-        parent::__construct($name, $jobPluginManager);
+        parent::__construct($name, $jobPluginManager, $workerPluginManager);
     }
 
     public function getOptions(): DoctrineOptions

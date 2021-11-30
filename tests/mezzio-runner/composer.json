@@ -1,7 +1,6 @@
 {
     "require": {
         "slm/queue-doctrine": "*",
-        "laminas/laminas-cli": "^1.1",
         "mezzio/mezzio": "^3.2.1",
         "laminas/laminas-diactoros": "^2.3.0",
         "laminas/laminas-config-aggregator": "^1.2",
@@ -21,6 +20,10 @@
         {
             "type": "path",
             "url": "../.."
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:koenkivits/SlmQueue.git"
         }
     ],
     "minimum-stability": "dev",

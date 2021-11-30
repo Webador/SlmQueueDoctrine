@@ -16,7 +16,7 @@ $connection->executeQuery(file_get_contents(__DIR__ . '/../queue_default.sqlite'
 $application->getServiceManager()->get(\SlmQueue\Queue\QueuePluginManager::class)->get('default')->push(new \TestModule\TestJob());
 
 // Run the queue for a single job
-exec('vendor/bin/laminas slm-queue-doctrine:start default', $output, $result);
+exec('vendor/bin/laminas slm-queue:start default', $output, $result);
 
 // Assert that file was generated?
 if (@file_get_contents('temp/succesful') !== 'YES') {

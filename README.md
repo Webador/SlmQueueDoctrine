@@ -222,7 +222,7 @@ Interact with workers from the command line from within the public folder of you
 #### Starting a worker
 Start a worker that will keep monitoring a specific queue for jobs scheduled to be processed. This worker will continue until it has reached certain criteria (exceeds a memory limit or has processed a specified number of jobs).
 
-`vendor/bin/laminas slm-queue-doctrine:start <queueName>`
+`vendor/bin/laminas slm-queue:start <queueName>`
 
 A worker will exit when you press cntr-C *after* it has finished the current job it is working on. (PHP doesn't support signal handling on Windows)
 
@@ -230,7 +230,7 @@ A worker will exit when you press cntr-C *after* it has finished the current job
 
 To recover jobs which are in the 'running' state for prolonged period of time (specified in minutes) use the following command.
 
-`vendor/bin/laminas slm-queue-doctrine:recover <queueName> [--executionTime=]`
+`vendor/bin/laminas slm-queue:doctrine:recover <queueName> [--executionTime=]`
 
 *Note : Workers that are processing a job that is being recovered are NOT stopped.*
 

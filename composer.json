@@ -31,7 +31,7 @@
         "laminas/laminas-router": "^3.4",
         "laminas/laminas-servicemanager": "^3.6",
         "laminas/laminas-stdlib": "^3.3",
-        "slm/queue": "3.0-beta.3",
+        "slm/queue": "dev-feature/v3 as 3.0",
         "doctrine/dbal": "^2.12",
         "doctrine/annotations": "^1.8",
         "laminas/laminas-config": "^3.4",
@@ -78,5 +78,11 @@
             "@composer test --working-dir=tests/laminas-runner",
             "@composer test --working-dir=tests/mezzio-runner"
         ]
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:koenkivits/SlmQueue.git"
+        }
+    ]
 }
