@@ -21,7 +21,7 @@ use SlmQueueDoctrine\Worker\DoctrineWorker;
 
 class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
 {
-    static $defaultWorkerName = DoctrineWorker::class;
+    protected static $defaultWorkerName = DoctrineWorker::class;
 
     public const STATUS_PENDING = 1;
     public const STATUS_RUNNING = 2;
