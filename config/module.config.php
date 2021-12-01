@@ -3,12 +3,10 @@
 use SlmQueueDoctrine\Command\RecoverJobsCommand;
 use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
 use SlmQueueDoctrine\Strategy\IdleNapStrategy;
-use SlmQueueDoctrine\Worker\DoctrineWorker;
 
 return [
     'service_manager' => [
         'factories' => [
-            DoctrineWorker::class => \SlmQueue\Factory\WorkerFactory::class,
             RecoverJobsCommand::class => \Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory::class,
         ]
     ],
