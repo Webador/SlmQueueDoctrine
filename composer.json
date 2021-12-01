@@ -36,9 +36,19 @@
         "doctrine/annotations": "^1.8",
         "laminas/laminas-config": "^3.4",
         "laminas/laminas-cli": "^1.1.1"
+        
     },
     "require-dev": {
-        "wikimedia/composer-merge-plugin": "^2.0",
+        "ext-sqlite3": "*",
+        "doctrine/doctrine-orm-module": "^4.0",
+        "laminas/laminas-modulemanager": "^2.10",
+        "laminas/laminas-view": "^2.12",
+        "laminas/laminas-log": "^2.13",
+        "laminas/laminas-i18n": "^2.11",
+        "laminas/laminas-serializer": "^2.10",
+        "laminas/laminas-mvc": "^3.3",
+        "doctrine/orm": "^2.10",
+        "phpunit/phpunit": "^9",
         "squizlabs/php_codesniffer": "3.*"
     },
     "suggest": {
@@ -77,7 +87,6 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "test": [
-            "@composer install",
             "phpunit",
             "@composer test --working-dir=tests/laminas-runner",
             "@composer test --working-dir=tests/mezzio-runner"
