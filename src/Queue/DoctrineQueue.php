@@ -16,7 +16,6 @@ use Doctrine\DBAL\Types\Types;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\AbstractQueue;
-use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 
@@ -52,13 +51,12 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         Connection $connection,
         DoctrineOptions $options,
         string $name,
-        JobPluginManager $jobPluginManager,
-        WorkerPluginManager $workerPluginManager
+        JobPluginManager $jobPluginManager
     ) {
         $this->connection = $connection;
         $this->options    = clone $options;
 
-        parent::__construct($name, $jobPluginManager, $workerPluginManager);
+        parent::__construct($name, $jobPluginManager);
     }
 
     public function getOptions(): DoctrineOptions

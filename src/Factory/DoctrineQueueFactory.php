@@ -7,7 +7,6 @@ use SlmQueueDoctrine\Options\DoctrineOptions;
 use SlmQueueDoctrine\Queue\DoctrineQueue;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
-use SlmQueue\Worker\WorkerPluginManager;
 
 /**
  * DoctrineQueueFactory
@@ -27,14 +26,12 @@ class DoctrineQueueFactory implements FactoryInterface
         /** @var $connection \Doctrine\DBAL\Connection */
         $connection          = $container->get($queueOptions->getConnection());
         $jobPluginManager    = $container->get(JobPluginManager::class);
-        $workerPluginManager = $container->get(WorkerPluginManager::class);
 
         return new DoctrineQueue(
             $connection,
             $queueOptions,
             $requestedName,
-            $jobPluginManager,
-            $workerPluginManager
+            $jobPluginManager
         );
     }
 }
