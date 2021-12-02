@@ -43,23 +43,23 @@ Connection parameters can be defined in the application configuration:
 
 ```php
 <?php
-return array(
-    'doctrine' => array(
-        'connection' => array(
+return [
+    'doctrine' => [
+        'connection' => [
             // default connection name
-            'orm_default' => array(
+            'orm_default' => [
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-                'params' => array(
+                'params' => [
                     'host'     => 'localhost',
                     'port'     => '3306',
                     'user'     => 'username',
                     'password' => 'password',
                     'dbname'   => 'database',
-                )
-            )
-        )
-    ),
-);
+                ]
+            ]
+        ]
+    ],
+];
 ```
 
 ### Creating the table from SQL file
@@ -76,28 +76,28 @@ There is an alternative way to create 'queue_default' table in your database by 
 ### Adding queues
 
 ```php
-return array(
-  'slm_queue' => array(
-    'queue_manager' => array(
-      'factories' => array(
+return [
+  'slm_queue' => [
+    'queue_manager' => [
+      'factories' => [
         'foo' => 'SlmQueueDoctrine\Factory\DoctrineQueueFactory'
-      )
-    )
-  )
-);
+      ]
+    ]
+  ]
+];
 ```
 ### Adding jobs
 
 ```php
-return array(
-  'slm_queue' => array(
-    'job_manager' => array(
-      'factories' => array(
+return [
+  'slm_queue' => [
+    'job_manager' => [
+      'factories' => [
         'My\Job' => 'My\JobFactory'
-      )
-    )
-  )
-);
+      ]
+    ]
+  ]
+];
 
 ``` 
 ### Configuring queues
@@ -111,15 +111,15 @@ The following options can be set per queue ;
 
 
 ```php
-return array(
-  'slm_queue' => array(
-    'queues' => array(
-      'foo' => array(
+return [
+  'slm_queue' => [
+    'queues' => [
+      'foo' => [
         // ...
-      )
-    )
-  )
-);
+      ]
+    ]
+  ]
+];
  ```
  
 Provided Worker Strategies
@@ -183,35 +183,35 @@ $queue->push($job, [
 ]);
 
 // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-$queue->push($job, array(
+$queue->push($job, [
     'scheduled' => 1420070400,
-));
+]);
 
 // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-$queue->push($job, array(
+$queue->push($job, [
     'scheduled' => '2015-01-01 00:00:00'
-));
+]);
 
 // scheduled for execution at 2015-01-01 01:00:00
-$queue->push($job, array(
+$queue->push($job, [
     'scheduled' => '2015-01-01 00:00:00',
     'delay' => 3600
-));
+]);
 
 // scheduled for execution at now + 300 seconds
-$queue->push($job, array(
+$queue->push($job, [
     'delay' => 'PT300S'
-));
+]);
 
 // scheduled for execution at now + 2 weeks (1209600 seconds)
-$queue->push($job, array(
+$queue->push($job, [
     'delay' => '2 weeks'
-));
+]);
 
 // scheduled for execution at now + 300 seconds
-$queue->push($job, array(
+$queue->push($job, [
     'delay' => new DateInterval("PT300S"))
-));
+]);
 ```
 
 
