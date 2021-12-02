@@ -29,11 +29,12 @@ class DoctrineQueueTest extends TestCase
 
         $options = new DoctrineOptions();
 
+        $container = ServiceManagerFactory::getServiceManager();
         $this->queue = new DoctrineQueue(
             $this->getEntityManager()->getConnection(),
             $options,
             'some-queue-name',
-            ServiceManagerFactory::getServiceManager()->get(JobPluginManager::class)
+            $container->get(JobPluginManager::class)
         );
     }
 

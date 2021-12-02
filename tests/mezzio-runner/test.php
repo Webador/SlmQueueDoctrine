@@ -9,19 +9,19 @@ require 'vendor/autoload.php';
 $serviceManager = require 'config/container.php';
 $entityManager = $serviceManager->get('doctrine.entitymanager.orm_default');
 $connection = $entityManager->getConnection();
-$connection->executeQuery(file_get_contents(__DIR__ . '/../../queue_default.sqlite'));
+$connection->executeQuery(file_get_contents(__DIR__ . '/../queue_default.sqlite'));
 
 // Populate with a job
 $serviceManager->get(\SlmQueue\Queue\QueuePluginManager::class)->get('default')->push(new \App\TestJob());
 
 // Run the queue for a single job
-exec('vendor/bin/laminas slm-queue-doctrine:start default');
+exec('vendor/bin/laminas slm-queue:start default');
 
 // Assert that file was generated?
-if (@file_get_contents('temp/succesfull') !== 'YES') {
-    echo 'Test was NOT successfull.';
+if (@file_get_contents('temp/succesful') !== 'YES') {
+    echo 'Test was NOT successful.';
     exit(1);
 }
 
-echo 'Test was successfull.';
+echo 'Test was successful.';
 exit(0);

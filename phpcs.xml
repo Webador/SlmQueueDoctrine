@@ -9,5 +9,6 @@
   <file>src</file>
   <file>tests</file>
 
+  <exclude-pattern>tests/*/vendor/*$</exclude-pattern>
 </ruleset>
 

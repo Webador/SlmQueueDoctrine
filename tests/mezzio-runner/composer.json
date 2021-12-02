@@ -1,8 +1,10 @@
 {
     "require": {
-        "slm/queue-doctrine": "dev-master",
-        "doctrine/doctrine-orm-module": "^4.0",
-        "laminas/laminas-cli": "^1.1.1"
+        "slm/queue-doctrine": "*",
+        "mezzio/mezzio": "^3.2.1",
+        "laminas/laminas-diactoros": "^2.3.0",
+        "laminas/laminas-config-aggregator": "^1.2",
+        "doctrine/doctrine-orm-module": "^4.0"
     },
     "replace": {
         "laminas/laminas-cache-storage-adapter-apc": "*",
@@ -17,13 +19,20 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../lib"
+            "url": "../.."
         }
     ],
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "TestModule\\": "module/TestModule/src"
+            "App\\": "src/App/"
         }
+    },
+    "scripts": {
+        "test": [
+            "echo Running Mezzio integration tests...",
+            "@composer update",
+            "@php test.php"
+        ]
     }
 }

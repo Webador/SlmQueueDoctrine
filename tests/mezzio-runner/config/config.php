@@ -23,4 +23,3 @@ $aggregator = new ConfigAggregator([
 ]);
 
 return $aggregator->getMergedConfig();
-

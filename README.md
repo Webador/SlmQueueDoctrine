@@ -43,23 +43,23 @@ Connection parameters can be defined in the application configuration:
 
 ```php
 <?php
-return array(
-    'doctrine' => array(
-        'connection' => array(
+return [
+    'doctrine' => [
+        'connection' => [
             // default connection name
-            'orm_default' => array(
+            'orm_default' => [
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-                'params' => array(
+                'params' => [
                     'host'     => 'localhost',
                     'port'     => '3306',
                     'user'     => 'username',
                     'password' => 'password',
                     'dbname'   => 'database',
-                )
-            )
-        )
-    ),
-);
+                ]
+            ]
+        ]
+    ],
+];
 ```
 
 ### Creating the table from SQL file
@@ -76,28 +76,28 @@ There is an alternative way to create 'queue_default' table in your database by 
 ### Adding queues
 
 ```php
-return array(
-  'slm_queue' => array(
-    'queue_manager' => array(
-      'factories' => array(
+return [
+  'slm_queue' => [
+    'queue_manager' => [
+      'factories' => [
         'foo' => 'SlmQueueDoctrine\Factory\DoctrineQueueFactory'
-      )
-    )
-  )
-);
+      ]
+    ]
+  ]
+];
 ```
 ### Adding jobs
 
 ```php
-return array(
-  'slm_queue' => array(
-    'job_manager' => array(
-      'factories' => array(
+return [
+  'slm_queue' => [
+    'job_manager' => [
+      'factories' => [
         'My\Job' => 'My\JobFactory'
-      )
-    )
-  )
-);
+      ]
+    ]
+  ]
+];
 
 ``` 
 ### Configuring queues
@@ -111,15 +111,15 @@ The following options can be set per queue ;
 
 
 ```php
-return array(
-  'slm_queue' => array(
-    'queues' => array(
-      'foo' => array(
+return [
+  'slm_queue' => [
+    'queues' => [
+      'foo' => [
         // ...
-      )
-    )
-  )
-);
+      ]
+    ]
+  ]
+];
  ```
  
 Provided Worker Strategies
@@ -183,35 +183,35 @@ $queue->push($job, [
 ]);
 
 // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-$queue->push($job, array(
+$queue->push($job, [
     'scheduled' => 1420070400,
-));
+]);
 
 // scheduled for execution 2015-01-01 00:00:00 (system timezone applies)
-$queue->push($job, array(
+$queue->push($job, [
     'scheduled' => '2015-01-01 00:00:00'
-));
+]);
 
 // scheduled for execution at 2015-01-01 01:00:00
-$queue->push($job, array(
+$queue->push($job, [
     'scheduled' => '2015-01-01 00:00:00',
     'delay' => 3600
-));
+]);
 
 // scheduled for execution at now + 300 seconds
-$queue->push($job, array(
+$queue->push($job, [
     'delay' => 'PT300S'
-));
+]);
 
 // scheduled for execution at now + 2 weeks (1209600 seconds)
-$queue->push($job, array(
+$queue->push($job, [
     'delay' => '2 weeks'
-));
+]);
 
 // scheduled for execution at now + 300 seconds
-$queue->push($job, array(
+$queue->push($job, [
     'delay' => new DateInterval("PT300S"))
-));
+]);
 ```
 
 
@@ -222,7 +222,7 @@ Interact with workers from the command line from within the public folder of you
 #### Starting a worker
 Start a worker that will keep monitoring a specific queue for jobs scheduled to be processed. This worker will continue until it has reached certain criteria (exceeds a memory limit or has processed a specified number of jobs).
 
-`vendor/bin/laminas slm-queue-doctrine:start <queueName>`
+`vendor/bin/laminas slm-queue:start <queueName>`
 
 A worker will exit when you press cntr-C *after* it has finished the current job it is working on. (PHP doesn't support signal handling on Windows)
 
@@ -230,7 +230,7 @@ A worker will exit when you press cntr-C *after* it has finished the current job
 
 To recover jobs which are in the 'running' state for prolonged period of time (specified in minutes) use the following command.
 
-`vendor/bin/laminas slm-queue-doctrine:recover <queueName> [--executionTime=]`
+`vendor/bin/laminas slm-queue:doctrine:recover <queueName> [--executionTime=]`
 
 *Note : Workers that are processing a job that is being recovered are NOT stopped.*
 

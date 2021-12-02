@@ -13,7 +13,7 @@ class DoctrineQueueFactoryTest extends TestCase
     {
         $sm = ServiceManagerFactory::getServiceManager();
         $factory = new DoctrineQueueFactory();
-        $service = $factory($sm, null);
+        $service = $factory($sm, 'some-queue');
 
         static::assertInstanceOf(DoctrineQueue::class, $service);
     }
