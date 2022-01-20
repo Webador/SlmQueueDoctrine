@@ -37,7 +37,7 @@ class ClearObjectManagerStrategyTest extends TestCase
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
-        $evm->expects($this->at(0))->method('attach')
+        $evm->expects($this->once())->method('attach')
             ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onClear'], 1000);
 
         $this->listener->attach($evm, $priority);
