@@ -68,8 +68,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
      * Valid options are:
      *      - priority: the lower the priority is, the sooner the job get popped from the queue (default to 1024)
      *
-     * {@inheritDoc}
-     *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
      */
     public function push(JobInterface $job, array $options = []): void

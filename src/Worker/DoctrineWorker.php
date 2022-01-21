@@ -2,15 +2,14 @@
 
 namespace SlmQueueDoctrine\Worker;
 
-use SlmQueueDoctrine\Job\Exception\ReleasableException;
-use SlmQueueDoctrine\Job\Exception\BuryableException;
-use Throwable;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\Event\ProcessJobEvent;
-use SlmQueueDoctrine\Job\Exception as JobException;
+use SlmQueueDoctrine\Job\Exception\BuryableException;
+use SlmQueueDoctrine\Job\Exception\ReleasableException;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
+use Throwable;
 
 /**
  * Worker for Doctrine
@@ -27,7 +26,7 @@ class DoctrineWorker extends AbstractWorker
         }
 
         try {
-            $job->execute($queue);
+            $job->execute();
             $queue->delete($job);
 
             return ProcessJobEvent::JOB_STATUS_SUCCESS;

@@ -5,8 +5,8 @@ namespace SlmQueueDoctrine\Strategy;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface as DMObjectManagerAwareInterface;
 use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Strategy\AbstractStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueueDoctrine\Persistence\ObjectManagerAwareInterface;
 
 class ClearObjectManagerStrategy extends AbstractStrategy
@@ -17,7 +17,7 @@ class ClearObjectManagerStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_JOB,
+            WorkerEventInterface::EVENT_PROCESS_JOB,
             [$this, 'onClear'],
             1000
         );

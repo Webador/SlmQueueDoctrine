@@ -6,8 +6,8 @@ use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\AbstractStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use SlmQueueDoctrine\Strategy\IdleNapStrategy;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
@@ -37,7 +37,7 @@ class IdleNapStrategyTest extends TestCase
         $priority = 1;
 
         $evm->expects($this->once())->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onIdle'], 1);
+            ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onIdle'], 1);
 
         $this->listener->attach($evm, $priority);
     }

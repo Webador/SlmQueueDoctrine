@@ -5,6 +5,7 @@ namespace SlmQueueDoctrine\Strategy;
 use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
 use Laminas\EventManager\EventManagerInterface;
 
@@ -33,7 +34,7 @@ class IdleNapStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_IDLE,
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
             [$this, 'onIdle'],
             1
         );

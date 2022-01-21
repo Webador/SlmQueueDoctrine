@@ -17,7 +17,7 @@
         {
             "name": "Stefan Kleff",
             "email": "s.kleff@goalio.de",
-            "homepage": "http://www.goalio.de"
+            "homepage": "https://www.goalio.de"
         },
         {
             "name": "Bas Kamer",
@@ -84,5 +84,10 @@
             "@composer test --working-dir=tests/laminas-runner",
             "@composer test --working-dir=tests/mezzio-runner"
         ]
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        }
     }
 }

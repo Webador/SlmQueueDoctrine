@@ -8,7 +8,6 @@ use SlmQueue\Job\AbstractJob;
 
 class OMJob extends AbstractJob implements ObjectManagerAwareInterface
 {
-
     /**
      * @var ObjectManager
      */
