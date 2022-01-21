@@ -36,8 +36,11 @@ class IdleNapStrategyTest extends TestCase
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
-        $evm->expects($this->once())->method('attach')
-            ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onIdle'], 1);
+        $evm->expects($this->once())->method('attach')->with(
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
+            [$this->listener, 'onIdle'],
+            1
+        );
 
         $this->listener->attach($evm, $priority);
     }
