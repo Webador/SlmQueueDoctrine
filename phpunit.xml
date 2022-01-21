@@ -1,21 +1,23 @@
 <?xml version="1.0"?>
 <phpunit
-    bootstrap="./tests/Bootstrap.php"
-    colors="true"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    verbose="true"
-    stopOnFailure="false"
-    processIsolation="false"
-    backupGlobals="false"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  bootstrap="./tests/Bootstrap.php"
+  colors="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  verbose="true"
+  stopOnFailure="false"
+  processIsolation="false"
+  backupGlobals="false"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 >
-    <testsuite name="SlmQueueDoctrine tests">
-        <directory>./tests/src</directory>
-    </testsuite>
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+  <coverage includeUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuite name="SlmQueueDoctrine tests">
+    <directory>./tests/src</directory>
+  </testsuite>
 </phpunit>

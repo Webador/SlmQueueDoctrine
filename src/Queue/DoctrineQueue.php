@@ -9,8 +9,8 @@ use DateInterval;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
-use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Types;
 use SlmQueue\Job\JobInterface;
@@ -67,8 +67,6 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     /**
      * Valid options are:
      *      - priority: the lower the priority is, the sooner the job get popped from the queue (default to 1024)
-     *
-     * {@inheritDoc}
      *
      * Note : see DoctrineQueue::parseOptionsToDateTime for schedule and delay options
      */
@@ -296,7 +294,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     public function peek(int $id): JobInterface
     {
         $sql  = 'SELECT * FROM ' . $this->options->getTableName() . ' WHERE id = ?';
-        $row  = $this->connection->fetchAssoc($sql, [$id], [Types::SMALLINT]);
+        $row  = $this->connection->fetchAssociative($sql, [$id], [Types::SMALLINT]);
 
         if (!$row) {
             throw new JobNotFoundException(sprintf("Job with id '%s' does not exists.", $id));

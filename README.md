@@ -16,13 +16,7 @@ Note: it's necessary require the doctrine package in composer.json file.
 Installation
 ------------
 
-Add the following line into your `composer.json` file:
-
-```json
-"require": {
-    "slm/queue-doctrine": "^3.0"
-}
-```
+Run `composer require slm/queue-doctrine`.
 
 If you have the [laminas/laminas-component-installer](https://github.com/laminas/laminas-component-installer) package installed, it will ask you to enable the module (and `SlmQueue`), both in Laminas and Mezzio. Otherwise, add the module to the list:
 * in Laminas MVC, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.

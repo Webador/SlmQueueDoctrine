@@ -2,14 +2,13 @@
 
 namespace SlmQueueDoctrineTest\Worker;
 
+use Laminas\EventManager\EventManager;
+use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueueDoctrine\Queue\DoctrineQueueInterface;
-use SlmQueueDoctrineTest\Asset;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
-use SlmQueueDoctrineTest\Util\ServiceManagerFactory;
-use Laminas\EventManager\EventManager;
-use Laminas\ServiceManager\ServiceManager;
+use SlmQueueDoctrineTest\Asset;
 
 class DoctrineWorkerTest extends TestCase
 {

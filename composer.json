@@ -17,7 +17,7 @@
         {
             "name": "Stefan Kleff",
             "email": "s.kleff@goalio.de",
-            "homepage": "http://www.goalio.de"
+            "homepage": "https://www.goalio.de"
         },
         {
             "name": "Bas Kamer",
@@ -26,17 +26,16 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ~8.0",
+        "php": ">=7.4",
         "laminas/laminas-eventmanager": "^3.3",
         "laminas/laminas-router": "^3.4",
         "laminas/laminas-servicemanager": "^3.6",
         "laminas/laminas-stdlib": "^3.3",
         "slm/queue": "^3.0",
-        "doctrine/dbal": "^2.12",
+        "doctrine/dbal": "^3.0",
         "doctrine/annotations": "^1.8",
         "laminas/laminas-config": "^3.4",
         "laminas/laminas-cli": "^1.1.1"
-        
     },
     "require-dev": {
         "ext-sqlite3": "*",
@@ -48,8 +47,8 @@
         "laminas/laminas-serializer": "^2.10",
         "laminas/laminas-mvc": "^3.3",
         "doctrine/orm": "^2.10",
-        "phpunit/phpunit": "^9",
-        "squizlabs/php_codesniffer": "3.*"
+        "phpunit/phpunit": "^9.3",
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
@@ -85,5 +84,13 @@
             "@composer test --working-dir=tests/laminas-runner",
             "@composer test --working-dir=tests/mezzio-runner"
         ]
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }

@@ -7,8 +7,8 @@ use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\AbstractStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueueDoctrine\Strategy\ClearObjectManagerStrategy;
 use SlmQueueDoctrine\Worker\DoctrineWorker;
 use SlmQueueDoctrineTest\Asset\OMJob;
@@ -37,8 +37,11 @@ class ClearObjectManagerStrategyTest extends TestCase
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
-        $evm->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onClear'], 1000);
+        $evm->expects($this->once())->method('attach')->with(
+            WorkerEventInterface::EVENT_PROCESS_JOB,
+            [$this->listener, 'onClear'],
+            1000
+        );
 
         $this->listener->attach($evm, $priority);
     }

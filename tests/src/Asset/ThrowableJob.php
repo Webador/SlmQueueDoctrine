@@ -19,7 +19,6 @@
 
 namespace SlmQueueDoctrineTest\Asset;
 
-use Exception;
 use SlmQueue\Job\AbstractJob;
 
 class ThrowableJob extends AbstractJob
@@ -27,7 +26,7 @@ class ThrowableJob extends AbstractJob
     /**
      * {@inheritDoc}
      */
-    public function execute(): ?int
+    public function execute()
     {
         $undefined->acces();
     }
