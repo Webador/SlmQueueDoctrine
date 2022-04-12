@@ -27,28 +27,25 @@
     ],
     "require": {
         "php": ">=7.4",
-        "laminas/laminas-eventmanager": "^3.3",
-        "laminas/laminas-router": "^3.4",
-        "laminas/laminas-servicemanager": "^3.6",
-        "laminas/laminas-stdlib": "^3.3",
-        "slm/queue": "^3.0",
-        "doctrine/dbal": "^3.0",
+        "laminas/laminas-eventmanager": "^3.4",
+        "laminas/laminas-router": "^3.5",
+        "slm/queue": "3.1-beta",
+        "doctrine/dbal": "^3.1.2",
         "doctrine/annotations": "^1.8",
-        "laminas/laminas-config": "^3.4",
-        "laminas/laminas-cli": "^1.1.1"
+        "laminas/laminas-config": "^3.7"
     },
     "require-dev": {
         "ext-sqlite3": "*",
-        "doctrine/doctrine-orm-module": "^4.0",
-        "laminas/laminas-modulemanager": "^2.10",
-        "laminas/laminas-view": "^2.12",
-        "laminas/laminas-log": "^2.13",
-        "laminas/laminas-i18n": "^2.11",
-        "laminas/laminas-serializer": "^2.10",
+        "doctrine/doctrine-orm-module": "^4.1",
+        "laminas/laminas-modulemanager": "^2.11",
+        "laminas/laminas-view": "^2.13",
+        "laminas/laminas-log": "^2.15",
+        "laminas/laminas-i18n": "^2.12",
+        "laminas/laminas-serializer": "^2.11",
         "laminas/laminas-mvc": "^3.3",
-        "doctrine/orm": "^2.10",
+        "doctrine/orm": "^2.11.1",
         "phpunit/phpunit": "^9.3",
-        "squizlabs/php_codesniffer": "^3.0"
+        "squizlabs/php_codesniffer": "^3.6.2"
     },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
