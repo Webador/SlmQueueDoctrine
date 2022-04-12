@@ -26,7 +26,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": "~7.4.0 || ~8.0.0 || ~8.1.0",
         "laminas/laminas-eventmanager": "^3.4",
         "laminas/laminas-router": "^3.5",
         "slm/queue": "3.1-beta",
