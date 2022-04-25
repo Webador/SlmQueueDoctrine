@@ -74,7 +74,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
+        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, (int)$time), new DateTimeZone(date_default_timezone_get()));
         $scheduled = $this->parseOptionsToDateTime($options);
 
         $this->connection->insert($this->options->getTableName(), [
@@ -116,7 +116,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
         $this->now = new DateTime(
-            date('Y-m-d H:i:s.' . $micro, $time),
+            date('Y-m-d H:i:s.' . $micro, (int)$time),
             new DateTimeZone(date_default_timezone_get())
         );
 
@@ -201,7 +201,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $time      = microtime(true);
             $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
             $this->now = new DateTime(
-                date('Y-m-d H:i:s.' . $micro, $time),
+                date('Y-m-d H:i:s.' . $micro, (int)$time),
                 new DateTimeZone(date_default_timezone_get())
             );
 
@@ -242,7 +242,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
             $time      = microtime(true);
             $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
             $this->now = new DateTime(
-                date('Y-m-d H:i:s.' . $micro, $time),
+                date('Y-m-d H:i:s.' . $micro, (int)$time),
                 new DateTimeZone(date_default_timezone_get())
             );
 
@@ -360,7 +360,7 @@ class DoctrineQueue extends AbstractQueue implements DoctrineQueueInterface
     {
         $time      = microtime(true);
         $micro     = sprintf("%06d", ($time - floor($time)) * 1000000);
-        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, $time), new DateTimeZone(date_default_timezone_get()));
+        $this->now = new DateTime(date('Y-m-d H:i:s.' . $micro, (int)$time), new DateTimeZone(date_default_timezone_get()));
         $scheduled = clone ($this->now);
 
         if (isset($options['scheduled'])) {
