@@ -4,7 +4,7 @@
         "mezzio/mezzio": "^3.2.1",
         "laminas/laminas-diactoros": "^2.3.0",
         "laminas/laminas-config-aggregator": "^1.2",
-        "doctrine/doctrine-orm-module": "^4.0"
+        "doctrine/doctrine-orm-module": "^5.0"
     },
     "replace": {
         "laminas/laminas-cache-storage-adapter-apc": "*",
