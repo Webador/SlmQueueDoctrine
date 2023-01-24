@@ -36,7 +36,7 @@
     },
     "require-dev": {
         "ext-sqlite3": "*",
-        "doctrine/doctrine-orm-module": "^4.1",
+        "doctrine/doctrine-orm-module": "^4.1 || ^5.0",
         "laminas/laminas-modulemanager": "^2.11",
         "laminas/laminas-view": "^2.13",
         "laminas/laminas-log": "^2.15",
