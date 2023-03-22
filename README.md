@@ -8,7 +8,7 @@ Created by Stefan Kleff
 
 Requirements
 ------------
-* [SlmQueue](https://github.com/juriansluiman/SlmQueue)
+* [SlmQueue](https://github.com/JouwWeb/SlmQueue)
 * [Doctrine 2 ORM Module](https://github.com/doctrine/DoctrineORMModule) or [roave/psr-container-doctrine](https://github.com/roave/psr-container-doctrine)
 
 Note: it's necessary require the doctrine package in composer.json file.
@@ -22,16 +22,16 @@ If you have the [laminas/laminas-component-installer](https://github.com/laminas
 * in Laminas MVC, enable the module by adding `SlmQueueDoctrine` in your application.config.php file.
 * in Mezzio, enable the module by adding `SlmQueueDoctrine\ConfigProvider::class,` in your config.php file.
 
-Note: Don't forget install [SlmQueue](https://github.com/juriansluiman/SlmQueue) in you config file, which is required.
+Note: Don't forget install [SlmQueue](https://github.com/JouwWeb/SlmQueue) in you config file, which is required.
 
 Documentation
 -------------
 
-Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentation](https://github.com/juriansluiman/SlmQueue).
+Before reading SlmQueueDoctrine documentation, please read [SlmQueue documentation](https://github.com/JouwWeb/SlmQueue).
 
 ### Configuring the connection
 
-You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here are some [examples](https://github.com/DASPRiD/container-interop-doctrine/tree/master/example).
+You need to register a doctrine connection which SlmQueueDoctrine will use to access the database into the service manager. Here are some [examples](https://github.com/Roave/psr-container-doctrine/tree/master/example).
 
 Connection parameters can be defined in the application configuration:
 
@@ -119,11 +119,11 @@ return [
 Provided Worker Strategies
 --------------------------
 
-In addition to the provided strategies by [SlmQueue](https://github.com/juriansluiman/SlmQueue/blob/master/docs/6.Events.md) SlmQueueDoctrine comes with these strategies;
+In addition to the provided strategies by [SlmQueue](https://github.com/JouwWeb/SlmQueue/blob/master/docs/6.Events.md) SlmQueueDoctrine comes with these strategies;
 
 #### ClearObjectManagerStrategy
 
-This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the [DoctrineModule\Persistence\ObjectManagerAwareInterface](https://github.com/doctrine/DoctrineModule/blob/master/src/DoctrineModule/Persistence/ObjectManagerAwareInterface.php) or [SlmQueueDoctrine\Persistence\ObjectManagerAwareInterface](https://github.com/juriansluiman/SlmQueueDoctrine/blob/master/src/Persistence/ObjectManagerAwareInterface.php).
+This strategy will clear the ObjectManager before execution of individual jobs. The job must implement the [DoctrineModule\Persistence\ObjectManagerAwareInterface](https://github.com/doctrine/DoctrineModule/blob/master/src/DoctrineModule/Persistence/ObjectManagerAwareInterface.php) or [SlmQueueDoctrine\Persistence\ObjectManagerAwareInterface](https://github.com/JouwWeb/SlmQueueDoctrine/blob/master/src/Persistence/ObjectManagerAwareInterface.php).
 
 listens to:
 
