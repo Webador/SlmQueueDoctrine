@@ -1,7 +1,7 @@
 {
     "require": {
         "slm/queue-doctrine": "*",
-        "doctrine/doctrine-orm-module": "^4.1 || ^5.0"
+        "doctrine/doctrine-orm-module": "^4.1 || ^5.0 || ^6.0"
     },
     "replace": {
         "laminas/laminas-cache-storage-adapter-apc": "*",
@@ -14,6 +14,11 @@
         "laminas/laminas-cache-storage-adapter-zend-server": "*"
     },
     "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/eivydas/SlmQueue",
+            "canonical": true
+        },
         {
             "type": "path",
             "url": "../.."

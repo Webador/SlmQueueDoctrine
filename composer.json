@@ -26,17 +26,17 @@
         }
     ],
     "require": {
-        "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0",
+        "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
         "laminas/laminas-eventmanager": "^3.4",
         "laminas/laminas-router": "^3.5",
-        "slm/queue": "^3.1",
+        "slm/queue": "dev-feature/php8.3",
         "doctrine/dbal": "^3.1.2",
         "doctrine/annotations": "^1.8",
         "laminas/laminas-config": "^3.7"
     },
     "require-dev": {
         "ext-sqlite3": "*",
-        "doctrine/doctrine-orm-module": "^4.1 || ^5.0",
+        "doctrine/doctrine-orm-module": "^4.1 || ^5.0 || ^6.0",
         "laminas/laminas-modulemanager": "^2.11",
         "laminas/laminas-view": "^2.13",
         "laminas/laminas-log": "^2.15",
@@ -47,13 +47,23 @@
         "phpunit/phpunit": "^9.3",
         "squizlabs/php_codesniffer": "^3.6.2"
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/eivydas/SlmQueue",
+            "canonical": true
+        }
+    ],
+    "conflict": {
+        "doctrine/cache": ">2.0"
+    },
     "suggest": {
         "doctrine/doctrine-orm-module": "If you use Doctrine in combination with Laminas",
         "roave/psr-container-doctrine": "Configures Doctrine services automatically."
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.1.x-dev"
+            "dev-feature/php8.3": "3.1.x-dev"
         },
         "laminas": {
             "module": "SlmQueueDoctrine\\Module",
