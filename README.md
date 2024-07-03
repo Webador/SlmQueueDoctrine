@@ -1,6 +1,12 @@
 SlmQueueDoctrine
 ================
 
+Important notice
+----------
+
+We decided to move onto Symfony Messenger and we are therefore not maintaining this repository anymore. Feel free to fork it and
+make it your own.
+
 [![Latest Stable Version](https://poser.pugx.org/slm/queue-doctrine/v/stable.png)](https://packagist.org/packages/slm/queue-doctrine)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue-doctrine/v/unstable.png)](https://packagist.org/packages/slm/queue-doctrine)
 
